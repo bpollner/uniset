@@ -1,0 +1,15 @@
+Package: uniset
+Type: Package
+Title: Universal Settings file for R
+Version: 0.0.1
+Author: Bernhard Pollner, Zoltan Kovacs
+Maintainer: Bernhard Pollner <bernhard.pollner@mac.com>
+Description: A universal framework to use an easily accessible, user-friendly text file as settings-file for any R-package, enabling personalization and user-specific customization of any parameter to be used within the code of a package. This settings file remains in place and unchanged even when the package is updated or re-installed.
+License: GPL (>=2)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Depends:
+    R (>= 3.3.2)
+Imports:
+    plyr
