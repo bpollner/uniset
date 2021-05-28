@@ -1,9 +1,17 @@
 ###########################################################################################
-######################## Settings file for package "aquap2" #########################
+######################## Settings file for package "XXX" ##################################
 ###########################################################################################
 
 stn <- list(
 	# tag = value, # with a comma !!
+	
+	
+	## general behavior
+	gen_autoUpdateSettings = TRUE, 								## Do not delete this variable (but of course you can change its value)
+	
+	
+	
+	
 	
 	## block 1 (describe what this collection of variables is about)
 	block1_1 = "foo",				## add a comment to describe what this variable is about
@@ -33,10 +41,10 @@ stn <- list(
 ) # end of list
 
 
-# if you add a new variable within a block *below the first* variable of the block, 
+# If you add a new variable within a block *below the first* variable of the block, 
 # this variable gets simply inserted into the settings file of the user. (Only the first variable
 # of a block acts as a hook.)
 
-# if you add a new block, or you add a variable *above the first* variable of the block,
-# the user´s settings-file can not be updated any more, and the changes have to be manually inserted
-# into the user´s settings-file.
+# If you add a new block, or you add a variable *above the first* variable of the block,
+# the user´s settings-file can not be updated any more, and the user has to manually insert
+# the changes into the settings-file.

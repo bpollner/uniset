@@ -4,9 +4,14 @@
 #' user-specific customization of any parameter to be used within the code of a 
 #' package. This settings file remains in place and unchanged even when the 
 #' package is updated or re-installed.
-#' @details First use \code{\link{copyUnisetTemplates}}, move the 'settings.r' 
-#' file into the 'inst' folder (create one if not already done) of your package, 
-#' and the 'unisetGlobals.r' file into the 'R' folder of your package.
+#' @details First use \code{\link{copyUnisetTemplates}}, then move the 'settings.r' 
+#' file into the 'inst' folder (create one if not already done) of  the package 
+#' that you want to enable to use the package 'uniset', and the file 'zzz.r" to 
+#' the 'R' folder of the package that you want to enable to use the package 
+#' 'uniset'. 
+#' Every variable defined in the settings.r file is accessible in your code.
+#' The big advantage is that the user of your package can customize and 
+#' personalize your package by using .. XXX
 #' For an introduction and more detailed information please see the package 
 #' vignettes: \code{browseVignettes(package = "uniset")}
 #' @author Bernhard Pollner, Zoltan Kovacs
