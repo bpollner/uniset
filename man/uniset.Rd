@@ -12,11 +12,11 @@ package. This settings file remains in place and unchanged even when the
 package is updated or re-installed.
 }
 \details{
-First use \code{\link{copyUnisetTemplates}}, then move the 'settings.r' 
+First use \code{\link{uniset_getFiles}}, then move the 'settings.r' 
 file into the 'inst' folder (create one if not already done) of  the package 
-that you want to enable to use the package 'uniset', and the file 'zzz.r" to 
-the 'R' folder of the package that you want to enable to use the package 
-'uniset'. 
+that you want to enable to use the package 'uniset', and the file 'zzz.r" and 
+the file 'uniset_globals' to the 'R' folder of the package that you want to 
+enable to use the package 'uniset'. 
 Every variable defined in the settings.r file is accessible in your code.
 The big advantage is that the user of your package can customize and 
 personalize your package by using .. XXX
@@ -28,7 +28,7 @@ vignettes: \code{browseVignettes(package = "uniset")}
 }
 
 \section{Important Functions}{
- \code{\link{copyUnisetTemplates}}
+ \code{\link{uniset_getFiles}}
 }
 
 \author{

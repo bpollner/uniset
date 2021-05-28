@@ -3,4 +3,5 @@
 export(autoUpS)
 export(copyUnisetTemplates)
 export(testingUniset)
+export(uniset_getFiles)
 export(updateSettings)

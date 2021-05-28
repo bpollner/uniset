@@ -1,29 +1,20 @@
-###########################################################################
-######################### From Package Uniset #############################
-###########################################################################
+#############################################################################################
+######################### On-Load function for package 'XXX_packageName' ####################
+#############################################################################################
 
 
-# Move this file called "zzz.r" into the "R" folder of the package that you want to enable to use the package "uniset".
+# Move this file called "zzz.r" into the "R" folder of your package 'XXX_packageName'.
 
-# Or, alternatively, if you already have a file containing the ".onLoad" function, add the 6 lines of code below to your ".onLoad" function
-
-# Change the character values (e.g. "MyPackageName", ".mse") to the values of your liking.
+# Or, alternatively, if you already have a file containing the '.onLoad' function in your package 'XXX_packageName', 
+# add the 6 lines of code below to your '.onLoad' function
 
 ######## !! Do NOT change the names of the variables. It will cripple the functionality of the package "uniset" !! ############
 
-
 .onLoad <- function(libname, pkgname) {
-
-    .GlobalEnv$.unisetVars <- new.env()												## creates a new environment called ".unisetVars"
-
-	.unisetVars$pkgUniset_UserPackageName <- "MyPackageName"						## character length one, the name of the package using the uniset system
-
-    .unisetVars$pkgUniset_RenvironSettingsHomeName <- "MyPackageName_SettingsHome"	## character length one, the name of the variable in the .Renviron file that contains the path to the user-defined settings-home
-
-	.unisetVars$pkgUniset_EnvironmentName <- ".mse"									## character length one, the name of the environment containing the settings. It is recommended to use a rather short name starting with a '.' dot.
-
-	.unisetVars$pkgUniset_SettingsObjectName <- "stn"								## character length one, the name of the object (within the environment defined above) that is containing the settings-list. This *MUST* be the same name as the name of the list in the settings.r file (in the default template, this is 'stn' in line 5)
-
-	.unisetVars$pkgUniset_SuffixForTemplate <- "_TEMPLATE"							## the character string that should be appended to the fresh settings file that is copied to the users settings home directory
-
+	.GlobalEnv$XXX_unisetEnv <- new.env()										## creates a new environment called "XXX_unisetEnv"
+	XXX_unisetEnv$pkgUniset_UserPackageName <- "XXX_packageName"				## character length one, the name of the package using the uniset system
+	XXX_unisetEnv$pkgUniset_RenvironSettingsHomeName <- "XXX_SH"				## character length one, the name of the variable in the .Renviron file that contains the path to the user-defined settings-home
+	XXX_unisetEnv$pkgUniset_EnvironmentName <- "XXX_targetEnv"					## character length one, the name of the environment containing the settings for the package using 'uniset. It is recommended to use a rather short name starting with a '.' dot.
+	XXX_unisetEnv$pkgUniset_SettingsObjectName <- "XXX_obj"						## character length one, the name of the object (within the environment defined above) that is containing the settings-list. This *MUST* be the same name as the name of the list in the settings.r file 
+	XXX_unisetEnv$pkgUniset_SuffixForTemplate <- "XXX_template"					## the character string that should be appended to the fresh settings file that is copied to the users settings home directory
 } # EOF
