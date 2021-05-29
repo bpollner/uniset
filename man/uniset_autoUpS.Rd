@@ -10,3 +10,8 @@ uniset_autoUpS()
 Use this function within your code to automatically update the 
 settings from the users settings file
 }
+\details{
+If 'autoUpdateSettings' in xxx_settings.r is left at 'TRUE', the 
+settings will be checked resp. updated automatically every time a function in 
+the target package is calling \code{\link{uniset_autoUpS}}.
+}

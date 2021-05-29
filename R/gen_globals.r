@@ -13,9 +13,9 @@ glob_actualSettingsName <- "XXX_actualSettingsName"			# for the header in the se
 glob_filenameZZZ <- "zzz.R"
 glob_filenameGlobals <- "uniset_globals.R"
 glob_filnameSettings <- "settings.R" 
-glob_folderPrev <- "Files_for_R-package_'"
+glob_folderPrev <- "UnisetFiles_R-pkg_'"
 glob_unisetEnvSuffix <- "_unisetEnv"
 ####
-glob_pathTemplGlobals <- "/templates/uniset_globals.R"
-glob_pathTemplZZZ <- "/templates/zzz.R"
-glob_pathTemplSettinsg <- "/templates/settings.R"
+glob_templGlobals <- "uniset_globals.R"
+glob_templZZZ <- "zzz.R"
+glob_templSettinsg <- "settings.R"

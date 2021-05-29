@@ -92,6 +92,17 @@ checkPath_Package_getName <- function(pathToPackage) {
 	return(taPaName)
 } # EOF
 
+printFinalCodeMessage <- function(taPaEnv, taPaObj, expSettingsName) {
+  	msgChar <- paste0("\n\nYou will be able to access values of the settings-file '", expSettingsName, "' via the code: \n")
+  	codechar <- paste0("'", taPaEnv, "$", taPaObj, "$KEY'")
+  	txt2 <- "(With 'KEY' being any of the 'key=value' pairs defined in the settings.R file.)"
+	cat(msgChar)
+	message(txt2)
+	cat(txt2)	
+	return(invisible(NULL))
+} # EOF  
+
+###############
 readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) {
 	#
 	unisEnvName <- glob_unisetEnvName  							# XXX_unisetEnv
@@ -104,16 +115,19 @@ readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) 
 	#
 	unisetEnvSuffix <- glob_unisetEnvSuffix
 	filnameSettings <- glob_filnameSettings 
-	pathTemplGlobals <- glob_pathTemplGlobals 		# "/templates/uniset_globals.R"
-	pathTemplZZZ <- glob_pathTemplZZZ				# "/templates/zzz.R"
-	pathTemplSettinsg <- glob_pathTemplSettinsg		# "/templates/settings.R"
-	#
-	
+	templGlobals <- glob_templGlobals 		# "uniset_globals.R"
+	templZZZ <- glob_templZZZ				# "zzz.R"
+	templSettinsg <- glob_templSettinsg		# "settings.R"
+	fileAdd <- "/templates/"				# the above three files will reside in the folder 'templates' in the installation of the uniset-package
+		
 	####### define paths ###### 
 	aa <- path.package("uniset")
-	path_unis_globals <- paste0(aa, pathTemplGlobals)
-	path_unis_zzz <- paste0(aa, pathTemplZZZ)
-	path_unis_settingsTemplate <- paste0(aa, pathTemplSettinsg)
+	if (dir.exists(paste0(aa, "/inst"))) { # so we are in a local dev mode and the templates are residing in the 'inst' folder of package root
+		fileAdd <- "/inst/templates/"
+	} # end if
+	path_unis_globals <- paste0(aa, fileAdd, templGlobals)
+	path_unis_zzz <- paste0(aa, fileAdd, templZZZ)
+	path_unis_settingsTemplate <- paste0(aa, fileAdd, templSettinsg)
 	#
 	###### read in the three template files #######
 	fcon <- file(path_unis_globals, open="r")
@@ -296,6 +310,7 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where="
 	cat(paste0("Three files called \n'", paste0(allfns, collapse="'\n'"), "\nhave been written to the folder \n'", folderPath, "'"))
  	cat("\n")
  	cat("Please move these three files into their resp. target folders (see ?uniset, or have a look at the content of the three generated files")
+  	printFinalCodeMessage(taPaEnv, taPaObj, expSettingsName)
 	return(invisible(folderPath))
 } # EOF
 
@@ -314,16 +329,18 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where="
 #' settings file. 
 #' @param pathToPackage Character length one. The path to the root of the 
 #' target package.
-#' @param taPaEnv Character length one. The name of the environment where the 
-#' settings for the target package (in a key=value format) will be stored. It is 
-#' recommended to use a rather short name starting with a '.' (dot). See details. 
-#' If left at the default 'def', the first two characters of the package name, 
-#' prepended with a '.' (dot), and appended with an 'e' (for environment) will 
-#' be used.
 #' @inheritParams uniset_getFiles
 #' @return Writes the three required files directly into a valid R-package folder 
 #' structure. Returns (invisible) NULL. 
 #' @seealso \code{\link{uniset_getFiles}}
+#' @examples
+#' \dontrun{
+#' # for an imaginary package called 'dogPack':
+#' aa <- "~/desktop/dogPack"
+#' uniset_copyFilesToPackage(aa) # uses the defaults for all arguments
+#' uniset_copyFilesToPackage(aa, ".dpe", "sn") 
+#' 	# see details. 
+#' } 
 #' @export
 uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE") {
 	#
@@ -403,37 +420,9 @@ uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn
 	##
 	
 	cat(paste0("A file called '", expSettingsName, "' has been written into the 'inst' folder, \ntwo files called '", filenameZZZ, "' and '", filenameGlobals, "' have been written into the 'R' folder of the package '", folderName, "' at \n'", folderPath, "'."))
+  	printFinalCodeMessage(taPaEnv, taPaObj, expSettingsName)
 	return(invisible(NULL))
 } # EOF
-
-# old. Not in use. 
-copyUnisetTemplates <- function(target="~") {
-	if (target == "~") {
-		pathTarget <-  "user/home"
-		hp <- try(path.expand(target), silent=TRUE)
-		if (class(hp) != "try-Error") {
-			pathTarget <- hp
-		}
-	} else {
-		if (!dir.exists(target)) {
-			stop(paste0("Sorry, the provided directory '", target, "' does not seem to exist"), call.=FALSE)
-		} else {
-			pathTarget <- target
-		}	
-	}
-	path <- path.package("uniset")
-	pathGlobals <- paste0(path, "/", "zzz.r")
-	pathSettings <- paste0(path, "/", "settings.r")
-	okGlob <- file.copy(pathGlobals, pathTarget, overwrite=TRUE)
-	okSet <- file.copy(pathSettings, pathTarget, overwrite=TRUE)
-	if (!any(okGlob, okSet)) {
-		stop(paste0("Sorry, it appears that both required templates could not be copied to '", pathTarget, "'."), call.=FALSE)
-	}
-	msg <- paste0("Two r-files, i.e. a template for the settings.r file and the necessary globals to include in your package should have been copied to '", pathTarget, "'.")
-	cat(msg)
-	return(invisible(NULL))
-}
-
 
 #' @title Test
 #' @description Test
@@ -795,12 +784,9 @@ checkSettings <- function() {
 	} # end else if !renvExists	
 } # EOF
 
-#' @title Update aquap2 settings.
-#' @description Manually read in the settings-file in the aquap2-settings 
+#' @title Update settings of target package
+#' @description Manually read in the settings-file in the target package settings 
 #' home directory as specified in the .Renviron file.
-#' @details If you leave 'autoUpdateSettings' in settings.r to 'TRUE', the 
-#' settings will be checked resp. updated automatically every time you call any 
-#' function from package 'aquap2'.
 #' @section Note: If not present, the required `.Renviron` file will be 
 #' automatically created. If the variable `AQUAP2SH` is not defined in the 
 #' .Renviron file, it will be automatically added, and its default path is 
@@ -844,6 +830,9 @@ uniset_updateSettings <- function(packageName="aquap2", silent=FALSE) {
 #' @title Automatically update Settings
 #' @description Use this function within your code to automatically update the 
 #' settings from the users settings file
+#' @details If 'autoUpdateSettings' in xxx_settings.r is left at 'TRUE', the 
+#' settings will be checked resp. updated automatically every time a function in 
+#' the target package is calling \code{\link{uniset_autoUpS}}.
 #' @export
 uniset_autoUpS <- function() { # stops if somethings goes wrong
 	res <- 1

@@ -38,8 +38,8 @@ XXX_obj <- list(
 	## block 3 (describe what this collection of variables is about)
 	block3_giveMeaningfulNames = TRUE,  	## add a comment to describe what this variable is about
 	favouriteColor = "blue", 
-
-
+	darkColor = "darkred", 
+	anyDecision = TRUE, 
 
 	block4 = "you get the picture",			## add a comment to describe what this variable is about
 	blabla = TRUE, 

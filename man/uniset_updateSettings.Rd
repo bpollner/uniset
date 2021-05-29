@@ -2,7 +2,7 @@
 % Please edit documentation in R/gen_functions.R
 \name{uniset_updateSettings}
 \alias{uniset_updateSettings}
-\title{Update aquap2 settings.}
+\title{Update settings of target package}
 \usage{
 uniset_updateSettings(packageName = "aquap2", silent = FALSE)
 }
@@ -18,13 +18,8 @@ An (invisible) list with the settings resp. a list called 'stn' in
 the environment '.ap2'.
 }
 \description{
-Manually read in the settings-file in the aquap2-settings 
+Manually read in the settings-file in the target package settings 
 home directory as specified in the .Renviron file.
-}
-\details{
-If you leave 'autoUpdateSettings' in settings.r to 'TRUE', the 
-settings will be checked resp. updated automatically every time you call any 
-function from package 'aquap2'.
 }
 \section{Note}{
  If not present, the required `.Renviron` file will be 

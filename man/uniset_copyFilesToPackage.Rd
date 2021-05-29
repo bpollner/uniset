@@ -59,6 +59,15 @@ if you provide '.dpe' at the argument 'taPaEnv' and 'stn' at the argument
 calling \code{.dpe$stn$XXX}, with 'XXX' being any of the keys defined in the 
 settings file.
 }
+\examples{
+\dontrun{
+# for an imaginary package called 'dogPack':
+aa <- "~/desktop/dogPack"
+uniset_copyFilesToPackage(aa) # uses the defaults for all arguments
+uniset_copyFilesToPackage(aa, ".dpe", "sn") 
+	# see details. 
+} 
+}
 \seealso{
 \code{\link{uniset_getFiles}}
 }
