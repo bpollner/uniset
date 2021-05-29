@@ -18,9 +18,42 @@ checkGetTaPaSH <- function(taPaSH, taPaName) {
 } # EOF 
 
 readInCharInput <- function(what) {
-	
+	maxTries <- 3
+	ask <- TRUE
+	aa <- 1
+	txt <- paste0("Please provide a character length one to the argument '", what, "'.")
+	if (what == "taPaName") {
+		askIntro <- paste0("Please provide the name of the target-package, i.e. the name of the package that you want to enable to use package 'uniset': ")
+	} # end if
+	if (what == "taPaEnv") {
+		askIntro <- paste0("Please provide a (short) name of the environment that will contain the object holding the settings, preferably starting with a '.' (dot): ") 
+	} # end if
+	if (what == "taPaObj") {
+		askIntro <- paste0("Please provide a (short) name of the object holding the settings, e.g. 'stn': ")
+	} # end if
+	#
+	checkChoice <- function(charIn) {
+		if (length(charIn) == 0) {
+			message(txt)
+			return(TRUE)			
+		} else {
+			checkCh1(charIn, what)
+		} # end else 
+		return(FALSE) # returns FALSE if all is ok
+	} # EOiF
+	#
+	message(askIntro)	
+	while (ask) {
+		charIn <- (scan(file = "", n = 1, quiet = TRUE, what="character"))
+		ask <- checkChoice(charIn)
+		aa <- aa+1
+		if (aa > maxTries & ask == TRUE) {
+			ask <- FALSE
+			stop(paste0("Please try again"), call.=FALSE)
+		} # end if
+	} # end while ask
+	return(charIn)	
 } # EOF
-
 
 # function for generating and producing the three files that we need in the target package
 # we want three files: 
@@ -113,14 +146,11 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv=NULL, taPaObj=NULL, where="~/
 	if (is.null(taPaObj)) {
 		taPaObj <- readInCharInput("taPaObj")
 	} # end if
-	taPaName <- "dogPack"
 	taPaSH <- checkGetTaPaSH(taPaSH, taPaName)
-	taPaEnv <- ".dpe"
-	taPaObj <- "stn"
 	#	
 	####### replace text #########
 	expSettingsName <- paste0(taPaName, "_", filnameSettings, ".r") # put the package name and 'settings.r' together
-	thisUnisetEnvName <-  paste0(taPaName, unisetEnvSuffix) # the underscore '_' between is already above
+	thisUnisetEnvName <-  paste0(".", taPaName, unisetEnvSuffix) # the underscore '_' between is already above
 	#
 	zzzTxt <-gsub(unisEnvName, thisUnisetEnvName, zzzTxt) # replace the uniset environment name with a package-prefix
 	zzzTxt <-gsub(taPackName, taPaName, zzzTxt)	# fill in the provided target package name
@@ -179,28 +209,13 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv=NULL, taPaObj=NULL, where="~/
 	close(fcon)
 	##
 	allfns <- c(filenameZZZ, filenameGlobals, expSettingsName)
-	cat(paste0("Three files called '", paste0(allfns, collapse="', \n'"), "have been written to the folder '", folderPath, "'."))
+	cat(paste0("Three files called \n'", paste0(allfns, collapse="'\n'"), "\nhave been written to the folder \n'", folderPath, "'"))
+ 	cat("\n")
+ 	cat("Please move these three files into their resp. target folders (see ?uniset, or have a look at the content of the three generated files")
 	return(invisible(folderPath))
-} # EOF
+} # EOF
 
-#' @title Copy Uniset templates
-#' @description Copies the required templates (a file with global variables
-#' and the template for the settings.r file) either to the "home" directory,
-#' or to any desired folder.
-#' @details If the usual '~' for the users home directory can not be expanded, 
-#' the files are instead copied to 'user/home'. Existing files will be overwritten.
-#' The 'settings.r' file has to be moved into the 'inst' folder (create one if 
-#' not already done) of your package, while the 'unisetGlobals.r' file goes into 
-#' the 'R' folder of your package.
-#' @param target Where the templates should be copied to. Provide either a valid
-#' path to a folder, or leave at the default '~' to copy the files to your home 
-#' directory.
-#' @examples
-#' \dontrun{
-#' copyUnisetTemplates() # to copy them to your home directory
-#' copyUnisetTemplates("foo/moo/bar") # copy the templates to folder 'bar'
-#' }
-#' @export
+# old 
 copyUnisetTemplates <- function(target="~") {
 	if (target == "~") {
 		pathTarget <-  "user/home"
@@ -229,12 +244,40 @@ copyUnisetTemplates <- function(target="~") {
 }
 
 
+#' @title Test
+#' @description Test
+#' @param Character length one. The name of the environment holding the uniset 
+#' definitions for a single package.
+#' @export
+uniset_test <- function(unisetEnv) {
+	print(unisetEnv)
+	env <- get(unisetEnv) # gives back the environment
+	aa <- ls(env)
+	print(aa)
+	print("------------")
+	pn <- get("pkgUniset_UserPackageName", envir=env)
+	evn <- get("pkgUniset_EnvironmentName", envir=env)
+	shn <- get("pkgUniset_RenvironSettingsHomeName", envir=env)
+	print(pn); print(evn); print(shn)
+	} # EOF
 
 
-
-
-
-
+#' @title Test2
+#' @description Test2
+#' @param uev Character length one. The name of the environment holding the uniset 
+#' definitions for a single package.
+#' @export
+uniset_test2 <- function(uev=get("uniset_env_name")) {
+	print(uev)
+	env <- get(uev) # gives back the environment
+	aa <- ls(uev)
+	print(aa)
+	print("------------")
+	pn <- get("pkgUniset_UserPackageName", envir=env)
+	evn <- get("pkgUniset_EnvironmentName", envir=env)
+	shn <- get("pkgUniset_RenvironSettingsHomeName", envir=env)
+	print(pn); print(evn); print(shn)
+	} # EOF
 
 ####################################################################
 ####################################################################
@@ -599,7 +642,6 @@ checkSettings <- function() {
 #' @return An (invisible) list with the settings resp. a list called 'stn' in 
 #' the environment '.ap2'.
 #' @family Helper Functions
-#' @seealso \code{\link{settings_file}} 
 #' @examples
 #' \dontrun{
 #' updateSettings()
@@ -607,7 +649,7 @@ checkSettings <- function() {
 #' ls(.ap2)
 #'}
 #' @export
-updateSettings <- function(packageName="aquap2", silent=FALSE) { 
+uniset_updateSettings <- function(packageName="aquap2", silent=FALSE) { 
 	ok <- checkSettings() # makes sure that we have the latest version of the settings.r file in the settings-home directory defined in .Renviron
 	if (ok) {
 		pathSettings <- paste0(Sys.getenv("AQUAP2SH"), "/settings.r")
@@ -625,24 +667,11 @@ updateSettings <- function(packageName="aquap2", silent=FALSE) {
 	}
 } # EOF
 
-
-#' @title Test
-#' @export
-testingUniset <- function() {
-	print(.unisetVars$pkgUniset_UserPackageName)
-	print(.unisetVars$pkgUniset_RenvironSettingsHomeName)
-	print(.unisetVars$pkgUniset_SettingsObjectName)
-	print(.unisetVars$pkgUniset_EnvironmentName)
-	print(.unisetVars$pkgUniset_SuffixForTemplate)
-} # EOF
-
-
-
 #' @title Automatically update Settings
 #' @description Use this function within your code to automatically update the 
-#' settings from the user´s settings file
+#' settings from the users settings file
 #' @export
-autoUpS <- function() { # stops if somethings goes wrong
+uniset_autoUpS <- function() { # stops if somethings goes wrong
 	res <- 1
 	if (exists(".ap2$stn")) {
 		autoUpS <- .ap2$stn$autoUpdateSettings
