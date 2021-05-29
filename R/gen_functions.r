@@ -784,6 +784,22 @@ checkSettings <- function() {
 	} # end else if !renvExists	
 } # EOF
 
+getUnisEnvirVariables <- function(unisetEnv) {
+	#
+	seFiName <- glob_filnameSettings # "settings.R"
+	#
+	env <- get(unisetEnv) # gives back the environment
+	taPaName <- get("pkgUniset_UserPackageName", envir=env)
+	taPaEnv <- get("pkgUniset_EnvironmentName", envir=env)
+	taPaSH <- get("pkgUniset_RenvironSettingsHomeName", envir=env)
+	taPaObj <- get("pkgUniset_SettingsObjectName", envir=env)
+	tmplName <- get("pkgUniset_SuffixForTemplate", envir=env)
+	setFiName <- paste0(taPaName, "_", seFiName)
+	return(list(taPaName=taPaName, taPaEnv=taPaEnv, taPaSH=taPaSH, taPaObj=taPaObj, tmplName=tmplName, setFiName=setFiName))
+} # EOF
+
+
+
 #' @title Update settings of target package
 #' @description Manually read in the settings-file in the target package settings 
 #' home directory as specified in the .Renviron file.
@@ -809,19 +825,26 @@ checkSettings <- function() {
 #' ls(.ap2)
 #'}
 #' @export
-uniset_updateSettings <- function(packageName="aquap2", silent=FALSE) { 
+uniset_updateSettings <- function(unisetEnv, silent=FALSE) { 
+	#
+	aaa <- getUnisEnvirVariables(unisetEnv)
+		taPaName <- aaa$taPaName
+		taPaEnv <- aaa$taPaEnv
+		taPaSH <- aaa$taPaSH
+		taPaObj <- aaa$taPaObj
+		tmplName <- aaa$tmplName
+		setFiName <- aaa$setFiName
+	######
 	ok <- checkSettings() # makes sure that we have the latest version of the settings.r file in the settings-home directory defined in .Renviron
 	if (ok) {
-		pathSettings <- paste0(Sys.getenv("AQUAP2SH"), "/settings.r")
-		sys.source(pathSettings, envir=.GlobalEnv$.ap2)
-	#	if (any(grepl(".ap2", search(), fixed=TRUE))) {
-	#		detach(.ap2)
-	#	}
-	#	attach(.ap2)
+		pathSettings <- paste0(Sys.getenv(taPaSH), "/", setFiName)
+		pat <- paste0("sys.source(pathSettings, envir=.GlobalEnv$", taPaEnv, ")")  #		sys.source(pathSettings, envir=.GlobalEnv$.ap2) # was that
+		eval(parse(text=pat))
 		if (!silent) {
-			cat(paste(packageName, "settings updated\n"))
+			cat(paste(taPaName, "settings updated\n"))
 		}
-		return(invisible(.ap2$stn))
+		pat <- paste0("return(invisible(", taPaEnv, "$", taPaObj, "))")  #		return(invisible(.ap2$stn)) # was that
+		eval(parse(text=pat))
 	} else { # so if the settings check was not ok
 		return(invisible(NULL))
 	}
