@@ -3,12 +3,13 @@
 #############################################################################################
 
 
-# Move this file called "zzz.r" into the "R" folder of your package 'XXX_packageName'.
+# If not already there, move this file called "zzz.R" into the "R" folder of 
+# your package 'XXX_packageName'.
 
 # Or, alternatively, if you already have a file containing the '.onLoad' function in your package 'XXX_packageName', 
 # add the 6 lines of code below to your '.onLoad' function
 
-######## !! Do NOT change the names of the variables. It will cripple the functionality of the package "uniset" !! ############
+######## Do NOT change the names of the variables. It will cripple the functionality of the package "uniset" ############
 
 .onLoad <- function(libname, pkgname) {
 	.GlobalEnv$XXX_unisetEnv <- new.env()										## creates a new environment called "XXX_unisetEnv"

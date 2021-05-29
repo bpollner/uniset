@@ -1,4 +1,4 @@
-checkCh1 <- function(char, argName){
+checkCh1 <- function(char, argName) {
 	if (!all(is.character(char)) | length(char) != 1) {
 		stop(paste0("Please provide a character length one to the argument '", argName, "'."), call.=FALSE)
 	}
@@ -16,6 +16,15 @@ checkGetTaPaSH <- function(taPaSH, taPaName) {
 		return(taPaSH)
 	}
 } # EOF 
+
+checkGetTaPaEnv <- function(taPaEnv, taPaName) {
+	checkCh1(taPaEnv, "taPaEnv")
+	if (taPaEnv == "def") {
+		return(paste0(".", substr(taPaName, 1,2), "e"))
+	} else {
+		return(taPaEnv)
+	} # end else	
+} # EOF
 
 readInCharInput <- function(what) {
 	maxTries <- 3
@@ -55,12 +64,121 @@ readInCharInput <- function(what) {
 	return(charIn)	
 } # EOF
 
-# function for generating and producing the three files that we need in the target package
-# we want three files: 
-#	the setttings.r file: here we have to adapt the object name
-#	the zzz.r file: here the environment name and the values of the uniset_Variables are set
-# 	the uniset_globals.r file: here the one global variable, defining the name of uniset-environment to read data from
-# provide via input, if any of them is NULL, this one gets asked interactively. (or all interactively) 
+checkPath_Package_getName <- function(pathToPackage) {
+	stdiFn_descr <- "DESCRIPTION"
+	stdFin_ns <- "NAMESPACE"
+	stdFon_R <- "R"
+	stdFon_man <- "man"
+	stdVec <- c(stdiFn_descr, stdFin_ns, stdFon_R, stdFon_man)
+	packSkellName <- "anRpackage" # the name given when using the function package.skelleton() without providing a package name
+	ptp <- pathToPackage
+	#
+	if (dir.exists(ptp)) {
+		fls <- list.files(ptp)
+		if (!all(stdVec %in% fls)) {
+			stop(paste0("Sorry, the provided path '", ptp, "' does not seem to lead to a valid R-package structure."), call.=FALSE)
+		} # end if
+		descrFile <- paste0(ptp, "/",  stdiFn_descr)
+		fcon <- file(descrFile, open="r")
+		descrTxt <- readLines(fcon) # the full settings.r text from the package
+		close(fcon)
+		taPaName <- trimws(unlist(strsplit(descrTxt[1], ":"))[2]) # gives back the package name
+		if (taPaName == packSkellName) {
+			stop(paste0("Please provide your package with an other name than '", packSkellName, "'"), call.=FALSE)
+		} # end if
+	} else {
+		stop(paste0("Sorry, the provided path '", ptp, "' does not lead to a folder."), call.=FALSE)
+	} # end else
+	return(taPaName)
+} # EOF
+
+readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) {
+	#
+	unisEnvName <- glob_unisetEnvName  							# XXX_unisetEnv
+	taPackName <- glob_targetPackageName 						# XXX_packageName
+	taPackSHname <- glob_targetPackageSettingsHomeVarName		# XXX_SH
+	taPackEnvName <- glob_targetPackageEnvName					# XXX_targetEnv
+	taPackStnName <- glob_targetPackgae_settingsObjectName 		# XXX_obj
+	taPackTmplSuff <- glob_targetPackage_templateSuffix 		# XXX_template
+	taPackActualSett <- glob_actualSettingsName 				# XXX_actualSettingsName
+	#
+	unisetEnvSuffix <- glob_unisetEnvSuffix
+	filnameSettings <- glob_filnameSettings 
+	pathTemplGlobals <- glob_pathTemplGlobals 		# "/templates/uniset_globals.R"
+	pathTemplZZZ <- glob_pathTemplZZZ				# "/templates/zzz.R"
+	pathTemplSettinsg <- glob_pathTemplSettinsg		# "/templates/settings.R"
+	#
+	
+	####### define paths ###### 
+	aa <- path.package("uniset")
+	path_unis_globals <- paste0(aa, pathTemplGlobals)
+	path_unis_zzz <- paste0(aa, pathTemplZZZ)
+	path_unis_settingsTemplate <- paste0(aa, pathTemplSettinsg)
+	#
+	###### read in the three template files #######
+	fcon <- file(path_unis_globals, open="r")
+	globalsTxt <- readLines(fcon) # the full settings.r text from the package
+	close(fcon)
+	fcon <- file(path_unis_zzz, open="r")
+	zzzTxt <- readLines(fcon) # the full settings.r text from the package
+	close(fcon)
+	fcon <- file(path_unis_settingsTemplate, open="r")
+	settingsTxt <- readLines(fcon) # the full settings.r text from the package
+	close(fcon)
+	#
+	
+	####### replace text #########
+	expSettingsName <- paste0(taPaName, "_", filnameSettings) # put the package name and 'settings.r' together
+	thisUnisetEnvName <-  paste0(".", taPaName, unisetEnvSuffix) # the underscore '_' between is already above     # here we dictate the . in the beginning.
+	#
+	zzzTxt <-gsub(unisEnvName, thisUnisetEnvName, zzzTxt) # replace the uniset environment name with a package-prefix
+	zzzTxt <-gsub(taPackName, taPaName, zzzTxt)	# fill in the provided target package name
+	zzzTxt <-gsub(taPackSHname, taPaSH, zzzTxt) # settings home
+	zzzTxt <-gsub(taPackEnvName, taPaEnv, zzzTxt) # target package environment name #  the .ap2 pendent
+	zzzTxt <-gsub(taPackStnName, taPaObj, zzzTxt) # the object holding the keys. # the stn pendent
+	zzzTxt <-gsub(taPackTmplSuff, tmpl, zzzTxt) # the object holding the keys. # the stn pendent
+	#
+	globalsTxt <- gsub(taPackName, taPaName, globalsTxt) # the package name
+	globalsTxt <- gsub(unisEnvName, thisUnisetEnvName, globalsTxt)	# the name of the uniset environment where the package name etc. are defined.
+	#
+	settingsTxt <- gsub(taPackName, taPaName, settingsTxt) # the name of the target package
+	settingsTxt <- gsub(taPackStnName, taPaObj, settingsTxt) # the name of the object holding the settings-list
+	settingsTxt <- gsub(taPackEnvName, taPaEnv, settingsTxt) # the name of environment holding the object holding the settings-list
+	settingsTxt <- gsub(taPackActualSett, expSettingsName, settingsTxt) # the name of settings file expanded with the name of the package
+	#
+	return(list(zzzTxt=zzzTxt, globalsTxt=globalsTxt, settingsTxt=settingsTxt))
+} # EOF
+
+createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsPath, globalsTxt, settingsName, settingsPath, settingsTxt) {
+	#	
+	ok <- file.create(zzzPath)
+	if (!ok) {
+		stop(paste0("Sorry, the file '", zzzName, "' could not be created."), call.=FALSE)
+	} # end if
+	ok <- file.create(globalsPath)
+	if (!ok) {
+		stop(paste0("Sorry, the file '", globalsName, "' could not be created."), call.=FALSE)
+	} # end if
+	ok <- file.create(settingsPath)
+	if (!ok) {
+		stop(paste0("Sorry, the file '", settingsName, "' could not be created."), call.=FALSE)
+	} # end if
+	#
+	# write into the files
+	fcon <- file(zzzPath, open="w")
+	writeLines(zzzTxt, fcon) # write the zzz.r file
+	close(fcon)
+	#
+	fcon <- file(globalsPath, open="w")
+	writeLines(globalsTxt, fcon) # write globals file
+	close(fcon)
+	#
+	fcon <- file(settingsPath, open="w")
+	writeLines(settingsTxt, fcon) # write the settings file
+	close(fcon)	
+	#
+	return(invisible(NULL))
+} # EOF
 
 #' @title Get Uniset Files
 #' @description Function to generate the three files required in the target
@@ -78,10 +196,14 @@ readInCharInput <- function(what) {
 #' @param taPaEnv Character length one. The name of the environment where the 
 #' settings for the target package (in a key=value format) will be stored. It is 
 #' recommended to use a rather short name starting with a '.' (dot). See details. 
+#' If left at the default 'def', the first two characters of the package name, 
+#' prepended with a '.' (dot), and appended with an 'e' (for environment) will 
+#' be used.
 #' @param taPaObj Character length one. The name of the object (residing in the 
 #' environment with the name provided in argument 'taPaEnv') holding the list 
 #' with all the individual key-value pairs that can be defined to be used in the 
-#' target package. It is recommended to use a rather short name. See details.
+#' target package. It is recommended to use a rather short name. See details. 
+#' Defaults to 'stn'.
 #' @param where Character length one. The location where the folder with the 
 #' resulting three files should be copied to. Defaults to '~/desktop'.
 #' @param taPaSH Character length one. The name of the variable to be defined in 
@@ -92,8 +214,11 @@ readInCharInput <- function(what) {
 #' @param tmpl Character length one. the Character string that will be appended 
 #' to the fresh settings file that is possibly copied (by the target package) 
 #' to the users settings home directory. Can be left at the default '_TEMPLATE'.
-#' @return An (invisible) character holding the path of the folder where the 
-#' three files were written into. 
+#' @return Creates a folder at the location specified at argument 'where' with 
+#' three files to be moved into the target package in it. Returns an (invisible) 
+#' character holding the path of the folder where the three files were written 
+#' into. 
+#' @seealso \code{\link{uniset_copyFilesToPackage}}
 #' @examples
 #' \dontrun{
 #' # for an imaginary package called 'dogPack':
@@ -102,40 +227,14 @@ readInCharInput <- function(what) {
 #' 	# see details. 
 #' } 
 #' @export
-uniset_getFiles <- function(taPaName=NULL, taPaEnv=NULL, taPaObj=NULL, where="~/desktop", taPaSH="def", tmpl= "_TEMPLATE") {
-	# read in from the globals, give shorter names
-	unisEnvName <- glob_unisetEnvName  							# XXX_unisetEnv
-	taPackName <- glob_targetPackageName 						# XXX_packageName
-	taPackSHname <- glob_targetPackageSettingsHomeVarName		# XXX_SH
-	taPackEnvName <- glob_targetPackageEnvName					# XXX_targetEnv
-	taPackStnName <- glob_targetPackgae_settingsObjectName 		# XXX_obj
-	taPackTmplSuff <- glob_targetPackage_templateSuffix 		# XXX_template
-	taPackActualSett <- glob_actualSettingsName 							# XXX_actualSettingsName
-
+uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where="~/desktop", taPaSH="def", tmpl= "_TEMPLATE") {
 	#
-	unisetEnvSuffix <- "_unisetEnv"
-	folderPrev <- "Files for R-package '"
-	filenameZZZ <- "zzz.r"
-	filenameGlobals <- "uniset_globals.r"
-	filnameSettings <- "settings" # the '.r' gets appended below
-	## 	
-	####### define paths ###### 
-	aa <- path.package("uniset")
-	path_unis_globals <- paste0(aa, "/inst/uniset_globals.r")
-	path_unis_zzz <- paste0(aa, "/inst/zzz.r")
-	path_unis_settingsTemplate <- paste0(aa, "/inst/settings.r")
+	folderPrev <- glob_folderPrev
+	filenameZZZ <- glob_filenameZZZ
+	filenameGlobals <- glob_filenameGlobals
+	filnameSettings <- glob_filnameSettings # the '.r' gets appended below
 	#
-	###### read in the three template files #######
-	fcon <- file(path_unis_globals, open="r")
-	globalsTxt <- readLines(fcon) # the full settings.r text from the package
-	close(fcon)
-	fcon <- file(path_unis_zzz, open="r")
-	zzzTxt <- readLines(fcon) # the full settings.r text from the package
-	close(fcon)
-	fcon <- file(path_unis_settingsTemplate, open="r")
-	settingsTxt <- readLines(fcon) # the full settings.r text from the package
-	close(fcon)
-	#
+		
 	########### possibly read in values ###########
 	if (is.null(taPaName)) {
 		taPaName <- readInCharInput("taPaName")
@@ -146,28 +245,24 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv=NULL, taPaObj=NULL, where="~/
 	if (is.null(taPaObj)) {
 		taPaObj <- readInCharInput("taPaObj")
 	} # end if
+	#
+	checkCh1(taPaName, "taPaName")
+	taPaEnv <- checkGetTaPaEnv(taPaEnv, taPaName)
+	checkCh1(taPaObj, "taPaObj")
+	checkCh1(tmpl, "tmpl")
 	taPaSH <- checkGetTaPaSH(taPaSH, taPaName)
-	#	
-	####### replace text #########
-	expSettingsName <- paste0(taPaName, "_", filnameSettings, ".r") # put the package name and 'settings.r' together
-	thisUnisetEnvName <-  paste0(".", taPaName, unisetEnvSuffix) # the underscore '_' between is already above
+	checkCh1(tmpl, "tmpl")
 	#
-	zzzTxt <-gsub(unisEnvName, thisUnisetEnvName, zzzTxt) # replace the uniset environment name with a package-prefix
-	zzzTxt <-gsub(taPackName, taPaName, zzzTxt)	# fill in the provided target package name
-	zzzTxt <-gsub(taPackSHname, taPaSH, zzzTxt) # settings home
-	zzzTxt <-gsub(taPackEnvName, taPaEnv, zzzTxt) # target package environment name #  the .ap2 pendent
-	zzzTxt <-gsub(taPackStnName, taPaObj, zzzTxt) # the object holding the keys. # the stn pendent
-	zzzTxt <-gsub(taPackTmplSuff, tmpl, zzzTxt) # the object holding the keys. # the stn pendent
+	
+	##### read in and replace text #######
+	aaa <- readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl)
+		zzzTxt <- aaa$zzzTxt
+		globalsTxt <- aaa$globalsTxt
+		settingsTxt <- aaa$settingsTxt
 	#
-	globalsTxt <- gsub(taPackName, taPaName, globalsTxt) # the package name
-	globalsTxt <- gsub(unisEnvName, thisUnisetEnvName, globalsTxt)	# the name of the uniset environment where the package name etc. are defined.
+	expSettingsName <- paste0(taPaName, "_", filnameSettings) # put the package name and 'settings.r' together
 	#
-	settingsTxt <- gsub(taPackName, taPaName, settingsTxt) # the name of the target package
-	settingsTxt <- gsub(taPackStnName, taPaObj, settingsTxt) # the name of the object holding the settings-list
-	settingsTxt <- gsub(taPackEnvName, taPaEnv, settingsTxt) # the name of environment holding the object holding the settings-list
-	settingsTxt <- gsub(taPackActualSett, expSettingsName, settingsTxt) # the name of settings file expanded with the name of the package
-
-	#
+	
 	####### write to file ##########
 	# check create folder
 	folderName <- paste0(folderPrev, taPaName, "'")
@@ -187,27 +282,16 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv=NULL, taPaObj=NULL, where="~/
 		} # end if !ok
 	} # end else
 	# now we can be sure to have an empty folder
-	# create the three files
-	ok <- file.create(paste0(folderPath, "/", filenameZZZ)); 		if (!ok) {stop(paste0("Sorry, the file '", filenameZZZ, "' could not be created."), call.=FALSE)}
-	ok <- file.create(paste0(folderPath, "/", filenameGlobals)); 	if (!ok) {stop(paste0("Sorry, the file '", filenameGlobals, "' could not be created."), call.=FALSE)}
-	ok <- file.create(paste0(folderPath, "/", expSettingsName)); 	if (!ok) {stop(paste0("Sorry, the file '", expSettingsName, "' could not be created."), call.=FALSE)}
 	#
-	# write into the files
-	loc <- paste0(folderPath, "/", filenameZZZ)
-	fcon <- file(loc, open="w")
-	writeLines(zzzTxt, fcon) # write the zzz.r file
-	close(fcon)
+	
+	#### create files and write text into them #######
+	zzzPath <- paste0(folderPath, "/", filenameZZZ)
+	globalsPath <- paste0(folderPath, "/", filenameGlobals)
+	settingsPath <- paste0(folderPath, "/", expSettingsName)
 	#
-	loc <- paste0(folderPath, "/", filenameGlobals)
-	fcon <- file(loc, open="w")
-	writeLines(globalsTxt, fcon) # write globals file
-	close(fcon)
-	#
-	loc <- paste0(folderPath, "/", expSettingsName)
-	fcon <- file(loc, open="w")
-	writeLines(settingsTxt, fcon) # write the settings file
-	close(fcon)
+	createFilesWriteText(filenameZZZ, zzzPath, zzzTxt, filenameGlobals, globalsPath, globalsTxt, expSettingsName, settingsPath, settingsTxt)
 	##
+	
 	allfns <- c(filenameZZZ, filenameGlobals, expSettingsName)
 	cat(paste0("Three files called \n'", paste0(allfns, collapse="'\n'"), "\nhave been written to the folder \n'", folderPath, "'"))
  	cat("\n")
@@ -215,7 +299,114 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv=NULL, taPaObj=NULL, where="~/
 	return(invisible(folderPath))
 } # EOF
 
-# old 
+#' @title Copy Uniset Files into Target Package
+#' @description Function to generate the three files required in the target
+#' package (i.e. the package that should be enabled to use the package 'uniset').
+#' The generated files will be copied directly into their required destination 
+#' folders in the target package. The name of the target package will be extracted 
+#' from the description file. 
+#' @details The importance of providing rather short characters at the arguments 
+#' 'taPaEnv' and 'taPaObj' lies in the fact that those two names will be used to 
+#' get any parameter stored in the settings file of the target package. For example, 
+#' if you provide '.dpe' at the argument 'taPaEnv' and 'stn' at the argument 
+#' 'taPaObj', then all the values stored in the settings file can be retrieved by 
+#' calling \code{.dpe$stn$XXX}, with 'XXX' being any of the keys defined in the 
+#' settings file. 
+#' @param pathToPackage Character length one. The path to the root of the 
+#' target package.
+#' @param taPaEnv Character length one. The name of the environment where the 
+#' settings for the target package (in a key=value format) will be stored. It is 
+#' recommended to use a rather short name starting with a '.' (dot). See details. 
+#' If left at the default 'def', the first two characters of the package name, 
+#' prepended with a '.' (dot), and appended with an 'e' (for environment) will 
+#' be used.
+#' @inheritParams uniset_getFiles
+#' @return Writes the three required files directly into a valid R-package folder 
+#' structure. Returns (invisible) NULL. 
+#' @seealso \code{\link{uniset_getFiles}}
+#' @export
+uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE") {
+	#
+	filenameZZZ <- glob_filenameZZZ
+	filenameGlobals <- glob_filenameGlobals
+	filnameSettings <- glob_filnameSettings # the '.r' gets appended below
+	zzzAdd <- "_2.R"
+	#
+	
+	#### check and get names ######
+	taPaName <- checkPath_Package_getName(pathToPackage) # stops if path is not good
+	taPaEnv <- checkGetTaPaEnv(taPaEnv, taPaName)
+	checkCh1(taPaObj, "taPaObj")
+	taPaSH <- checkGetTaPaSH(taPaSH, taPaName)
+	checkCh1(tmpl, "tmpl")
+	#
+	
+	##### read in and replace text #######
+	aaa <- readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl)
+		zzzTxt <- aaa$zzzTxt
+		globalsTxt <- aaa$globalsTxt
+		settingsTxt <- aaa$settingsTxt
+	#
+	expSettingsName <- paste0(taPaName, "_", filnameSettings) # put the package name and 'settings.R' together
+	#
+	
+	########## check / remove files #############
+	folderName <- basename(pathToPackage)
+	folderPath <- pathToPackage
+	pathToR <- paste0(folderPath, "/R")
+	paToInst <- paste0(folderPath, "/inst")
+	if (dir.exists(paToInst)) {
+		fls <- list.files(paToInst)
+		if (expSettingsName %in% fls) {
+			ok <- file.remove(paste0(paToInst, "/", expSettingsName))
+			if (!ok) {
+				stop(paste0("Sorry, there was a problem when trying to remove the previously generated file '", expSettingsName, "' in the folder 'inst'."), call.=FALSE)
+			} # end if
+		} # end if
+	} else { # so the folder "inst" is not existing
+		ok <- dir.create(paToInst)
+		if (!ok) {
+			stop("Sorry, the folder 'inst' could not be created", call.=FALSE)
+		} # end if !ok
+	} # end else
+	# check / remove zzz.r and globals.r
+	fls <- list.files(pathToR)
+	if (length(fls) != 0) { # check if already there
+		if (filenameZZZ %in% fls) { # se we already got a file called zzz.R, we must not overwrite or remove it
+			oldZZZname <- filenameZZZ
+			filenameZZZ <- paste0(substr(filenameZZZ, 1, nchar(filenameZZZ)-2), zzzAdd)
+			msg <- paste0("It seems that there already is a file called '", oldZZZname, "' in the 'R' folder of your package. \nIn case there is already an '.onLoad' function defined, please add the six lines of code from the file '", filenameZZZ, "' to your existing '.onLoad' function.")
+			message(msg)
+		} # end if zzz already here
+		if (filenameZZZ %in% fls) { # now this would be zzz_2.R an other #2 already here -- this one must go
+			ok <- file.remove(paste0(pathToR, "/", filenameZZZ))
+			if (!ok) {
+				stop(paste0("Sorry, there was a problem when trying to remove the previously generated file '", filenameZZZ, "' in the folder 'R'."), call.=FALSE)
+			} # end if
+		} # end if		
+		if (filenameGlobals %in% fls) { # remove it
+			ok <- file.remove(paste0(pathToR, "/", filenameGlobals))
+			if (!ok) {
+				stop(paste0("Sorry, there was a problem when trying to remove the previously generated file '", filenameGlobals, "' in the folder 'R'."), call.=FALSE)
+			} # end if			
+		} # end if
+	} # end if length(fls) != 0
+	# now we are sure to have a) the inst folder present, and b) none of our three files present
+	#
+
+	#### create files and write text into them #######
+	zzzPath <- paste0(pathToR, "/", filenameZZZ)
+	globalsPath <- paste0(pathToR, "/", filenameGlobals)
+	settingsPath <- paste0(paToInst, "/", expSettingsName)
+	#
+	createFilesWriteText(filenameZZZ, zzzPath, zzzTxt, filenameGlobals, globalsPath, globalsTxt, expSettingsName, settingsPath, settingsTxt)
+	##
+	
+	cat(paste0("A file called '", expSettingsName, "' has been written into the 'inst' folder, \ntwo files called '", filenameZZZ, "' and '", filenameGlobals, "' have been written into the 'R' folder of the package '", folderName, "' at \n'", folderPath, "'."))
+	return(invisible(NULL))
+} # EOF
+
+# old. Not in use. 
 copyUnisetTemplates <- function(target="~") {
 	if (target == "~") {
 		pathTarget <-  "user/home"
@@ -246,7 +437,7 @@ copyUnisetTemplates <- function(target="~") {
 
 #' @title Test
 #' @description Test
-#' @param Character length one. The name of the environment holding the uniset 
+#' @param unisetEnv Character length one. The name of the environment holding the uniset 
 #' definitions for a single package.
 #' @export
 uniset_test <- function(unisetEnv) {
@@ -261,23 +452,6 @@ uniset_test <- function(unisetEnv) {
 	print(pn); print(evn); print(shn)
 	} # EOF
 
-
-#' @title Test2
-#' @description Test2
-#' @param uev Character length one. The name of the environment holding the uniset 
-#' definitions for a single package.
-#' @export
-uniset_test2 <- function(uev=get("uniset_env_name")) {
-	print(uev)
-	env <- get(uev) # gives back the environment
-	aa <- ls(uev)
-	print(aa)
-	print("------------")
-	pn <- get("pkgUniset_UserPackageName", envir=env)
-	evn <- get("pkgUniset_EnvironmentName", envir=env)
-	shn <- get("pkgUniset_RenvironSettingsHomeName", envir=env)
-	print(pn); print(evn); print(shn)
-	} # EOF
 
 ####################################################################
 ####################################################################

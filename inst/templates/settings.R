@@ -3,10 +3,13 @@
 #######################################################################################################
 
 
-# Move this file called 'XXX_actualSettingsName' into the "inst" folder of your package 'XXX_packageName'.
-# (create an "inst" folder if it does not exist)
+# If not already there, move this file called 'XXX_actualSettingsName' into the "inst" folder of 
+# your package 'XXX_packageName'. (create an "inst" folder if it does not exist)
 
-# ! do NOT change the name of the object holding the list - in this case, 'XXX_obj'
+# do NOT change the name of the object holding the list - in this case, 'XXX_obj'
+
+# use the code 'XXX_targetEnv$XXX_obj$KEY' (with 'KEY' being any of the key=value pairs defined below) 
+# in the target package to access the values of the object 'XXX_obj'.
 
 XXX_obj <- list(
 	# tag = value, # with a comma !!
@@ -44,6 +47,12 @@ XXX_obj <- list(
 
 
 
+	obey = TRUE,							## and so on... 
+	abide = FALSE,
+	strength = 5000,
+	
+
+
 	######
 	last = 0 # do not add anything below that
 	## the last one without comma !!
@@ -64,6 +73,8 @@ XXX_obj <- list(
 # If you add a new variable within a block *below the first* variable of the block, 
 # this variable gets simply inserted into the settings file of the user. (Only the first variable
 # of a block acts as a hook.)
+# There can be any number of empty lines between blocks. 
+
 
 # If you add a new block, or you add a variable *above the first* variable of the block,
 # the user´s settings-file can not be updated any more, and the user has to manually insert

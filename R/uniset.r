@@ -8,7 +8,11 @@
 #' file ('xxx' for the name of your package) into the 'inst' folder 
 #' (create one if not already done) of the package that you want to enable to use 
 #' the package 'uniset' (the target package). Move the file 'zzz.r" and the file 
-#' 'uniset_globals' to the 'R' folder of the target package. 
+#' 'uniset_globals' to the 'R' folder of the target package. In case that the 
+#' '.onLoad' function already is defined, add the six lines of code from the file 
+#' 'zzz.R' to your existing '.onLoad' function.
+#' Alternatively, use \code{\link{uniset_copyFilesToPackage}} to copy the required 
+#' files directly into the target package.
 #' Every variable defined in the xxx_settings.r file is accessible in the code of 
 #' the target package. See the created 'xxx_settings.r' file for an example. 
 #' The target package has to list 'uniset' as an 'import', and then you can 
@@ -18,6 +22,8 @@
 #' them accessible in a environment created by the target package. 
 #' For an introduction and more detailed information please see the package 
 #' vignettes: \code{browseVignettes(package = "uniset")}
+#' @section Important: In case that the '.onLoad' function already is defined, add 
+#' the six lines of code from the file 'zzz.R' to your existing '.onLoad' function.
 #' @author Bernhard Pollner, Zoltan Kovacs
 #' @section Maintainer: Bernhard Pollner <bernhard.pollner@@mac.com>
 #' @section Important Functions: \code{\link{uniset_getFiles}}
