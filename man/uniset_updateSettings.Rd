@@ -4,18 +4,21 @@
 \alias{uniset_updateSettings}
 \title{Update settings of target package}
 \usage{
-uniset_updateSettings(packageName = "aquap2", silent = FALSE)
+uniset_updateSettings(unisetEnv, silent = FALSE)
 }
 \arguments{
-\item{packageName}{Character, the name of the package where settings 
-should be updated. Defaults to "aquap2".}
+\item{unisetEnv}{Character length one. Hand over the global variable defined 
+in the target package holding the name of the uniset-environment for the 
+specific target package ('uniset_env_name' or 'uev', see examples at 
+\code{\link{uniset}}.)}
 
 \item{silent}{Logical. If a confirmation should be printed. Defaults 
 to 'FALSE'}
 }
 \value{
-An (invisible) list with the settings resp. a list called 'stn' in 
-the environment '.ap2'.
+An (invisible) list with the settings resp. a list called as defined 
+in argument 'taPaObj' in the environment called as defined in argument 'taPaEnv'.
+See \code{\link{uniset}} for examples.
 }
 \description{
 Manually read in the settings-file in the target package settings 
@@ -23,20 +26,15 @@ home directory as specified in the .Renviron file.
 }
 \section{Note}{
  If not present, the required `.Renviron` file will be 
-automatically created. If the variable `AQUAP2SH` is not defined in the 
-.Renviron file, it will be automatically added, and its default path is 
-pointing to the (possibly also created) folder `aquap2SH` in the users home 
-directory, where the `settings.r` file is automatically copied to if not 
-already present. It is possible to manually provide a different path in the 
-variable `AQUAP2SH` in the .Renviron file, pointing to any folder where then 
-the settings.r file and all other relevant general files will reside.
+automatically created. If the variable defined in argument 'taPaSH' in 
+\code{\link{uniset_getFiles}} is not defined in the .Renviron file, it 
+will be automatically added, and its default path is pointing to the 
+(possibly also created) folder having the same name as `taPaSH` in 
+the users home directory, where the `xxx_settings.R` file is automatically 
+copied to if not already present. 
+It is possible to manually provide a different path in the 
+variable as defined in argument `taPaSH` in the .Renviron file, pointing 
+to any folder where then the xxx_settings.R file will reside.
+XXX Improve this text please.
 }
 
-\examples{
-\dontrun{
-updateSettings()
-str(.ap2$stn)
-ls(.ap2)
-}
-}
-\concept{Helper Functions}

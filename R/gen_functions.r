@@ -93,11 +93,11 @@ checkPath_Package_getName <- function(pathToPackage) {
 } # EOF
 
 printFinalCodeMessage <- function(taPaEnv, taPaObj, expSettingsName) {
-  	msgChar <- paste0("\n\nYou will be able to access values of the settings-file '", expSettingsName, "' via the code: \n")
+  	msgChar <- paste0("\n\nYou will be able to access values of the file '", expSettingsName, "' via the code: \n")
   	codechar <- paste0("'", taPaEnv, "$", taPaObj, "$KEY'")
-  	txt2 <- "(With 'KEY' being any of the 'key=value' pairs defined in the settings.R file.)"
+  	txt2 <- paste0("(With 'KEY' being any of the 'key=value' pairs defined in the file '", expSettingsName, "'.)")
 	cat(msgChar)
-	message(txt2)
+	message(codechar)
 	cat(txt2)	
 	return(invisible(NULL))
 } # EOF  
@@ -555,18 +555,8 @@ expandFillInLocalTxt <- function(ftPack, ftLocal, missNames) {
 	return(newTxt)
 } # EOF
 
-copySettingsFile <- function(fromPath, toPath) {
-	a <- paste(toPath, "settings.r", sep="/")
-	b <- paste(toPath, "settings_OLD.r", sep="/")
-	if (file.exists(a)) {
-		file.rename(a, b)
-	}
-	ok <- file.copy(fromPath, toPath, overwrite=TRUE)
-	if (ok) { cat("A fresh version of the settings.r file has been copied from the package.\n")}			
-} # EOF
-
-copyFreshTemplate <- function(pathToPack, folderLocal, fileName) {
-	suff <- pv_suffixForTemplates
+copyFreshTemplate <- function(pathToPack, folderLocal, fileName, tmpl) {
+	suff <- tmpl
 	#
 	toPath <- paste0(folderLocal, "/", fileName, suff, ".r")
 	ok <- file.copy(pathToPack, toPath, overwrite=TRUE)
@@ -577,10 +567,11 @@ copyFreshTemplate <- function(pathToPack, folderLocal, fileName) {
 	}			
 } # EOF
 
-checkFileVersionPossiblyModify <- function(pathToPack, pathToLocal, folderLocal, nameLocal, pm=NULL) {
+checkFileVersionPossiblyModify <- function(pathToPack, pathToLocal, folderLocal, nameLocal, pm=NULL, tmpl) {
+	pv_suffixForTemplates <- tmpl
+	# 
 	loc <- pathToLocal
 	pac <- pathToPack
-	#
 	if (is.null(pm)) {
 		pm <- ""
 	} else {
@@ -648,13 +639,13 @@ checkFileVersionPossiblyModify <- function(pathToPack, pathToLocal, folderLocal,
 			}
 		}
 		if (doCopyMove) {
-			message(paste0("Do you want to copy it now into the folder \n'", folderLocal, "'\n as a template ('", nameLocal, pv_suffixForTemplates, ".r') for modifying the existing '", nameLocal, "' file?\n( y / n )"))
+			message(paste0("Do you want to copy it now into the folder \n'", folderLocal, "'\n as a template ('", nameLocal, pv_suffixForTemplates, "') for modifying the existing '", nameLocal, "' file?\n( y / n )"))
 			a <- readLines(n=1)
 			if (a != "y" & a != "Y") {
 				message("Please be aware that the package will not work properly if your '", nameLocal, "' file is not up to date.")
 				return(FALSE)
 			} else {
-				copyFreshTemplate(pathToPack, folderLocal, nameLocal)
+				copyFreshTemplate(pathToPack, folderLocal, nameLocal, tmpl)
 				message(paste0("Please update your '", nameLocal, "' file according to the template."))
 				return(FALSE)
 			}	
@@ -667,15 +658,15 @@ checkFileVersionPossiblyModify <- function(pathToPack, pathToLocal, folderLocal,
 	stop(paste0("Sorry, there is an unexpected error in file check (", nameLocal, ")")) # theoretically this should never happen...
 } # EOF
 
-checkCreateSHfolder <- function(systemHome, fn_aquap2SH) {
-	if (!dir.exists(paste0(systemHome, "/", fn_aquap2SH))) {
-		dirCreaOk <- dir.create(paste0(systemHome, "/", fn_aquap2SH))
+checkCreateSHfolder <- function(systemHome, fn_taPaSH) {
+	if (!dir.exists(paste0(systemHome, "/", fn_taPaSH))) {
+		dirCreaOk <- dir.create(paste0(systemHome, "/", fn_taPaSH))
 		if (!dirCreaOk) {
-			msg <- paste0("Sorry, the required settings-home directory `", fn_aquap2SH, "` could not be created in `", systemHome, "`.")
+			msg <- paste0("Sorry, the required settings-home directory `", fn_taPaSH, "` could not be created in `", systemHome, "`.")
 			message(msg)
 			return(FALSE)
 		} else { # so we created the .Renviron file AND created the aquap2SH folder
-			msg <- paste0("The folder `", fn_aquap2SH, "` as settings-home directory has been created in `", systemHome, "`.")
+			msg <- paste0("The folder `", fn_taPaSH, "` as settings-home directory has been created in `", systemHome, "`.")
 			message(msg)
 			return(TRUE)
 		}
@@ -683,14 +674,23 @@ checkCreateSHfolder <- function(systemHome, fn_aquap2SH) {
 	return(TRUE) 
 } # EOF
 
-checkSettings <- function() {
+checkSettings <- function(taPaList) {
+	#
+	aaa <- taPaList
+		taPaName <- aaa$taPaName
+		taPaEnv <- aaa$taPaEnv
+		taPaSH <- aaa$taPaSH
+		taPaObj <- aaa$taPaObj
+		tmplName <- aaa$tmplName
+		setFiName <- aaa$setFiName
+	#########
 	systemHome <- Sys.getenv("HOME")
 	systemHome_R <- gsub("\\\\", "/", systemHome)
-#	fullRenvPath <- paste0(systemHome, "/.Renviron") # was this
 	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
-	fn_aquap2SH <- "aquap2SH"
-	AQUAP2SH_creationMsg <- paste0("The initial path of `AQUAP2SH` in the .Renviron file (`", fullRenvPath, "`) has been set to `", systemHome_R, "/", fn_aquap2SH, "`. \nIf you want, you can open the .Renviron file (e.g. using R-Studio) and modify the variable `AQUAP2SH` (holding the path to the  `settings-home` directory) so that it points to a folder of your liking.")
-	addInfo <- "Restart R for the changes to become effective. \nSee the help for '?updateSettings' for additional information."
+	fn_taPaSH <- taPaSH # makes the name of the variable and the name of the final folder identical
+	#
+	taPaSH_creationMsg <- paste0("The initial path of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`) has been set to `", systemHome_R, "/", fn_taPaSH, "`. \nIf you want, you can open the .Renviron file (e.g. using R-Studio) and modify the variable `", taPaSH, "` (holding the path to the  `settings-home` directory) so that it points to a folder of your liking.")
+	addInfo <- "Restart R for the changes to become effective."
 	restartMsg <- "Please restart R for the changes in the .Renviron file to become effective."
 	#
 	# first check for existence of the .Renviron file
@@ -703,84 +703,86 @@ checkSettings <- function() {
 			return(FALSE)
 		} else { # so we could create the .Renviron file
 			# if no .Renviron file, then also no settings home diretory --> create one
-			ok <- checkCreateSHfolder(systemHome, fn_aquap2SH)
+			ok <- checkCreateSHfolder(systemHome, fn_taPaSH)
 				if (!ok) {
 					return(FALSE)
 				}
-			# now we have to fill the newly created .Renviron file and point AQUAP2SH to the newly created folder
-			defaultFillForRenviron <- paste0("\n\nAQUAP2SH = ", systemHome_R, "/", fn_aquap2SH) # here problem in windows !!
+			# now we have to fill the newly created .Renviron file and point taPaSH to the newly created folder
+			defaultFillForRenviron <- paste0("\n\n", taPaSH, " = ", systemHome_R, "/", fn_taPaSH) # here problem in windows !! # really? I do not (in windows)
 			fcon <- file(fullRenvPath, open="w")
 			writeLines(defaultFillForRenviron, fcon)
 			close(fcon)
-			creMsg <- paste0("The required '.Renviron' file in '", systemHome, "' has been created for you.\n", AQUAP2SH_creationMsg, "\n", addInfo)
+			creMsg <- paste0("The required '.Renviron' file in '", systemHome, "' has been created for you.\n", taPaSH_creationMsg, "\n", addInfo)
 			message(creMsg)
 			return(FALSE)
 		} # end else (where we could create and fill the .Renviron file and create the settings home folder
 	}  else { # so the .Renviron file is existing
-		# check if AQUAP2SH is existing in the system: if yes, check if pointing to a valid directory; if no check if it is existing on the .Renviron file
-		AP2SH_system <- Sys.getenv("AQUAP2SH") # returns `""` if not existing in Sys.getenv()
-		if (AP2SH_system == "") { # so it is not existing in the system, and we have to check if it exists in the .Renviron file
+		# check if taPaSH is existing in the system: if yes, check if pointing to a valid directory; if no check if it is existing on the .Renviron file
+		pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
+		taPaSH_system <- eval(parse(text=pat))  # returns `""` if not existing in Sys.getenv() # was 		taPaSH_system <- Sys.getenv("AQUAP2SH") # returns `""` if not existing in Sys.getenv()
+		if (taPaSH_system == "") { # so it is not existing in the system, and we have to check if it exists in the .Renviron file
 			fcon <- file(fullRenvPath, open="r")
 			content <- readLines(fcon)
 			close(fcon)
-			if (any(grepl("AQUAP2SH", content))) { # returns TRUE if AQUAP2SH is present in the .Renviron file
+			if (any(grepl(taPaSH, content))) { # returns TRUE if taPaSH is present in the .Renviron file
 				# so not in the system, but on the file --> that means we have to restart R
 				message(restartMsg)
 				return(FALSE)
 			} else { # so not in the system, and not on the file (but the .Renviron was present
-				# now we have to ADD the AQUAP2SH to the existing .Renviron file
+				# now we have to ADD the taPaSH to the existing .Renviron file
 				# first check for existence / create the settings home folder
-				ok <- checkCreateSHfolder(systemHome, fn_aquap2SH)
+				ok <- checkCreateSHfolder(systemHome, fn_taPaSH)
 				if (!ok) {
 					return(FALSE)
 				}
 				fcon <- file(fullRenvPath, open="r+b")
 				content <- readLines(fcon)
-				newContent <- c(content, "\n\n## aquap2", paste0("AQUAP2SH = ", systemHome, "/", fn_aquap2SH), "\n")
+				newContent <- c(content, paste0("\n\n## ", taPaName, ":"), paste0(taPaSH, " = ", systemHome, "/", fn_taPaSH), "\n") # was c(content, "\n\n## aquap2", paste0("AQUAP2SH = ", systemHome, "/", fn_taPaSH), "\n")
 				writeLines(newContent, fcon)
 				close(fcon)
-				msg <- paste0(AQUAP2SH_creationMsg, "\n", addInfo)
+				msg <- paste0(taPaSH_creationMsg, "\n", addInfo)
 				message(msg)
 				return(FALSE)
 			} # end else
-		} else { # (AP2SH_system != "") --> so AQUAP2SH IS existing in the system
+		} else { # (taPaSH_system != "") --> so taPaSH IS existing in the system
 			# check if pointing to a valid folder
-			if (!dir.exists(AP2SH_system)) {
-				# first check if the content of AQUAP2SH in the file and in the system are the same
+			if (!dir.exists(taPaSH_system)) {
+				# first check if the content of taPaSH in the file and in the system are the same
 				fcon <- file(fullRenvPath, open="r")
 				content <- readLines(fcon)
 				close(fcon)
-				AP2SH_file <- content[which(grepl("AQUAP2SH", content))] # get only the one string that is the AQUAP2SH
-				fileValue <- trimws(strsplit(AP2SH_file, "=")[[1]][[2]])
-				if (fileValue != AP2SH_system) { # so the content of AQUAP2SH is different in the system and in the file, we have to restart R
+				taPaSH_file <- content[which(grepl(taPaSH, content))] # get only the one string that is the taPaSH
+				fileValue <- trimws(strsplit(taPaSH_file, "=")[[1]][[2]]) # the [[1]] to get out of the list. naja.
+				if (fileValue != taPaSH_system) { # so the content of taPaSH is different in the system and in the file, we have to restart R
 					message(restartMsg)
 					return(FALSE)
-				}				
-				msg <- paste0("Sorry, the path `", AP2SH_system, "` specified in the `AQUAP2SH` variable is not pointing to a valid directory.\nPlease change the value of `AQUAP2SH` in the .Renviron file (`", fullRenvPath, "`), or create the appropriate file structure.")
+				} # end if				
+				msg <- paste0("Sorry, the path `", taPaSH_system, "` specified in the `", taPaSH,"` variable is not pointing to a valid directory.\nPlease change the value of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`), or create the appropriate file structure.")
 				message(msg)
 				return(FALSE)
 			} else { # end if !dir.exists
 				# so now everything should be good, file and system unisono etc.
 				# check if a settings file is here, If no, please copy it.
-				sFile <- "settings.r"
-				pathSH <- Sys.getenv("AQUAP2SH")
-				pspath <- paste(path.package("aquap2"), sFile, sep="/")
+				sFile <- setFiName # we get that from the environment -reading things.
+				pat <- paste0("Sys.getenv(\"", taPaSH, "\")")	
+				pathSH <- eval(parse(text=pat))
+				pspath <- paste(path.package(taPaName), sFile, sep="/")
 				pathToSettings <- paste(pathSH, sFile, sep="/")
 				if (!file.exists(pathToSettings)) {
 					# please simply copy the settings
 					ok <- file.copy(pspath, pathSH)
 					if (!ok) {
-						message(paste0("Sorry, for unknown reasons it was not possible to copy the `settings.r` file from `", pspath, "` to `", pathSH, "`."))
+						message(paste0("Sorry, for unknown reasons it was not possible to copy the `", sFile, "` file from `", pspath, "` to `", pathSH, "`."))
 						return(FALSE)
 					} else { # so we could copy the settings.r file
-						message(paste0("The settings.r file has been copied into `", pathSH, "`."))
+						message(paste0("The '", sFile, "' file has been copied into `", pathSH, "`."))
 						return(TRUE)
 					} # end else
 				} else { # so the settings.r file does exist  - we can, finally, go to checking the content of the settings.r file		
-					return(checkFileVersionPossiblyModify(pathToPack=pspath, pathToLocal=pathToSettings, folderLocal=pathSH, nameLocal=sFile, pm="stn"))  # returns TRUE or FALSE
+					return(checkFileVersionPossiblyModify(pathToPack=pspath, pathToLocal=pathToSettings, folderLocal=pathSH, nameLocal=sFile, pm=taPaObj, tmpl=tmplName))  # returns TRUE or FALSE
 				} # end else
 			} # end else !dir.exists
-		} # end else AP2SH_system == ""
+		} # end else taPaSH_system == ""
 	} # end else if !renvExists	
 } # EOF
 
@@ -798,35 +800,31 @@ getUnisEnvirVariables <- function(unisetEnv) {
 	return(list(taPaName=taPaName, taPaEnv=taPaEnv, taPaSH=taPaSH, taPaObj=taPaObj, tmplName=tmplName, setFiName=setFiName))
 } # EOF
 
-
-
 #' @title Update settings of target package
 #' @description Manually read in the settings-file in the target package settings 
 #' home directory as specified in the .Renviron file.
 #' @section Note: If not present, the required `.Renviron` file will be 
-#' automatically created. If the variable `AQUAP2SH` is not defined in the 
-#' .Renviron file, it will be automatically added, and its default path is 
-#' pointing to the (possibly also created) folder `aquap2SH` in the users home 
-#' directory, where the `settings.r` file is automatically copied to if not 
-#' already present. It is possible to manually provide a different path in the 
-#' variable `AQUAP2SH` in the .Renviron file, pointing to any folder where then 
-#' the settings.r file and all other relevant general files will reside.
-#' @param packageName Character, the name of the package where settings 
-#' should be updated. Defaults to "aquap2".
+#' automatically created. If the variable defined in argument 'taPaSH' in 
+#' \code{\link{uniset_getFiles}} is not defined in the .Renviron file, it 
+#' will be automatically added, and its default path is pointing to the 
+#' (possibly also created) folder having the same name as `taPaSH` in 
+#' the users home directory, where the `xxx_settings.R` file is automatically 
+#' copied to if not already present. 
+#' It is possible to manually provide a different path in the 
+#' variable as defined in argument `taPaSH` in the .Renviron file, pointing 
+#' to any folder where then the xxx_settings.R file will reside.
+#' XXX Improve this text please. 
+#' @param unisetEnv Character length one. Hand over the global variable defined 
+#' in the target package holding the name of the uniset-environment for the 
+#' specific target package ('uniset_env_name' or 'uev', see examples at 
+#' \code{\link{uniset}}.)
 #' @param silent Logical. If a confirmation should be printed. Defaults 
 #' to 'FALSE'
-#' @return An (invisible) list with the settings resp. a list called 'stn' in 
-#' the environment '.ap2'.
-#' @family Helper Functions
-#' @examples
-#' \dontrun{
-#' updateSettings()
-#' str(.ap2$stn)
-#' ls(.ap2)
-#'}
+#' @return An (invisible) list with the settings resp. a list called as defined 
+#' in argument 'taPaObj' in the environment called as defined in argument 'taPaEnv'.
+#' See \code{\link{uniset}} for examples.
 #' @export
 uniset_updateSettings <- function(unisetEnv, silent=FALSE) { 
-	#
 	aaa <- getUnisEnvirVariables(unisetEnv)
 		taPaName <- aaa$taPaName
 		taPaEnv <- aaa$taPaEnv
@@ -835,11 +833,13 @@ uniset_updateSettings <- function(unisetEnv, silent=FALSE) {
 		tmplName <- aaa$tmplName
 		setFiName <- aaa$setFiName
 	######
-	ok <- checkSettings() # makes sure that we have the latest version of the settings.r file in the settings-home directory defined in .Renviron
+	ok <- checkSettings(taPaList=aaa) # makes sure that we have the latest version of the settings.r file in the settings-home directory defined in .Renviron
 	if (ok) {
-		pathSettings <- paste0(Sys.getenv(taPaSH), "/", setFiName)
-		pat <- paste0("sys.source(pathSettings, envir=.GlobalEnv$", taPaEnv, ")")  #		sys.source(pathSettings, envir=.GlobalEnv$.ap2) # was that
-		eval(parse(text=pat))
+		pathSettings <- paste0(Sys.getenv(taPaSH), "/", setFiName) # the path to the local settings file as defined in the .Renviron file
+		pat <- paste0(".GlobalEnv$", taPaEnv, " <- new.env()") # create a new environment
+		eval(parse(text=pat)) # possibly also an other way 
+		sys.source(pathSettings, envir=get(taPaEnv, pos=".GlobalEnv"))
+		#
 		if (!silent) {
 			cat(paste(taPaName, "settings updated\n"))
 		}
@@ -856,18 +856,24 @@ uniset_updateSettings <- function(unisetEnv, silent=FALSE) {
 #' @details If 'autoUpdateSettings' in xxx_settings.r is left at 'TRUE', the 
 #' settings will be checked resp. updated automatically every time a function in 
 #' the target package is calling \code{\link{uniset_autoUpS}}.
+#' @inheritParams uniset_updateSettings
 #' @export
-uniset_autoUpS <- function() { # stops if somethings goes wrong
+uniset_autoUpS <- function(unisetEnv) { # stops if somethings goes wrong
+	aaa <- getUnisEnvirVariables(unisetEnv)
+		taPaEnv <- aaa$taPaEnv
+		taPaObj <- aaa$taPaObj
+	####
 	res <- 1
-	if (exists(".ap2$stn")) {
-		autoUpS <- .ap2$stn$autoUpdateSettings
+	pat <- paste0("exists(\"", taPaEnv, "$", taPaObj, "\")")
+	doesExist <- eval(parse(text=pat))
+	if (doesExist) {
+		pat <- paste0(taPaEnv, "$", taPaObj, "$autoUpdateSettings")
+		autoUpS <- eval(parse(text=pat))
 	} else {
 		autoUpS <- TRUE
 	}
 	if (autoUpS) {
-		if (is.null(.ap2$.devMode)) { 			## to be able to run it locally without loading the package
-			res <- updateSettings(packageName="aquap2", silent=TRUE)
-		}
+		res <- uniset_updateSettings(unisetEnv, silent=TRUE)
 	}
 	if (is.null(res)) {
 		stop(call.=FALSE)

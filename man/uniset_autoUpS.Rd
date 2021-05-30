@@ -4,7 +4,13 @@
 \alias{uniset_autoUpS}
 \title{Automatically update Settings}
 \usage{
-uniset_autoUpS()
+uniset_autoUpS(unisetEnv)
+}
+\arguments{
+\item{unisetEnv}{Character length one. Hand over the global variable defined 
+in the target package holding the name of the uniset-environment for the 
+specific target package ('uniset_env_name' or 'uev', see examples at 
+\code{\link{uniset}}.)}
 }
 \description{
 Use this function within your code to automatically update the 
