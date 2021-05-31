@@ -53,7 +53,7 @@ With everything left at the defaults, this call to *uniset_copyFilesToPackage()*
 path <- "~/desktop/dogPack"
 uniset_copyFilesToPackage(path)
 ```
-Now you can define functions in 'dogPack' that can call the following functions from 'uniset': 
+Now you can define functions **in 'dogPack'** that can call the following functions from 'uniset': 
 ```
 uniset::uniset_test(get("uev"))
 uniset::uniset_updateSettings(get("uev))
