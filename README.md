@@ -36,7 +36,7 @@ In this example, 'dogPack' is the target package, and we want it to live at '*~/
 '''
 to <- "~/desktop"
 from <- paste0(path.package("uniset"), "/examples/dogPack")
-file.copy(from, to, recursive = TRUE)
+file.copy(from, to, recursive = TRUE) 
 '''
 
 * **Export and Move Files**
@@ -107,11 +107,4 @@ Use the auto-update function within your code when you want to automatically sou
 ```
 dogPack_autoUpS
 ```
-
 Enjoy !
-
-
-
-
-
-
