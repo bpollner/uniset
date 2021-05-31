@@ -1,5 +1,5 @@
 # uniset
-A universal framework to use an easily accessible, user-friendly text file as settings-file for your R-package.
+Package 'uniset' provides an easily accessible, user-friendly text file as settings-file for your R-package.
 
 ### Description 
 Package 'uniset' provides the means to outfit your package (the 'target package') with an accessible, user-friendly and easy to read text file where settings resp. various parameters can be saved. This settings file remains in place and can remain unchanged even when the target package is updated or re-installed.  
