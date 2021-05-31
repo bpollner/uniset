@@ -32,7 +32,7 @@ test_that("checkGetTaPaEnv", {
 }) # EOT
 
 test_that("checkPath_Package_getName", {
-  # expect_type(checkPath_Package_getName(ptp), "character") ##############
+    expect_type(checkPath_Package_getName(ptp), "character") ##############
     expect_error(checkPath_Package_getName("a"))
 }) # EOT
 
@@ -77,7 +77,7 @@ pso <- paste0(ptp, "/tests/helpers/dopaem")
 ptp <- paste0(td, "/dopaem")
 # R.utils::copyDirectory(pso, ptp)
 test_that("uniset_copyFilesToPackage", {
-    R.utils::copyDirectory(pso, ptp)
+    R.utils::copyDirectory(pso, ptp) ##########
     expect_null(uniset_copyFilesToPackage(ptp, taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE"))
     expect_output(uniset_copyFilesToPackage(ptp, taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE"))
     expect_error(uniset_copyFilesToPackage(ptp="~/blabla", taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE"))
@@ -173,7 +173,7 @@ pt3 <-  paste0(td, "/dopaem/R/", "s_mod_plus_minus.R"); msg3 <- "comboDelete1, c
 pt4 <-  paste0(td, "/dopaem/R/", "s_block_new.R"); msg4 <- "newBlock1, newBlock2, newBlock3"
 pt5 <-  paste0(td, "/dopaem/R/", "s_block_delete.R"); msg5 <- "block2, block2_2, block2_oneMoreVariable, comboDelete1"
 test_that("checkFileVersionPossiblyModify", {
-    expect_true(checkFileVersionPossiblyModify(pathToPack, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE))
+    expect_true(checkFileVersionPossiblyModify(pathToPack, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) ####
     #1
     expect_message(checkFileVersionPossiblyModify(pt1, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE), msg1) # change it
     expect_true(checkFileVersionPossiblyModify(pt1, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
