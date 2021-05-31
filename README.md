@@ -16,7 +16,7 @@ In case that the '.onLoad' function already is defined, add the six lines of cod
 
 ### Accessing values from target package
 Every variable defined in the xxx_settings.r file is accessible in the code of the target package. See the created 'xxx_settings.r' file for an example.  
-The target package has to list 'uniset' as an 'import', and then you can use the functions *uniset_updateSettings* or *uniset_autoUpS* called from a function **defined in the target package** to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the xxx_settings.r file and have them accessible in an environment created by the target package. See the examples at the documentation for *?uniset*.
+The target package has to list 'uniset' as an 'import', and then you can use the functions *uniset_updateSettings* or *uniset_autoUpS* called from a function **defined in the target package** to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the xxx_settings.r file and have them accessible in an environment created by the target package. See the examples at the documentation for *?uniset* and below.
 ***
 
 ## Installation
@@ -33,6 +33,8 @@ install_github(repo="bpollner/uniset", ref="master")
 ## Usage
 We assume that we want to enable a package called *dogPack* with the settings-functionality provided by 'uniset'.  
 In this example, 'dogPack' is the target package, and we assume it lives at '*~/desktop*'.
+XXX add folder to installs, copy over. have really here.  
+
 * **Export and Move Files**
 With everything left at the defaults, this call to 'uniset_getFiles' creates a folder containing the three required files on the desktop. 
 ```
