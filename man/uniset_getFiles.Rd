@@ -16,60 +16,60 @@ uniset_getFiles(
 \arguments{
 \item{taPaName}{Character length one. The name of the target package.}
 
-\item{taPaEnv}{Character length one. The name of the environment where the 
-settings for the target package (in a key=value format) will be stored. It is 
-recommended to use a rather short name starting with a '.' (dot). See details. 
-If left at the default 'def', the first two characters of the package name, 
-prepended with a '.' (dot), and appended with an 'e' (for environment) will 
+\item{taPaEnv}{Character length one. The name of the environment where the
+settings for the target package (in a key=value format) will be stored. It is
+recommended to use a rather short name starting with a '.' (dot). See details.
+If left at the default 'def', the first two characters of the package name,
+prepended with a '.' (dot), and appended with an 'e' (for environment) will
 be used.}
 
-\item{taPaObj}{Character length one. The name of the object (residing in the 
-environment with the name provided in argument 'taPaEnv') holding the list 
-with all the individual key-value pairs that can be defined to be used in the 
-target package. It is recommended to use a rather short name. See details. 
+\item{taPaObj}{Character length one. The name of the object (residing in the
+environment with the name provided in argument 'taPaEnv') holding the list
+with all the individual key-value pairs that can be defined to be used in the
+target package. It is recommended to use a rather short name. See details.
 Defaults to 'stn'.}
 
-\item{where}{Character length one. The location where the folder with the 
+\item{where}{Character length one. The location where the folder with the
 resulting three files should be copied to. Defaults to '~/desktop'.}
 
-\item{taPaSH}{Character length one. The name of the variable to be defined in 
-the '.Renviron' file, leading to the place where the settings.r file for the 
-target package will be stored. If left at the default 'def', \code{taPaName_SH} 
-will be used, with 'taPaName' being the value provided at the argument 
+\item{taPaSH}{Character length one. The name of the variable to be defined in
+the '.Renviron' file, leading to the place where the settings.r file for the
+target package will be stored. If left at the default 'def', \code{taPaName_SH}
+will be used, with 'taPaName' being the value provided at the argument
 'taPaName'.}
 
-\item{tmpl}{Character length one. the Character string that will be appended 
-to the fresh settings file that is possibly copied (by the target package) 
+\item{tmpl}{Character length one. the Character string that will be appended
+to the fresh settings file that is possibly copied (by the target package)
 to the users settings home directory. Can be left at the default '_TEMPLATE'.}
 }
 \value{
-Creates a folder at the location specified at argument 'where' with 
-three files to be moved into the target package in it. Returns an (invisible) 
-character holding the path of the folder where the three files were written 
+Creates a folder at the location specified at argument 'where' with
+three files to be moved into the target package in it. Returns an (invisible)
+character holding the path of the folder where the three files were written
 into.
 }
 \description{
 Function to generate the three files required in the target
 package (i.e. the package that should be enabled to use the package 'uniset').
-If those arguments that default to 'NULL' are left at their default 'NULL', 
+If those arguments that default to 'NULL' are left at their default 'NULL',
 their values are read in interactively.
 }
 \details{
-The importance of providing rather short characters at the arguments 
-'taPaEnv' and 'taPaObj' lies in the fact that those two names will be used to 
-get any parameter stored in the settings file of the target package. For example, 
-if you provide '.dpe' at the argument 'taPaEnv' and 'stn' at the argument 
-'taPaObj', then all the values stored in the settings file can be retrieved by 
-calling \code{.dpe$stn$XXX}, with 'XXX' being any of the keys defined in the 
+The importance of providing rather short characters at the arguments
+'taPaEnv' and 'taPaObj' lies in the fact that those two names will be used to
+get any parameter stored in the settings file of the target package. For example,
+if you provide '.dpe' at the argument 'taPaEnv' and 'stn' at the argument
+'taPaObj', then all the values stored in the settings file can be retrieved by
+calling \code{.dpe$stn$XXX}, with 'XXX' being any of the keys defined in the
 settings file.
 }
 \examples{
 \dontrun{
 # for an imaginary package called 'dogPack':
-uniset_getFiles("dogPack", ".dpe", "stn") 
+uniset_getFiles("dogPack", ".dpe", "stn")
 	# 'dpe' could be for 'dogPack Environment', 'stn' could be for 'settings'
-	# see details. 
-} 
+	# see details.
+}
 }
 \seealso{
 \code{\link{uniset_copyFilesToPackage}}

@@ -7,33 +7,33 @@
 uniset_updateSettings(unisetEnv, silent = FALSE)
 }
 \arguments{
-\item{unisetEnv}{Character length one. Hand over the global variable defined 
-in the target package holding the name of the uniset-environment for the 
-specific target package ('uniset_env_name' or 'uev', see examples at 
+\item{unisetEnv}{Character length one. Hand over the global variable defined
+in the target package holding the name of the uniset-environment for the
+specific target package ('uniset_env_name' or 'uev', see examples at
 \code{\link{uniset}}.)}
 
-\item{silent}{Logical. If a confirmation should be printed. Defaults 
+\item{silent}{Logical. If a confirmation should be printed. Defaults
 to 'FALSE'}
 }
 \value{
-An (invisible) list with the settings resp. a list called as defined 
+An (invisible) list with the settings resp. a list called as defined
 in argument 'taPaObj' in the environment called as defined in argument 'taPaEnv'.
 See \code{\link{uniset}} for examples.
 }
 \description{
-Manually read in the settings-file in the target package settings 
+Manually read in the settings-file in the target package settings
 home directory as specified in the .Renviron file.
 }
 \section{Note}{
- If not present, the required `.Renviron` file will be 
-automatically created. If the variable defined in argument 'taPaSH' in 
-\code{\link{uniset_getFiles}} is not defined in the .Renviron file, it 
-will be automatically added, and its default path is pointing to the 
-(possibly also created) folder having the same name as `taPaSH` in 
-the users home directory, where the `xxx_settings.R` file is automatically 
-copied to if not already present. 
-It is possible to manually provide a different path in the 
-variable as defined in argument `taPaSH` in the .Renviron file, pointing 
+ If not present, the required `.Renviron` file will be
+automatically created. If the variable defined in argument 'taPaSH' in
+\code{\link{uniset_getFiles}} is not defined in the .Renviron file, it
+will be automatically added, and its default path is pointing to the
+(possibly also created) folder having the same name as `taPaSH` in
+the users home directory, where the `xxx_settings.R` file is automatically
+copied to if not already present.
+It is possible to manually provide a different path in the
+variable as defined in argument `taPaSH` in the .Renviron file, pointing
 to any folder where then the xxx_settings.R file will reside.
 XXX Improve this text please.
 }

@@ -2,14 +2,26 @@
 % Please edit documentation in R/gen_functions.R
 \name{uniset_test}
 \alias{uniset_test}
-\title{Test}
+\title{Simple Test}
 \usage{
 uniset_test(unisetEnv)
 }
 \arguments{
-\item{unisetEnv}{Character length one. The name of the environment holding the uniset 
+\item{unisetEnv}{Character length one. The name of the environment holding the uniset
 definitions for a single package.}
 }
+\value{
+An (invisible) list.
+}
 \description{
-Test
+Test if your input regarding environment name, package name
+etc. was correct / successful. This function is meant to be called from the
+target package. See examples.
+}
+\examples{
+\dontrun{
+targetPackageTest <- function() { # this function is defined in the target package
+    uniset::uniset_test(get("uev"))
+} # eof
+}
 }

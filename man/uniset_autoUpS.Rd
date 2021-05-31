@@ -7,17 +7,17 @@
 uniset_autoUpS(unisetEnv)
 }
 \arguments{
-\item{unisetEnv}{Character length one. Hand over the global variable defined 
-in the target package holding the name of the uniset-environment for the 
-specific target package ('uniset_env_name' or 'uev', see examples at 
+\item{unisetEnv}{Character length one. Hand over the global variable defined
+in the target package holding the name of the uniset-environment for the
+specific target package ('uniset_env_name' or 'uev', see examples at
 \code{\link{uniset}}.)}
 }
 \description{
-Use this function within your code to automatically update the 
+Use this function within your code to automatically update the
 settings from the users settings file
 }
 \details{
-If 'autoUpdateSettings' in xxx_settings.r is left at 'TRUE', the 
-settings will be checked resp. updated automatically every time a function in 
+If 'autoUpdateSettings' in xxx_settings.r is left at 'TRUE', the
+settings will be checked resp. updated automatically every time a function in
 the target package is calling \code{\link{uniset_autoUpS}}.
 }
