@@ -22,11 +22,65 @@ The target package has to list 'uniset' as an 'import', and then you can use the
 ## Installation
 From Cran XXX
 ```
-asdfasdf
+xxxxxx
 ```
-Or download grom github:
+Or download from github:
 ```
 library(devtools)
-devtools_install()
+install_github(repo="bpollner/uniset", ref="master")
 ```
+***
+## Usage
+We assume that we want to enable a package called *dogPack* with the settings-functionality provided by 'uniset'.  
+In this example, 'dogPack' is the target package, and we assume it lives at '*~/desktop*'.
+* **Export and Move Files**
+With everything left at the defaults, this call to 'uniset_getFiles' creates a folder containing the three required files on the desktop. 
+```
+uniset_getFiles("dogPack")
+```
+Move the 'dogPack_settings.r' file into the 'inst' folder (create one if not already done) of 'dogPack'. Move the file 'zzz.r" and the file 'uniset_globals' to the 'R' folder of 'dogPack'.  
+In case that the '.onLoad' function already is defined, add the six lines of code from the file 'zzz.R' to your existing '.onLoad' function.  
 
+* **Write files directly to target package**
+With everything left at the defaults, this call to 'uniset_copyFilesToPackage()' copies the three required files directly into the target package -- called 'dogPack' in our example. We assume that 'dogPack' is living at '~/desktop'.
+```
+path <- "~/desktop"
+uniset_copyFilesToPackage(path)
+```
+Now you can define functions in 'dogPack' that can call the following functions from 'uniset': 
+```
+uniset::uniset_test(get("uev"))
+uniset::uniset_updateSettings(get("uev))
+uniset::uniset_autoUpS(get("uev"))
+```
+*uev* is a global constant defined in 'dogPack', handing over the name of the environment where necessary variables are stored.
+'uniset_test' is merely a testing function to see if the handover of environments etc. is workign properly.  
+  
+'uniset_updateSettings' and 'uniset_autoUpS' is:
+* When called for the **first time**
+  * Creating the required environment variable in your .Renviron file, and
+  * copying the 'dogPack_settings.R' file to a folder in the users home directory. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package 'dogPack'.
+* When called subsequently, simply updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the 'dogPack' installation folder. Thus, whenever the developer of package 'dogPack' is introducing new or deleting obsolete key=value pairs, they will be (usually) automatically added to or deleted from the user´s file. Any values that the user modified will be preserved. Thus, a new update or installation of package 'dogPack' will not force the user of package 'dogPack' to completely re-customize the 'dogPack_settings.R' file. 
+  
+In package 'dogPack', you could now define functions as follows:
+```
+dogPackTest <- function(){
+    uniset::uniset_test(get("uev"))
+} # EOF
+#
+dogPack_updateSettings <- function() {
+    uniset::uniset_updateSettings(get("uev"))
+} # EOF
+#
+dogPack_autoUpS <- function() {
+	uniset::uniset_autoUpS(get("uev"))
+  cat("My favourite Color: \n")
+	cat(.doe$stn$favouriteColor)
+  # and some more code ... 
+} # EOF
+```
+The latter function is intended to be placed at the beginning of any function of package 'dogPack' to always (if desired) automatically source the local 'dogPack_settings.R' file into the environment called '.doe' (in our example). Thus, any values stored in the local 'dogPack_settings.R' file can be obtained via
+```
+color <- .doe$stn$favouriteColor
+```
+In this example we obtained the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environmen name, object name) can of course be customized when using the functions *uniset_getFiles* or *uniset_copyFilesToPackage*.
