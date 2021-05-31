@@ -34,11 +34,11 @@ install_github(repo="bpollner/uniset", ref="master")
 We assume that we want to enable a package called *dogPack* with the settings-functionality provided by 'uniset'.  
 In this example, 'dogPack' is the target package, and we want it to live at '*~/desktop*'. First copy the example folder 'dogPack' to your desktop:
 ```
+library(uniset)
 to <- "~/desktop"
 from <- paste0(path.package("uniset"), "/examples/dogPack")
 file.copy(from, to, recursive = TRUE) 
-'''
-
+```
 * **Export and Move Files**
 With everything left at the defaults, this call to 'uniset_getFiles' creates a folder containing the three required files on the desktop. 
 ```
