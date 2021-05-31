@@ -1,4 +1,4 @@
-library(testthat)
+# library(testthat)
 
 fp <- "~/Documents/RPS/uniset_R/uniset/R/gen_globals.R"
 test_that("all character", {

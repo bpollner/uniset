@@ -568,7 +568,7 @@ expandFillInLocalTxt <- function(ftPack, ftLocal, missNames) {
 copyFreshTemplate <- function(pathToPack, folderLocal, fileName, tmpl) {
 	suff <- tmpl
 	#
-	toPath <- paste0(folderLocal, "/", fileName, suff, ".r")
+	toPath <- paste0(folderLocal, "/", fileName, suff, ".R  ")
 	ok <- file.copy(pathToPack, toPath, overwrite=TRUE)
 	if (ok) {
 		cat("A fresh template of the ", fileName, " file has been copied from the package.\n")
@@ -577,10 +577,10 @@ copyFreshTemplate <- function(pathToPack, folderLocal, fileName, tmpl) {
 	}
 } # EOF
 
-checkFileVersionPossiblyModify <- function(pathToPack, pathToLocal, folderLocal, nameLocal, pm=NULL, tmpl) {
+checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL, onTest=FALSE) {
 	pv_suffixForTemplates <- tmpl
 	#
-	loc <- pathToLocal
+	loc <- pathToLocal <- paste0(folderLocal, "/", nameLocal)
 	pac <- pathToPack
 	if (is.null(pm)) {
 		pm <- ""
@@ -633,7 +633,7 @@ checkFileVersionPossiblyModify <- function(pathToPack, pathToLocal, folderLocal,
 			msg <- paste0("Your '", nameLocal, "' file in the folder \n", folderLocal, "\nhas been updated.\n***Everything is ok.***")
 			doCopyMove <- FALSE
 		} else { # so we could NOT modify the local file
-			msg <- paste0("There appears to be a newer version of the '", nameLocal, "' file in the package 'aquap2'.")
+			msg <- paste0("There appears to be a newer version of the '", nameLocal, "' file in the package '", taPaName, "'.")
 			doCopyMove <- TRUE
 		}
 		message(msg) # actually display here a message !!
@@ -649,8 +649,12 @@ checkFileVersionPossiblyModify <- function(pathToPack, pathToLocal, folderLocal,
 			}
 		}
 		if (doCopyMove) {
-			message(paste0("Do you want to copy it now into the folder \n'", folderLocal, "'\n as a template ('", nameLocal, pv_suffixForTemplates, "') for modifying the existing '", nameLocal, "' file?\n( y / n )"))
-			a <- readLines(n=1)
+			if (!onTest) {
+				message(paste0("Do you want to copy it now into the folder \n'", folderLocal, "'\n as a template ('", nameLocal, pv_suffixForTemplates, "') for modifying the existing '", nameLocal, "' file?\n( y / n )"))
+				a <- readLines(n=1)
+			} else { # so we are running a test
+				a <- "y"
+			} # end else
 			if (a != "y" & a != "Y") {
 				message("Please be aware that the package will not work properly if your '", nameLocal, "' file is not up to date.")
 				return(FALSE)
@@ -669,22 +673,107 @@ checkFileVersionPossiblyModify <- function(pathToPack, pathToLocal, folderLocal,
 } # EOF
 
 checkCreateSHfolder <- function(systemHome, fn_taPaSH) {
-	if (!dir.exists(paste0(systemHome, "/", fn_taPaSH))) {
-		dirCreaOk <- dir.create(paste0(systemHome, "/", fn_taPaSH))
+	if (!dir.exists(paste0(systemHome, "/", fn_taPaSH))) { 
+		dirCreaOk <- dir.create(paste0(systemHome, "/", fn_taPaSH), showWarnings=FALSE)
 		if (!dirCreaOk) {
 			msg <- paste0("Sorry, the required settings-home directory `", fn_taPaSH, "` could not be created in `", systemHome, "`.")
 			message(msg)
 			return(FALSE)
-		} else { # so we created the .Renviron file AND created the aquap2SH folder
+		} else { # so we created the .Renviron file AND created the taPaSH folder
 			msg <- paste0("The folder `", fn_taPaSH, "` as settings-home directory has been created in `", systemHome, "`.")
 			message(msg)
 			return(TRUE)
 		}
-	} # end if !dir.exists aquap2SH
+	} # end if !dir.exists taPaSH
 	return(TRUE)
 } # EOF
 
-checkSettings <- function(taPaList) {
+ifNotRenvExists <- function(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo) {
+	 # we have NO .Renviron file, so we simply make one
+	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
+	createOK <- file.create(fullRenvPath, showWarnings=FALSE)
+	if (!createOK) {  #  if .Renviron could not be created
+		msg <- paste0("Sorry, the creation of the .Renviron file in `", systemHome_R, "` failed.")
+		message(msg)
+		return(FALSE)
+	} else { # so we could create the .Renviron file
+		# if no .Renviron file, then also no settings home diretory --> create one
+		ok <- checkCreateSHfolder(systemHome_R, fn_taPaSH)
+			if (!ok) {
+				return(FALSE)
+			}
+		# now we have to fill the newly created .Renviron file and point taPaSH to the newly created folder
+		defaultFillForRenviron <- paste0("\n\n", taPaSH, " = ", systemHome_R, "/", fn_taPaSH) # here problem in windows !! # really? I do not (in windows)
+		fcon <- file(fullRenvPath, open="w")
+		writeLines(defaultFillForRenviron, fcon)
+		close(fcon)
+		creMsg <- paste0("The required '.Renviron' file in '", systemHome_R, "' has been created for you.\n", taPaSH_creationMsg, "\n", addInfo)
+		message(creMsg)
+		return(FALSE)
+	} # end else (where we could create and fill the .Renviron file and create the settings home folder
+} # EOF	
+
+taPaSH_System_missing <- function(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo) {
+	# so it is not existing in the system, and we have to check if it exists in the .Renviron file
+	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
+	fcon <- file(fullRenvPath, open="r")
+	content <- readLines(fcon)
+	close(fcon)
+	#
+	if (any(grepl(taPaSH, content))) { # returns TRUE if taPaSH is present in the .Renviron file
+		# so not in the system, but on the file --> that means we have to restart R
+		message(restartMsg)
+		return(FALSE)
+	} else { # so not in the system, and not on the file (but the .Renviron was present
+		# now we have to ADD the taPaSH to the existing .Renviron file
+		# first check for existence / create the settings home folder
+		ok <- checkCreateSHfolder(systemHome_R, fn_taPaSH)
+		if (!ok) {
+			return(FALSE)
+		}
+		fcon <- file(fullRenvPath, open="r+b")
+		content <- readLines(fcon)
+		newContent <- c(content, paste0("\n\n## ", taPaName, ":"), paste0(taPaSH, " = ", systemHome_R, "/", fn_taPaSH), "\n") # was c(content, "\n\n## aquap2", paste0("AQUAP2SH = ", systemHome, "/", fn_taPaSH), "\n")
+		writeLines(newContent, fcon)
+		close(fcon)
+		msg <- paste0(taPaSH_creationMsg, "\n", addInfo)
+		message(msg)
+		return(FALSE)
+	} # end else
+} # EOF
+
+taPaSH_System_OK_noDir <- function(systemHome_R, taPaSH, taPaSH_system, restartMsg) {
+	# first check if the content of taPaSH in the file and in the system are the same
+	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
+	fcon <- file(fullRenvPath, open="r")
+	content <- readLines(fcon)
+	close(fcon)
+	taPaSH_file <- content[which(grepl(taPaSH, content))] # get only the one string that is the taPaSH
+#	print(taPaSH_file)
+	fileValue <- trimws(strsplit(taPaSH_file, "=")[[1]][[2]]) # the [[1]] to get out of the list. naja.
+#	print(fileValue)
+	if (fileValue != taPaSH_system) { # so the content of taPaSH is different in the system and in the file, we have to restart R
+		message(restartMsg)
+		return(FALSE) 
+	} # end if
+	msg <- paste0("Sorry, the path `", taPaSH_system, "` specified in the `", taPaSH,"` variable is not pointing to a valid directory.\nPlease change the value of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`), or create the appropriate file structure.")
+	message(msg)
+	return(FALSE)
+} # EOF	
+
+pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName) {					
+	# please simply copy the settings
+	ok <- file.copy(taPaSettingsPath, taPaSH_system)
+	if (!ok) {
+		message(paste0("Sorry, for unknown reasons it was not possible to copy the `", setFiName, "` file from `", taPaSettingsPath, "` to `", taPaSH_system, "`."))
+		return(FALSE)
+	} else { # so we could copy the settings.r file
+		message(paste0("The '", setFiName, "' file has been copied into `", taPaSH_system, "`."))
+		return(TRUE)
+	} # end else		
+} # EOF
+
+checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL) {
 	#
 	aaa <- taPaList
 		taPaName <- aaa$taPaName
@@ -705,91 +794,30 @@ checkSettings <- function(taPaList) {
 	#
 	# first check for existence of the .Renviron file
 	renvExists <- file.exists(fullRenvPath)
-	if (!renvExists) { # we have NO .Renviron file, so we simply make one
-		createOK <- file.create(fullRenvPath, showWarnings=FALSE)
-		if (!createOK) {  #  if .Renviron could not be created
-			msg <- paste0("Sorry, for unknown reasons the creation of the .Renviron file in `", systemHome, "` failed.")
-			message(msg)
-			return(FALSE)
-		} else { # so we could create the .Renviron file
-			# if no .Renviron file, then also no settings home diretory --> create one
-			ok <- checkCreateSHfolder(systemHome, fn_taPaSH)
-				if (!ok) {
-					return(FALSE)
-				}
-			# now we have to fill the newly created .Renviron file and point taPaSH to the newly created folder
-			defaultFillForRenviron <- paste0("\n\n", taPaSH, " = ", systemHome_R, "/", fn_taPaSH) # here problem in windows !! # really? I do not (in windows)
-			fcon <- file(fullRenvPath, open="w")
-			writeLines(defaultFillForRenviron, fcon)
-			close(fcon)
-			creMsg <- paste0("The required '.Renviron' file in '", systemHome, "' has been created for you.\n", taPaSH_creationMsg, "\n", addInfo)
-			message(creMsg)
-			return(FALSE)
-		} # end else (where we could create and fill the .Renviron file and create the settings home folder
+	if (!renvExists) {
+		return(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo)) #############
 	}  else { # so the .Renviron file is existing
 		# check if taPaSH is existing in the system: if yes, check if pointing to a valid directory; if no check if it is existing on the .Renviron file
-		pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
-		taPaSH_system <- eval(parse(text=pat))  # returns `""` if not existing in Sys.getenv() # was 		taPaSH_system <- Sys.getenv("AQUAP2SH") # returns `""` if not existing in Sys.getenv()
-		if (taPaSH_system == "") { # so it is not existing in the system, and we have to check if it exists in the .Renviron file
-			fcon <- file(fullRenvPath, open="r")
-			content <- readLines(fcon)
-			close(fcon)
-			if (any(grepl(taPaSH, content))) { # returns TRUE if taPaSH is present in the .Renviron file
-				# so not in the system, but on the file --> that means we have to restart R
-				message(restartMsg)
-				return(FALSE)
-			} else { # so not in the system, and not on the file (but the .Renviron was present
-				# now we have to ADD the taPaSH to the existing .Renviron file
-				# first check for existence / create the settings home folder
-				ok <- checkCreateSHfolder(systemHome, fn_taPaSH)
-				if (!ok) {
-					return(FALSE)
-				}
-				fcon <- file(fullRenvPath, open="r+b")
-				content <- readLines(fcon)
-				newContent <- c(content, paste0("\n\n## ", taPaName, ":"), paste0(taPaSH, " = ", systemHome, "/", fn_taPaSH), "\n") # was c(content, "\n\n## aquap2", paste0("AQUAP2SH = ", systemHome, "/", fn_taPaSH), "\n")
-				writeLines(newContent, fcon)
-				close(fcon)
-				msg <- paste0(taPaSH_creationMsg, "\n", addInfo)
-				message(msg)
-				return(FALSE)
-			} # end else
+		if (!onTest) {	
+			pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
+			taPaSH_system <- eval(parse(text=pat))  # returns `""` if not existing in Sys.getenv() 
+		} # end if !onTest
+		if (taPaSH_system == "") {
+			return(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo))	#############		
 		} else { # (taPaSH_system != "") --> so taPaSH IS existing in the system
-			# check if pointing to a valid folder
-			if (!dir.exists(taPaSH_system)) {
-				# first check if the content of taPaSH in the file and in the system are the same
-				fcon <- file(fullRenvPath, open="r")
-				content <- readLines(fcon)
-				close(fcon)
-				taPaSH_file <- content[which(grepl(taPaSH, content))] # get only the one string that is the taPaSH
-				fileValue <- trimws(strsplit(taPaSH_file, "=")[[1]][[2]]) # the [[1]] to get out of the list. naja.
-				if (fileValue != taPaSH_system) { # so the content of taPaSH is different in the system and in the file, we have to restart R
-					message(restartMsg)
-					return(FALSE)
-				} # end if
-				msg <- paste0("Sorry, the path `", taPaSH_system, "` specified in the `", taPaSH,"` variable is not pointing to a valid directory.\nPlease change the value of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`), or create the appropriate file structure.")
-				message(msg)
-				return(FALSE)
+			if (!dir.exists(taPaSH_system)) {  # check if pointing to a valid folder
+				return(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system, restartMsg))
 			} else { # end if !dir.exists
 				# so now everything should be good, file and system unisono etc.
 				# check if a settings file is here, If no, please copy it.
-				sFile <- setFiName # we get that from the environment -reading things.
-				pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
-				pathSH <- eval(parse(text=pat))
-				pspath <- paste(path.package(taPaName), sFile, sep="/")
-				pathToSettings <- paste(pathSH, sFile, sep="/")
-				if (!file.exists(pathToSettings)) {
-					# please simply copy the settings
-					ok <- file.copy(pspath, pathSH)
-					if (!ok) {
-						message(paste0("Sorry, for unknown reasons it was not possible to copy the `", sFile, "` file from `", pspath, "` to `", pathSH, "`."))
-						return(FALSE)
-					} else { # so we could copy the settings.r file
-						message(paste0("The '", sFile, "' file has been copied into `", pathSH, "`."))
-						return(TRUE)
-					} # end else
+				if (!onTest) {
+					taPaSettingsPath <- paste0(path.package(taPaName), "/",  setFiName)
+					localSettingsPath <- paste0(taPaSH_system, "/", setFiName)
+				} # end if
+				if (!file.exists(localSettingsPath)) {
+					return(pleaseCopyFreshSettings(taPaSettingsPath, taPaSH_system, setFiName))
 				} else { # so the settings.r file does exist  - we can, finally, go to checking the content of the settings.r file
-					return(checkFileVersionPossiblyModify(pathToPack=pspath, pathToLocal=pathToSettings, folderLocal=pathSH, nameLocal=sFile, pm=taPaObj, tmpl=tmplName))  # returns TRUE or FALSE
+					return(checkFileVersionPossiblyModify(pathToPack=taPaSettingsPath, folderLocal=taPaSH_system, nameLocal=setFiName, pm=taPaObj, taPaName, tmpl=tmplName))  # returns TRUE or FALSE
 				} # end else
 			} # end else !dir.exists
 		} # end else taPaSH_system == ""

@@ -1,20 +1,20 @@
 #######################################################################################################
-######################## Settings file for package "XXX_packageName" ##################################
+######################## Settings file for package "dogPack" ##################################
 #######################################################################################################
 
 
-# If not already there, move this file called 'XXX_actualSettingsName' into the "inst" folder of 
-# your package 'XXX_packageName'. (create an "inst" folder if it does not exist)
+# If not already there, move this file called 'dogPack_settings.R' into the "inst" folder of 
+# your package 'dogPack'. (create an "inst" folder if it does not exist)
 
-# do NOT change the name of the object holding the list - in this case, 'XXX_obj'
+# do NOT change the name of the object holding the list - in this case, 'stn'
 
-# use the code 'XXX_targetEnv$XXX_obj$KEY' (with 'KEY' being any of the key=value pairs defined below) 
-# in the target package to access the values of the object 'XXX_obj'.
+# use the code '.doe$stn$KEY' (with 'KEY' being any of the key=value pairs defined below) 
+# in the target package to access the values of the object 'stn'.
 
-XXX_obj <- list(
+stn <- list(
 	# tag = value, # with a comma !!
 		
-	## general behavior
+		## general behavior
 	gen_autoUpdateSettings = TRUE, 			## Do not delete this variable (but of course you can change its value)
 	
 	
@@ -30,8 +30,8 @@ XXX_obj <- list(
 
 	## block 2 (describe what this collection of variables is about)
 	block2 = "bar",	
-	block2_2 = 12345,	
-	comboDelete1 = "theo",
+	block2_2 = 12345,
+	comboAdd1 = "herta",	
 	block2_oneMoreVariable = FALSE,
 
 
@@ -40,7 +40,6 @@ XXX_obj <- list(
 	block3_giveMeaningfulNames = TRUE,  
 	favouriteColor = "blue", 
 	willBeDeleted2 = "darkred", 
-	comboDelete2 = TRUE, 
 	comboDelete3 = FALSE, 
 
 
@@ -56,18 +55,20 @@ XXX_obj <- list(
 
 	obey = TRUE,
 	willBeDeleted3 = FALSE,
+	comboAdd2 = TRUE,
+	comboAdd3 = FALSE,
 	strength = 5000,
-	
+		
 	
 	
 	######
 	last = 0 # do not add anything below that
 	## the last one without comma !!
-) # end of list called 'XXX_obj'
+) # end of list called 'stn'
 
 
-# any of these key=value pairs can be accessed in the code of your package 'XXX_packageName' by using simply
-# XXX_targetEnv$XXX_obj$favouriteColor, for example. Instead of 'favouriteColor' any other of the keys defined
+# any of these key=value pairs can be accessed in the code of your package 'dogPack' by using simply
+# .doe$stn$favouriteColor, for example. Instead of 'favouriteColor' any other of the keys defined
 # in the list above can be used. 
 # You can create as many key=value pairs as you want. 
 
@@ -75,7 +76,7 @@ XXX_obj <- list(
 # (as this is nothing but a simple list, and in a list the key=value pairs have to be separated by a comma.)
 # The keys have to be unique (obviously). 
 
-# Do not change the name of the object holding the list - in this case, 'XXX_obj'
+# Do not change the name of the object holding the list - in this case, 'stn'
 
 # If you add a new variable within a block *below the first* variable of the block, 
 # this variable gets simply inserted into the settings file of the user. (Only the first variable
