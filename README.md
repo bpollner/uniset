@@ -122,5 +122,5 @@ color # should be "lightyellow"
 dogPack_autoUpS()
 color <- .doe$stn$favouriteColor
 color # should be the value you assigned before
-
+```
 Enjoy !
