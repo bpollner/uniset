@@ -69,8 +69,7 @@ checkPath_Package_getName <- function(pathToPackage) {
 	stdiFn_descr <- "DESCRIPTION"
 	stdFin_ns <- "NAMESPACE"
 	stdFon_R <- "R"
-	stdFon_man <- "man"
-	stdVec <- c(stdiFn_descr, stdFin_ns, stdFon_R, stdFon_man)
+	stdVec <- c(stdiFn_descr, stdFin_ns, stdFon_R)
 	packSkellName <- "anRpackage" # the name given when using the function package.skelleton() without providing a package name
 	ptp <- pathToPackage
 	#

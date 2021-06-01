@@ -14,7 +14,7 @@
 stn <- list(
 	# tag = value, # with a comma !!
 		
-		## general behavior
+	## general behavior
 	gen_autoUpdateSettings = TRUE, 			## Do not delete this variable (but of course you can change its value)
 	
 	
