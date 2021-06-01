@@ -115,7 +115,7 @@ Of course it is also possible to set values of the 'stn' object via
 ```
 .doe$stn$favouriteColor <- "lightyellow"
 ```
-Be aware that every call to a settings update function is re-instating the values as written in the 'dogPack_settings.R' file:
+Be aware that a call to update functions is re-instating the values as written in the 'dogPack_settings.R' file (but not for uniset::uniset_autoUpS() if you changed 'gen_autoUpdateSettings' to 'FALSE'):
 ```
 color <- .doe$stn$favouriteColor
 color # should be "lightyellow"
@@ -124,7 +124,9 @@ color <- .doe$stn$favouriteColor
 color # should be the value you assigned before
 ```
 #### Adding / deleting keys
-If you are the developer of package 'dogPack', at some time you will want to add keys to or delete from the settings file. Do that now: Add e.g. a new *key=value,* pair (do not forget the comma ',') at the *end* of a block in the settings-file **in the folder 'inst' of 'dogPack'**, re-install 'dogPack' and run again an update settings function, e.g.
+If you are the developer of package 'dogPack', at some time after you publihsed 'dogPack' you might want to add keys to or delete from the settings file.  
+Do that now: Add e.g. a new *key=value,* pair (do not forget the comma ',') at the *end* of a block in the settings-file **in the folder 'inst' of 'dogPack'**, and re-install 'dogPack'.  
+Now the *user of dogPack* will run again an update settings function:
 ```
 dogPack_updateSettings()
 ```
