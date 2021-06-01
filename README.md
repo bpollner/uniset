@@ -123,4 +123,12 @@ dogPack_autoUpS()
 color <- .doe$stn$favouriteColor
 color # should be the value you assigned before
 ```
+#### Adding / deleting keys
+If you are the developer of package 'dogPack', at some time you will want to add keys to or delete from the settings file. Do that now: Add e.g. a new *key=value,* pair (do not forget the comma ',') at the *end* of a block in the settings-file **in the folder 'inst' of 'dogPack'**, re-install 'dogPack' and run again an update settings function, e.g.
+```
+dogPack_updateSettings()
+```
+The *user of dogPack* will then have the new key added to the local file 'dogPack_settings.R' in the folder 'dogPack_SH' in the home directory (default location).
+(Please see the comments on the bottom of the file 'dogPack_settings.R' for limitations when creating a new block.)
+
 Enjoy !
