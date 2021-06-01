@@ -13,8 +13,7 @@ The most imminent advantage of the 'uniset' settings-file system over using simp
 In case that the '.onLoad' function already is defined, add the six lines of code from the file 'zzz.R' to your existing '.onLoad' function. 
 * **Write files directly to target package**  Alternatively, use *uniset_copyFilesToPackage* to copy the required files directly into the target package.  
 
-
-### Accessing values from target package
+### Accessing values from within target package
 Every variable defined in the xxx_settings.r file is accessible in the code of the target package. See the created 'xxx_settings.r' file for an example.  
 The target package has to list 'uniset' as an 'import', and then you can use the functions *uniset_updateSettings* or *uniset_autoUpS* called from a function **defined in the target package** to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the xxx_settings.r file and have them accessible in an environment created by the target package. See the examples at the documentation for *?uniset* and below.
 ***
