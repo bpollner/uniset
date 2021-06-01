@@ -97,11 +97,19 @@ Now everything should be ready and set up.
 
 Use the auto-update function within your code when you want to automatically source all the values from the local 'dogPack_settings.R' file into the environment '.doe':
 ```
-dogPack_autoUpS
+dogPack_autoUpS()
 ```
 Now, it is possible to obain values from 'dogPack_settings.R' directly via:
 ```
 color <- .doe$stn$favouriteColor
 color
+```
+Change the value of the key 'favouriteColor' in the file 'dogPack_settings.R' in the folder 'dogPack_SH' in your home directory (if you left all at the defaults above).
+```
+color <- .doe$stn$favouriteColor
+color # should be the same as before
+dogPack_autoUpS()
+color <- .doe$stn$favouriteColor
+color # should have the new value
 ```
 Enjoy !
