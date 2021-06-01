@@ -31,6 +31,7 @@ install_github(repo="bpollner/uniset", ref="master")
 ```
 ***
 ## Usage
+### Set up example
 We assume that we want to enable a package called *dogPack* with the settings-functionality provided by 'uniset'.  
 In this example, 'dogPack' is the target package, and we want it to live at '*~/desktop*'. First copy the example folder 'dogPack' to your desktop:
 ```
@@ -39,6 +40,7 @@ to <- "~/desktop"
 from <- paste0(path.package("uniset"), "/examples/dogPack")
 file.copy(from, to, recursive = TRUE) 
 ```
+### Generate Files
 * **Export and Move Files**
 With everything left at the defaults, this call to 'uniset_getFiles' creates a folder containing the three required files on the desktop. 
 ```
@@ -53,6 +55,7 @@ With everything left at the defaults, this call to *uniset_copyFilesToPackage()*
 path <- "~/desktop/dogPack"
 uniset_copyFilesToPackage(path)
 ```
+### Some more explanations
 Now you can define functions **in dogPack** that can call the following functions from 'uniset': 
 * uniset::uniset_test(get("uev"))
 * uniset::uniset_updateSettings(get("uev))
@@ -66,30 +69,21 @@ Now you can define functions **in dogPack** that can call the following function
   * copying the 'dogPack_settings.R' file to a folder in the users home directory. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package 'dogPack'.
 * When called subsequently, simply updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the 'dogPack' installation folder. Thus, whenever the developer of package 'dogPack' is introducing new or deleting obsolete key=value pairs, they will be (usually) automatically added to or deleted from the user´s file. Any values that the user modified will be preserved. Thus, a new update or installation of package 'dogPack' will not force the user of package 'dogPack' to completely re-customize the 'dogPack_settings.R' file. 
   
-In package 'dogPack', you could now define functions as follows:
-```
-> dogPackTest <- function(){
-    uniset::uniset_test(get("uev"))
-} # EOF
-#
-dogPack_updateSettings <- function() {
-    uniset::uniset_updateSettings(get("uev"))
-} # EOF
-#
-dogPack_autoUpS <- function() {
-	uniset::uniset_autoUpS(get("uev"))
- 	 cat("My favourite Color: \n")
-	cat(.doe$stn$favouriteColor)
-  # and some more code ... 
-} # EOF
-```
+**In package 'dogPack'**, you could now define functions as follows:
+> dogPackTest <- function(){uniset::uniset_test(get("uev"))}  
+> dogPack_updateSettings <- function(){uniset::uniset_updateSettings(get("uev"))}  
+> dogPack_autoUpS <- function(){uniset::uniset_autoUpS(get("uev"))}  
+
 The latter function is intended to be placed at the beginning of any function of package 'dogPack' to always (if desired) automatically source the local 'dogPack_settings.R' file into the environment called '.doe' (in our example). Thus, any values stored in the local 'dogPack_settings.R' file can be obtained via
 ```
 color <- .doe$stn$favouriteColor # does not work yet
 ```
 In this example we obtain the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environmen name, object name) can of course be customized when using the functions *uniset_getFiles* or *uniset_copyFilesToPackage*.  
-To try this out, open the RProject project file in the folder 'dogPack', build and install the package, and then call:
+
+### The real world test
+Open the RProject project file in the folder 'dogPack', build and install the package, and then call:
 ```
+library(dogPack)
 dogPackTest() # should give a nice printout
 dogPack_updateSettings()
 ```
@@ -104,5 +98,10 @@ Now everything should be ready and set up.
 Use the auto-update function within your code when you want to automatically source all the values from the local 'dogPack_settings.R' file into the environment '.doe':
 ```
 dogPack_autoUpS
+```
+Now, it is possible to obain values from 'dogPack_settings.R' directly via:
+```
+color <- .doe$stn$favouriteColor
+color
 ```
 Enjoy !
