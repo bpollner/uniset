@@ -124,7 +124,12 @@ color # should be the value you assigned before
 ```
 #### Adding / deleting keys
 If you are the developer of package 'dogPack', at some time after you publihsed 'dogPack' you might want to add keys to or delete from the settings file.  
-Do that now: Add e.g. a new *key=value,* pair (do not forget the comma ',') at the *end* of a block in the settings-file **in the folder 'inst' of 'dogPack'**, and re-install 'dogPack'.  
+Do that now: Add e.g. a new *key=value,* pair (do not forget the comma ',') at the *end* of a block in the settings-file **in the folder 'inst' of 'dogPack'**, and re-install 'dogPack'.  Or, as an alternative shortcut for this demonstration, go to root of the *installed* dogPack package
+```
+path.package("dogPack")
+```
+and simply modify there the file 'dogPack_settings.R'.
+
 Now the *user of dogPack* will run again an update settings function:
 ```
 dogPack_updateSettings()
