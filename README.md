@@ -53,12 +53,10 @@ With everything left at the defaults, this call to *uniset_copyFilesToPackage()*
 path <- "~/desktop/dogPack"
 uniset_copyFilesToPackage(path)
 ```
-Now you can define functions **in 'dogPack'** that can call the following functions from 'uniset': 
-```
-uniset::uniset_test(get("uev"))
-uniset::uniset_updateSettings(get("uev))
-uniset::uniset_autoUpS(get("uev"))
-```
+Now you can define functions **in dogPack** that can call the following functions from 'uniset': 
+* uniset::uniset_test(get("uev"))
+* uniset::uniset_updateSettings(get("uev))
+* uniset::uniset_autoUpS(get("uev"))  
 *uev* is a global constant defined in 'dogPack', handing over the name of the environment where necessary variables are stored.
 'uniset_test' is merely a testing function to see if the handover of environments etc. is workign properly.  
   
@@ -70,7 +68,7 @@ uniset::uniset_autoUpS(get("uev"))
   
 In package 'dogPack', you could now define functions as follows:
 ```
-dogPackTest <- function(){
+> dogPackTest <- function(){
     uniset::uniset_test(get("uev"))
 } # EOF
 #
@@ -87,7 +85,7 @@ dogPack_autoUpS <- function() {
 ```
 The latter function is intended to be placed at the beginning of any function of package 'dogPack' to always (if desired) automatically source the local 'dogPack_settings.R' file into the environment called '.doe' (in our example). Thus, any values stored in the local 'dogPack_settings.R' file can be obtained via
 ```
-color <- .doe$stn$favouriteColor
+color <- .doe$stn$favouriteColor # does not work yet
 ```
 In this example we obtain the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environmen name, object name) can of course be customized when using the functions *uniset_getFiles* or *uniset_copyFilesToPackage*.  
 To try this out, open the RProject project file in the folder 'dogPack', build and install the package, and then call:
