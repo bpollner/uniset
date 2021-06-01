@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/bpollner/uniset/workflows/R-CMD-check/badge.svg)](https://github.com/bpollner/uniset/actions)
+<!-- badges: end -->
+
 # uniset
 Package 'uniset' provides an easily accessible, user-friendly text file as settings-file for your R-package.
 

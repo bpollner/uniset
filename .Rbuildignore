@@ -4,3 +4,5 @@
 
 # ignore pictures for readme.md
 ^.*\.png$
+^codecov\.yml$
+^\.github$
