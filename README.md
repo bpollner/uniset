@@ -56,7 +56,7 @@ path <- "~/desktop/dogPack"
 uniset_copyFilesToPackage(path)
 ```
 ### Some more explanations
-Now you can define functions **in dogPack** that can call the following functions from 'uniset': 
+You can define functions **in dogPack** that can call the following three functions from 'uniset': 
 * uniset::uniset_test(get("uev"))
 * uniset::uniset_updateSettings(get("uev))
 * uniset::uniset_autoUpS(get("uev"))  
@@ -81,7 +81,7 @@ color <- .doe$stn$favouriteColor # does not work yet
 In this example we obtain the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environmen name, object name) can of course be customized when using the functions *uniset_getFiles* or *uniset_copyFilesToPackage*.  
 
 ### The real world test
-Open the RProject project file in the folder 'dogPack', build and install the package, and then call:
+Open the RProject project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
 ```
 library(dogPack)
 dogPackTest() # should give a nice printout
@@ -89,7 +89,6 @@ dogPack_updateSettings()
 ```
 You might have to restart R now for the changes in the environment variable in your .Renviron file to become effective.  
 Now call again:
-
 ```
 dogPack_updateSettings()
 ```
@@ -112,4 +111,16 @@ dogPack_autoUpS()
 color <- .doe$stn$favouriteColor
 color # should have the new value
 ```
+Of course it is also possible to set values of the 'stn' object via
+```
+.doe$stn$favouriteColor <- "lightyellow"
+```
+Be aware that every call to a settings update function is re-instating the values as written in the 'dogPack_settings.R' file:
+```
+color <- .doe$stn$favouriteColor
+color # should be "lightyellow"
+dogPack_autoUpS()
+color <- .doe$stn$favouriteColor
+color # should be the value you assigned before
+
 Enjoy !
