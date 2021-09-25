@@ -576,7 +576,7 @@ copyFreshTemplate <- function(pathToPack, folderLocal, fileName, tmpl) {
 	}
 } # EOF
 
-checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL, onTest=FALSE) {
+checkFileVersionPossiblyModify_old <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL, onTest=FALSE) {
 	pv_suffixForTemplates <- tmpl
 	#
 	loc <- pathToLocal <- paste0(folderLocal, "/", nameLocal)
@@ -670,9 +670,190 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 	}
 	stop(paste0("Sorry, there is an unexpected error in file check (", nameLocal, ")")) # theoretically this should never happen...
 } # EOF
+####################################################################
+# up from there old
 
+getStnCenter <- function(pac, taPaObj) {
+		fconPack <- file(pac, open="r")
+		ftPack <- readLines(fconPack)   # read in the pac file
+		close(fconPack)
+		indPm <- which(startsWith(trimws(ftPack), taPaObj)) # on which line number is the "stn" object
+		indBracket <- which(startsWith(trimws(ftPack), ")"))
+		return(ftPack[indPm:indBracket])
+} # EOF
+
+getKeysOnlyFromText <- function(ftXX, splitChar, taPaObj) {
+	ftXXr <- unlist(lapply(strsplit(trimws(ftXX), splitChar), function(x) trimws(x[1])))
+	ftXXr[is.na(ftXXr)] <- "" # replace NAs with empty character. NAs were those that did not have a key = value pair. (--> an "=")
+	ftXXr[1] <- taPaObj
+	return(ftXXr)
+} # EOF
+
+getMissingKVPs <- function(ftPack, ftPackR, missingKeys) {
+	out <- character(length(missingKeys))
+	for (i in 1: length(missingKeys)) {
+		out[i] <- ftPack[which(ftPackR == missingKeys[i])]
+	} # end for i
+	return(out)
+} # EOF
+
+getTxtsBetweenLocal <- function(ftLocal, indLocHook, indLocNext) {
+#	txtBetweenLocal: tbl
+#	txtBetweenLocalUpper: tbl_U
+#	txtBetweenLocalLower: tbl_L
+	#
+	if (indLocHook+1 == indLocNext) { # so there is no between text
+		return(list(tbl=NULL, tbl_U=NULL, tbl_L=NULL))
+	} # end if
+	#
+	tbl <- ftLocal[(indLocHook+1):(indLocNext-1)]
+	if (all(tbl == "")) {
+		return(list(tbl=tbl, tbl_U=tbl, tbl_L=NULL)) # classic case for new block
+	} # end if
+	if (all(tbl != "")) {
+		return(list(tbl=tbl, tbl_U=NULL, tbl_L=tbl)) # can be either or (top or bottom, no way to know)
+	} # end if
+	# by now tbl has to be longer than 1
+	indFirstSpace <- which(tbl == "")[1]
+	if (indFirstSpace == 1) {
+		return(list(tbl=tbl, tbl_U=NULL, tbl_L=tbl))
+	} # end if
+	#
+	tbl_U <- tbl[1:(indFirstSpace-1)]
+	tbl_L <- tbl[indFirstSpace: length(tbl)]
+	return(list(tbl=tbl, tbl_U=tbl_U, tbl_L=tbl_L))
+} # EOF
+
+getTextBetweenPac <- function(pacNames, singleMissingKey, ftPackR, ftPack, indKey) {
+	pacHookAbove <- pacNames[which(pacNames == singleMissingKey)-1]	
+	indPacHook <- which(ftPackR == pacHookAbove)
+	keyIndFT <- which(ftPackR == singleMissingKey)
+	if (indPacHook == (keyIndFT-1)) { # so there is no space between the two keys
+		return(NULL)
+	} # end if
+	#
+	txtBetweenPac <- ftPack[(indPacHook+1):(indKey-1)]
+	# cut away everything above that is above an empty line	
+	txtT <- trimws(txtBetweenPac)
+	if (all(txtT == "")) {
+		return(NULL)
+	} # end if
+	aa <- max(which(txtT == "")) 	# get the index of the last empty line
+	return(txtBetweenPac[(aa+1):(length(txtBetweenPac))])		
+} # EOF
+
+checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL, onTest=FALSE){
+	pv_suffixForTemplates <- tmpl
+	taPaObj <- pm
+	splitChar <- "="
+	txtBetweenPack <- NULL # so that it can be commented out below
+	#
+	loc <- pathToLocal <- paste0(folderLocal, "/", nameLocal)
+	pac <- pathToPack
+	if (is.null(pm)) {
+		pmu <- ""
+	} else {
+		pmu <- paste0("$", taPaObj)
+	}
+	lenv <- new.env()
+	sys.source(pathToLocal, envir=lenv)
+	txt <- paste0("sort(names(lenv", pmu, "))")
+	locNames <- eval(parse(text=txt))
+	penv <- new.env()
+	sys.source(pathToPack, envir=penv)
+	txt <- paste0("sort(names(penv", pmu, "))")
+	pacNames <- eval(parse(text=txt))
+	if (identical(locNames, pacNames)) {
+		return(TRUE)
+	} # end if identical
+
+	# we only continue, if the locNames and pacNames are NOT identical
+
+	######## first we will ADD any possible keys
+	# get the name of the keys that are missing in local / added in pathToPack
+	txt <- paste0("names(lenv", pmu, ")") # NOT sorted
+	locNames <- c(taPaObj, eval(parse(text=txt))) # add taPaObj as first in case of a first key is introduced. Need a hook then.
+	txt <- paste0("names(penv", pmu, ")") # NOT sorted
+	pacNames <- c(taPaObj, eval(parse(text=txt)))
+	missingKeys <- pacNames[which(!pacNames %in% locNames)]
+	#
+	if (length(missingKeys != 0)) { # so we do have to add something
+		#get parts before and after the list (TaPaPbj)
+		fconPack <- file(pathToPack, open="r")
+		ftPack <- readLines(fconPack)   # read in the pac file
+		close(fconPack)
+		indPm <- which(startsWith(trimws(ftPack), taPaObj)) # on which line number is the "stn" object
+		indBracket <- which(startsWith(trimws(ftPack), ")"))
+		txtAbove <- ftPack[1:(indPm-1)]
+		txtBelow <- ftPack[(indBracket+1):length(ftPack)]
+		#
+		ftLocal <- getStnCenter(pathToLocal, taPaObj)
+		ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj)
+		ftPack <- getStnCenter(pathToPack, taPaObj)
+		ftPackR <- getKeysOnlyFromText(ftPack, splitChar, taPaObj)
+		missingKVPs <- getMissingKVPs(ftPack, ftPackR, missingKeys) # all the missing key-values pairs in one object
+		for (i in 1: length(missingKeys)) {
+			indKey <- which(ftPackR == missingKeys[i])  # the pac index of a key missing in loc
+			if (length(indKey) > 1) {stop("Sorry, it seems that a key name appears twice.", call.=FALSE)}
+			newKVP <- missingKVPs[i]
+			
+			# now look up for the next hook
+			pacHook <- pacNames[which(pacNames == missingKeys[i])-1]
+			locHookKeyInd <- which(locNames == pacHook)
+			locHook <- locNames[locHookKeyInd] # the name of the key in loc one higher than the missing one
+			
+			# get the comments above the pacHook (if there are any)
+			txtBetweenPack <- getTextBetweenPac(pacNames, missingKeys[i],ftPackR, ftPack, indKey)
+				
+			# get all lines between hook and new key
+			indLocHook <- which(ftLocalR == locHook) # next higher hook in local file !!
+			locNext <- locNames[which(locNames == locHook)+1] # the name of the next key present in the local file
+			indLocNext <- which(ftLocalR == locNext)
+			aa <- getTxtsBetweenLocal(ftLocal, indLocHook, indLocNext) # here it is decided where in the between text the new KVP is put
+				txtBetweenLocal <- aa$tbl
+				txtBetweenLocalUpper <- aa$tbl_U
+				txtBetweenLocalLower <- aa$tbl_L
+			txtUpper <- ftLocal[(1):(indLocHook)] # !!!!! changes this if pacHook == taPaObj.
+			txtLower <- ftLocal[(indLocNext):length(ftLocal)]
+			#
+			# put together the text, add to locNames etc. as well.
+			ftLocal <- c(txtUpper, txtBetweenLocalUpper, txtBetweenPack, newKVP, txtBetweenLocalLower, txtLower)
+			ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj)
+			locNames <- c(locNames[1:locHookKeyInd], missingKeys[i], locNames[(locHookKeyInd+1):length(locNames)])
+	##########
+	#		print(txtUpper);
+	#		print(locHook)
+	#		print(txtBetweenLocalUpper);
+	#		print(txtBetweenPack); 
+	#		print(newKVP);
+	#		print(txtBetweenLocalLower);
+	#		print(locNext);
+	#		print(txtLower)
+	#		#
+	#		print(ftLocal)
+	#		print("----------------"); print("--------------")
+  	#		wait()
+	###########
+		} # end for i
+	} # end if length(missingKeys) != 0 # until here, things were added. OR not.
+	##
+	
+	# now write into local settings file !! move down to after deleting !!
+	fconLocal <- file(loc, open="w")
+	writeLines(c(txtAbove, ftLocal, txtBelow), fconLocal) # write the new file to settings.r in pathSH
+	close(fconLocal)
+
+	#### now go delete things
+	
+	####  have some comments on what was added and what was deleted
+	
+	
+} # EOF
+
+# down from here new
+####################################################################
 checkCreateSHfolder <- function(systemHome, fn_taPaSH) {
-	if (!dir.exists(paste0(systemHome, "/", fn_taPaSH))) { 
+	if (!dir.exists(paste0(systemHome, "/", fn_taPaSH))) {
 		dirCreaOk <- dir.create(paste0(systemHome, "/", fn_taPaSH), showWarnings=FALSE)
 		if (!dirCreaOk) {
 			msg <- paste0("Sorry, the required settings-home directory `", fn_taPaSH, "` could not be created in `", systemHome, "`.")
@@ -710,7 +891,7 @@ ifNotRenvExists <- function(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg,
 		message(creMsg)
 		return(FALSE)
 	} # end else (where we could create and fill the .Renviron file and create the settings home folder
-} # EOF	
+} # EOF
 
 taPaSH_System_missing <- function(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo) {
 	# so it is not existing in the system, and we have to check if it exists in the .Renviron file
@@ -753,14 +934,14 @@ taPaSH_System_OK_noDir <- function(systemHome_R, taPaSH, taPaSH_system, restartM
 #	print(fileValue)
 	if (fileValue != taPaSH_system) { # so the content of taPaSH is different in the system and in the file, we have to restart R
 		message(restartMsg)
-		return(FALSE) 
+		return(FALSE)
 	} # end if
 	msg <- paste0("Sorry, the path `", taPaSH_system, "` specified in the `", taPaSH,"` variable is not pointing to a valid directory.\nPlease change the value of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`), or create the appropriate file structure.")
 	message(msg)
 	return(FALSE)
-} # EOF	
+} # EOF
 
-pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName) {					
+pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName) {
 	# please simply copy the settings
 	ok <- file.copy(taPaSettingsPath, taPaSH_system)
 	if (!ok) {
@@ -769,7 +950,7 @@ pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName) 
 	} else { # so we could copy the settings.r file
 		message(paste0("The '", setFiName, "' file has been copied into `", taPaSH_system, "`."))
 		return(TRUE)
-	} # end else		
+	} # end else
 } # EOF
 
 checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL) {
@@ -797,12 +978,12 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 		return(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo)) #############
 	}  else { # so the .Renviron file is existing
 		# check if taPaSH is existing in the system: if yes, check if pointing to a valid directory; if no check if it is existing on the .Renviron file
-		if (!onTest) {	
+		if (!onTest) {
 			pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
-			taPaSH_system <- eval(parse(text=pat))  # returns `""` if not existing in Sys.getenv() 
+			taPaSH_system <- eval(parse(text=pat))  # returns `""` if not existing in Sys.getenv()
 		} # end if !onTest
 		if (taPaSH_system == "") {
-			return(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo))	#############		
+			return(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo))	#############
 		} else { # (taPaSH_system != "") --> so taPaSH IS existing in the system
 			if (!dir.exists(taPaSH_system)) {  # check if pointing to a valid folder
 				return(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system, restartMsg))
