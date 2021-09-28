@@ -262,6 +262,7 @@ test_that("checkFileVersionPossiblyModify - 4, 5, 6, 7", {
 ######################################
 aaa <- getUnisEnvirVariables(uev)
 localSettingsPath <- paste0(taPaSH_system, "/", setFiName)
+cleanUp()
 test_that("checkSettings", {
     expect_true(checkSettings(aaa, onTest=TRUE, taPaSH_system, taPaSettingsPath, localSettingsPath))
 }) # EOT
