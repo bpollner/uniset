@@ -952,7 +952,7 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 	#
 	# first check for existence of the .Renviron file
 	renvExists <- file.exists(fullRenvPath)
-	return(TRUE)
+# 	return(TRUE) # ok up to here
 	if (!renvExists) {
 		return(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo)) #############
 	}  else { # so the .Renviron file is existing
@@ -976,6 +976,7 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 				if (!file.exists(localSettingsPath)) {
 					return(pleaseCopyFreshSettings(taPaSettingsPath, taPaSH_system, setFiName))
 				} else { # so the settings.r file does exist  - we can, finally, go to checking the content of the settings.r file
+		return(TRUE)
 					return(checkFileVersionPossiblyModify(pathToPack=taPaSettingsPath, folderLocal=taPaSH_system, nameLocal=setFiName, pm=taPaObj, taPaName, tmpl=tmplName))  # returns TRUE or FALSE
 				} # end else
 			} # end else !dir.exists
