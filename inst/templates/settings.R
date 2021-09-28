@@ -20,34 +20,34 @@ XXX_obj <- list(
 	
 		
 	## block 1 (describe what this collection of variables is about)
-	block1 = "foo",							## add a comment to describe what variables are about
-	block1_2 = TRUE,	
-	willBeDeleted1 = 5,							## you can specify any type of variable
-	block1_nameThemWhateverYouWant = "Henry", 
+	var1 = "foo",			## add a comment to describe what variables are about
+	var2 = TRUE,			## comments on each key make it easier for the user to use the settings file
+	var3 = 5,				## you can specify any type of variable
+	name = "Henry", 
 	anyName = "anyValue", 
 
 
 
 	## block 2 (describe what this collection of variables is about)
-	block2 = "bar",	
-	block2_2 = 12345,	
-	comboDelete1 = "theo",
-	block2_oneMoreVariable = FALSE,
+	key1 = "bar",	
+	key2 = 12345,	
+	key3 = "theo",
+	xxx = FALSE,
 
 
 
 	## block 3 (describe what this collection of variables is about)
-	block3_giveMeaningfulNames = TRUE,  
+	abc5 = TRUE,  
 	favouriteColor = "blue", 
-	willBeDeleted2 = "darkred", 
-	comboDelete2 = TRUE, 
-	comboDelete3 = FALSE, 
+	leastFavColor = "darkred", 
+	abc7 = TRUE, 
+	abc8 = FALSE, 
 
 
 
-	block4 = "you get the picture",	
-	blabla = TRUE, 
-	andSoOn = 999999,
+	name_a = "you get the picture",	
+	name_b = TRUE, 
+	name_c = 999999,
 	petterson = "old",
 	findus = "cat",
 	mouse = "grey", 
@@ -55,7 +55,7 @@ XXX_obj <- list(
 
 
 	obey = TRUE,
-	willBeDeleted3 = FALSE,
+	consume = TRUE,
 	strength = 5000,
 	
 	

@@ -640,7 +640,9 @@ tellKeyAddDelete <- function(keys, folderLocal, nameLocal, what="add") {
 	} else {
 		plS <- ""; plC <- " was"
 	}
-	cat(paste0("The following ", length(keys), " key", plS, plC, whatTxt, " the settings-file '", nameLocal, "' in \n'", folderLocal, "':\n\t", paste0(keys, collapse=", "), "\n\n"))
+#	cat(paste0("The following ", length(keys), " key", plS, plC, whatTxt, " the settings-file '", nameLocal, "' in \n'", folderLocal, "':\n\t", paste0(keys, collapse=", "), "\n\n"))
+	cat(paste0("The following ", length(keys), " key", plS, plC, whatTxt, " the settings-file '", nameLocal, "' in \n'", folderLocal, "':\n\t"))
+	message(paste0(keys, collapse=", "), "\n")
 } # EOF
 
 addMissingKeys <- function(ftLocal, splitChar, taPaObj, pathToPack, folderLocal, nameLocal, pacNames, locNames, maxS) {
@@ -913,14 +915,18 @@ pleaaseCopyAsTemplate <- function(taPaSettingsPath, taPaSH_system, setFiName) {
 		} # end else
 } # EOF
 
-pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName) {
+pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName, onTest=FALSE) {
 	# please simply copy the settings
 	ok <- file.copy(taPaSettingsPath, taPaSH_system)
 	if (!ok) {
 		message(paste0("Sorry, for unknown reasons it was not possible to copy the `", setFiName, "` file from `", taPaSettingsPath, "` to `", taPaSH_system, "`."))
 		return(FALSE)
 	} else { # so we could copy the settings.r file
-		message(paste0("The '", setFiName, "' file has been copied into `", taPaSH_system, "`."))
+		msg <- paste0("The '", setFiName, "' file has been copied into `", taPaSH_system, "`.")
+		if (onTest) {
+			msg <- "clean"
+		} # end if
+		message(msg)
 		return(TRUE)
 	} # end else
 } # EOF
