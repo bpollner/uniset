@@ -161,6 +161,10 @@ test_that("taPaSH_System_OK_noDir", {
     expect_message(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system=aa, restartMsg), restartMsg)
 }) # EOT
 
+
+# pleaaseCopyAsTemplate
+
+
 setFiName <- "dogPack_settings.R"
 taPaSettingsPath <- paste0(td, "/dopaem/inst/", setFiName)
 taPaSH_system <- paste0(td, "/", tempSysHome, "/", fn_taPaSH)

@@ -11,9 +11,14 @@
 # use the code '.doe$stn$KEY' (with 'KEY' being any of the key=value pairs defined below) 
 # in the target package to access the values of the object 'stn'.
 
+# this is a special file used / especially "malformed" for testing only.
+# not to be used for production
+
 stn <- list(
 	# tag = value, # with a comma !!
-		
+
+
+	## extra line above general behavior
 	## general behavior
 	gen_autoUpdateSettings = TRUE, 			## Do not delete this variable (but of course you can change its value)
 	
@@ -24,14 +29,16 @@ stn <- list(
 	block1_2 = TRUE,	
 	willBeDeleted1 = 5,							## you can specify any type of variable
 	block1_nameThemWhateverYouWant = "Henry", 
-	anyName = "anyValue", 
+	anyName = "XXX_1", 
+	# in between line 1
+	# in betwen line 2
 
 
 
 	## block 2 (describe what this collection of variables is about)
 	block2 = "bar",	
-	block2_2 = 12345,
-	comboAdd1 = "herta",	
+	block2_2 = "XXX_2",	
+	comboDelete1 = "theo",
 	block2_oneMoreVariable = FALSE,
 
 
@@ -40,6 +47,8 @@ stn <- list(
 	block3_giveMeaningfulNames = TRUE,  
 	favouriteColor = "blue", 
 	willBeDeleted2 = "darkred", 
+	comboDelete2 = TRUE, 
+	comboDelete3 = "XXX_3", 
 
 
 
@@ -54,10 +63,8 @@ stn <- list(
 
 	obey = TRUE,
 	willBeDeleted3 = FALSE,
-	comboAdd2 = TRUE,
-	comboAdd3 = FALSE,
 	strength = 5000,
-		
+	
 	
 	
 	######

@@ -524,7 +524,7 @@ getTxtsBetweenLocal <- function(ftLocal, ftLocalR, indLocHook, indLocNext, ftPac
 	indPacNext <- which(ftPackR == ftLocalR[indLocNext])
 	if (indPacNext-1 == indKey) { # there is no space below, the new key is directly above the next
 		return(list(tbl=tbl, tbl_U=tbl, tbl_L=NULL))
-	} # end if	
+	} # end if
 	#######
 	if (all(trimws(tbl) == "")) {
 		return(list(tbl=tbl, tbl_U=tbl, tbl_L=NULL)) # classic case for new block
@@ -539,7 +539,7 @@ getTxtsBetweenLocal <- function(ftLocal, ftLocalR, indLocHook, indLocNext, ftPac
 		return(list(tbl=tbl, tbl_U=rep("", maxS), tbl_L=tbl))
 	} # end if
 	#
-	tbl_U <- tbl[1:(indFirstSpace-1)] 
+	tbl_U <- tbl[1:(indFirstSpace-1)]
 	tbl_L <- tbl[indFirstSpace: length(tbl)]
 	return(list(tbl=tbl, tbl_U=c(tbl_U, rep("", maxS)), tbl_L=tbl_L)) # because we have to be "in the middle" somewhere
 } # EOF
@@ -565,7 +565,7 @@ getTextBetweenPac <- function(pacNames, singleMissingKey, ftPackR, ftPack, indKe
 	out <- txtBetweenPac[(aa+1):(length(txtBetweenPac))]
 	ind <- which(out %in% ftLocal)
 	if (length(ind) != 0) {
-		out <- out[-ind] # make sure that we do not copy anything that is already in the local file		
+		out <- out[-ind] # make sure that we do not copy anything that is already in the local file
 	} # end if
 	if (length(out) == 0) {
 		out <- NULL # just to be sure
@@ -605,7 +605,7 @@ getMaxSpace <- function(ftLocal) {
 	aa <- trimws(ftLocal)
 	rl <- rle(aa=="")
 	out <- max(rl$lengths[rl$values])
-	return(out) 
+	return(out)
 } # EOF
 
 reduceEmptyLines <- function(ftLocal, maxS, maxSD) { # maxSD is after deleting (is the higher one)
@@ -620,7 +620,7 @@ reduceEmptyLines <- function(ftLocal, maxS, maxSD) { # maxSD is after deleting (
 			thisLeng <- rl$lengths[ind]
 			cutAwayLeng <- thisLeng - maxS
 			maxIndTxt <- sum(rl$lengths[1:ind])
-			minIndTxt <- maxIndTxt - cutAwayLeng +1 
+			minIndTxt <- maxIndTxt - cutAwayLeng +1
 			indDelOut <- c(indDelOut, (minIndTxt : maxIndTxt)) # cut down delete to the max empty lines of before deletion
 		} # end for i
 		return(ftLocal[-indDelOut])
@@ -699,7 +699,7 @@ addMissingKeys <- function(ftLocal, splitChar, taPaObj, pathToPack, folderLocal,
 		ftLocal <- reduceEmptyLines(ftLocal, maxS, maxSD)
 		#
 		tellKeyAddDelete(missingKeys, folderLocal, nameLocal, what="add")
-	} ########### end if length(missingKeys) != 0 # until here, things were added. OR not.	
+	} ########### end if length(missingKeys) != 0 # until here, things were added. OR not.
 	return(ftLocal)
 } # EOF
 
@@ -707,11 +707,10 @@ deleteSurplusKeys <- function(folderLocal, nameLocal, ftLocal, splitChar, taPaOb
 	surplusKeys <- locNames[which(!locNames %in% pacNames)]
 	if (length(surplusKeys != 0)) { # so we do have to delete something
 		ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj) # the incoming ftLocal is "stn" only, and was possibly modified above in the additions
-		indUp <- NULL
-		allIndKeys <- which(ftLocalR %in% surplusKeys) # the index of every key to be deleted
 		for (i in 1: length(surplusKeys)) { # we are collecting possible single line comments above a block
-			indKey <- allIndKeys[i]
+			indKey <- which(ftLocalR == surplusKeys[i])
 			aa <- trimws(ftLocal) # so that tabs etc go to ""
+			ikm <- NULL
 			if ( (aa[indKey-1] != "")  & (aa[indKey-2] == "") ) { # that means we have a single line of comment above a key
 				ikm <- indKey-1 # ikm: index key minus
 				if (ftLocalR[ikm] %in% locNames) { # now this above could be a key, check....
@@ -720,12 +719,12 @@ deleteSurplusKeys <- function(folderLocal, nameLocal, ftLocal, splitChar, taPaOb
 				if (ftLocalR[indKey+1] %in% locNames) { # means we have an other key directly below the one to be deleted, so we will *not* delete the one comment line above
 					ikm <- NULL
 				} # end if
-				indUp <- c(indUp, ikm)
 			} # end if
+			indDel <- c(indKey, ikm)
+			ftLocal <- ftLocal[-indDel] # delete here #### ******************
+			ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj)
 		} # end for i going through surplusKeys
-		indKD <- unique(sort(c(allIndKeys, indUp))) # index keys to be deleted indKD
 		#
-		ftLocal <- ftLocal[-indKD] # delete here #### ******************
 		maxSD <- getMaxSpace(ftLocal) # the max space after deleting keys
 		ftLocal <- reduceEmptyLines(ftLocal, maxS, maxSD)
 		#
@@ -733,7 +732,7 @@ deleteSurplusKeys <- function(folderLocal, nameLocal, ftLocal, splitChar, taPaOb
 		ind <- which(locNames %in% surplusKeys)
 		locNames <- locNames[-ind]
 	} # end if (length(surplusKeys != 0))
-	return(list(ftLocal=ftLocal, locNames=locNames))	
+	return(list(ftLocal=ftLocal, locNames=locNames))
 } # EOF
 
 checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL){
@@ -798,6 +797,8 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 		fconLocal <- file(loc, open="w")
 		writeLines(ftLocalBackup, fconLocal) # write the backup file to settings.r in pathSH
 		close(fconLocal)
+		cat(paste0("A template containing the required key-value pairs will be made available.\n"))
+		pleaaseCopyAsTemplate(pathToPack, folderLocal, nameLocal)
 		return(invisible(FALSE))
 	} # end if identical
 	#
@@ -891,6 +892,25 @@ taPaSH_System_OK_noDir <- function(systemHome_R, taPaSH, taPaSH_system, restartM
 	msg <- paste0("Sorry, the path `", taPaSH_system, "` specified in the `", taPaSH,"` variable is not pointing to a valid directory.\nPlease change the value of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`), or create the appropriate file structure.")
 	message(msg)
 	return(FALSE)
+} # EOF
+
+pleaaseCopyAsTemplate <- function(taPaSettingsPath, taPaSH_system, setFiName) {
+		tmpl <- "_TEMPLATE.R"
+		#
+		td <- tempdir()
+		ok <- file.copy(taPaSettingsPath, td, overwrite = TRUE)
+		nfn <- paste0(td, "/", setFiName)
+		nfn_T <- paste0(nfn, tmpl)
+		ok <- file.rename(nfn, nfn_T)
+		ok <- file.copy(nfn_T, taPaSH_system, overwrite = TRUE)
+		unlink(nfn_T)
+		if (!ok) {
+			message("Sorry, for unknown reasons the required template file could not be copied.\n")
+			return(invisible(FALSE))
+		} else {
+		message(paste0("The '", paste0(setFiName, tmpl), "' file has been copied into `", taPaSH_system, "`."))
+		return(invisible(TRUE))
+		} # end else
 } # EOF
 
 pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName) {
