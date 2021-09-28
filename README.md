@@ -15,7 +15,7 @@ The most imminent advantage of the 'uniset' settings-file system over using simp
 ### Two ways to generate the required files
 * **Export and Move Files**  Use *uniset_getFiles*, then move the 'xxx_settings.r' file ('xxx' for the name of your package) into the 'inst' folder (create one if not already done) of the target package. Move the file 'zzz.r" and the file 'uniset_globals' to the 'R' folder of the target package.  
 In case that the '.onLoad' function already is defined, add the six lines of code from the file 'zzz.R' to your existing '.onLoad' function. 
-* **Write files directly to target package**  Alternatively, use *uniset_copyFilesToPackage* to copy the required files directly into the target package.  
+* **Write files directly to target package (recommended)**  Alternatively, use *uniset_copyFilesToPackage* to copy the required files directly into the target package.  
 
 ### Accessing values from within target package
 Every variable defined in the xxx_settings.r file is accessible in the code of the target package. See the created 'xxx_settings.r' file for an example.  
