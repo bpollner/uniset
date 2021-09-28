@@ -28,14 +28,6 @@ stn <- list(
 
 
 
-	## block 2 (describe what this collection of variables is about)
-	block2 = "bar",	
-	block2_2 = 12345,	
-	comboDelete1 = "theo",
-	block2_oneMoreVariable = FALSE,
-
-
-
 	## block 3 (describe what this collection of variables is about)
 	block3_giveMeaningfulNames = TRUE,  
 	favouriteColor = "blue", 
@@ -45,23 +37,6 @@ stn <- list(
 
 
 
-	block4 = "you get the picture",	
-	blabla = TRUE, 
-	andSoOn = 999999,
-	petterson = "old",
-	findus = "cat",
-	mouse = "grey", 
-
-
-	# newBlock added yea
-	newBlock1 = TRUE,
-	newBlock2 = FALSE,
-	newBlock3 = "charly",
-	# nb1
-	# nb2
-
-
-	below_newBlock4 = "blond", 
 	obey = TRUE,
 	willBeDeleted3 = FALSE,
 	strength = 5000,

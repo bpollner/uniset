@@ -77,14 +77,6 @@ XXX_obj <- list(
 
 # Do not change the name of the object holding the list - in this case, 'XXX_obj'
 
-# If you add a new variable within a block *below the first* variable of the block, 
-# this variable gets simply inserted into the settings file of the user. (Only the first variable
-# of a block acts as a hook.)
-# There can be any number of empty lines between blocks. 
-
-
-# If you add a new block, or you add a variable *above the first* variable of the block,
-# the user´s settings-file can not be updated any more, and the user has to manually insert
-# the changes into the settings-file.
-# Therefore it is recommended to pre-generate some blocks - depending on the complexity of your package,
-#' so that the user of your package will not have to manually insert the new variables into the settings file.
+# empty lines and comments can be introduced or deleted at the users wish
+# it is recommended to place comments, explanations etc. to a specific key directly into the line holding the key.
+# comments have to be preceeded by a '#' 

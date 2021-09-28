@@ -77,15 +77,3 @@ stn <- list(
 # The keys have to be unique (obviously). 
 
 # Do not change the name of the object holding the list - in this case, 'stn'
-
-# If you add a new variable within a block *below the first* variable of the block, 
-# this variable gets simply inserted into the settings file of the user. (Only the first variable
-# of a block acts as a hook.)
-# There can be any number of empty lines between blocks. 
-
-
-# If you add a new block, or you add a variable *above the first* variable of the block,
-# the user´s settings-file can not be updated any more, and the user has to manually insert
-# the changes into the settings-file.
-# Therefore it is recommended to pre-generate some blocks - depending on the complexity of your package,
-#' so that the user of your package will not have to manually insert the new variables into the settings file.

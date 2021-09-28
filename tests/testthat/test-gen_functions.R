@@ -181,105 +181,18 @@ folderLocal <- paste0(td, "/", tempSysHome, "/", fn_taPaSH) # same as taPaSH_sys
 nameLocal <- setFiName
 tmpl <- "_TEMPLATE"
 pt1 <-  paste0(td, "/dopaem/R/", "s_mod_plus.R"); msg1 <- "varAdd1, varAdd2, varAdd3"
-pt11 <-  paste0(td, "/dopaem/R/", "s_mod_plus_my.R"); msg11 <- "myAdd1, myAdd2, myAdd3, myAdd4"
+pt10 <-  paste0(td, "/dopaem/R/", "s_mod_plus2.R"); msg1 <- "varAdd0, varAdd1, varAdd2, varAdd3"
+pt11 <-  paste0(td, "/dopaem/R/", "s_mod_plus_my.R"); msg11 <- "myAdd01, myAdd02, myAdd1, myAdd2, myAdd3, myAdd4"
 pt2 <-  paste0(td, "/dopaem/R/", "s_mod_minus.R"); msg2 <- "willBeDeleted1, willBeDeleted2, willBeDeleted3"
 pt3 <-  paste0(td, "/dopaem/R/", "s_mod_plus_minus.R"); msg3 <- "comboDelete1, comboDelete2"
 pt4 <-  paste0(td, "/dopaem/R/", "s_block_new.R"); msg4 <- "newBlock1, newBlock2, newBlock3"
-pt5 <-  paste0(td, "/dopaem/R/", "s_block_delete.R"); msg5 <- "block2, block2_2, block2_oneMoreVariable, comboDelete1"
+pt5 <-  paste0(td, "/dopaem/R/", "s_block_delete.R"); msg5 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable"
+pt6 <-  paste0(td, "/dopaem/R/", "s_block_delete2.R"); msg6 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable, block3_giveMeaningfulNames, favouriteColor, willBeDeleted2, comboDelete2, comboDelete3"
+pt7 <-  paste0(td, "/dopaem/R/", "s_block_delete3.R"); msg7 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable, block4, blabla, andSoOn, petterson, findus, mouse"
+
 
 cleanUp <- function(){
     unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back to original
 } # EOF
 cleanUp()
-
-test_that("checkFileVersionPossiblyModify", {
-    expect_true(checkFileVersionPossiblyModify(pathToPack, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # should be the same
-}) # EOT
-cat("\n\nThe three added vars should NOT be here:")
- nenv <- new.env(); sys.source(paste0(folderLocal, "/", setFiName), envir=nenv); str(nenv$stn); nenv$stn$block2_oneMoreVariable
-
-test_that("checkFileVersionPossiblyModify", {
-    expect_message(checkFileVersionPossiblyModify(pt1, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # add three vars
-}) # EOT
-cat("\n\nThe three added vars SHOULD be here")
-nenv <- new.env(); sys.source(paste0(folderLocal, "/", setFiName), envir=nenv); str(nenv$stn); nenv$stn$block2_oneMoreVariable
-
-test_that("checkFileVersionPossiblyModify", {
-    expect_true(checkFileVersionPossiblyModify(pt1, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # again no difference
-}) # EOT
-cat("\n\nThe three added vars SHOULD STILL be here")
-nenv <- new.env(); sys.source(paste0(folderLocal, "/", setFiName), envir=nenv); str(nenv$stn); nenv$stn$block2_oneMoreVariable
-
-    cleanUp()
-
-    print("------------------------ 2 ---------------------------------")
-    print("------------------------------------------------------------")
-    print("------------------------------------------------------------")
-    print("------------------------------------------------------------")
-    print("------------------------------------------------------------")
-
-
-test_that("checkFileVersionPossiblyModify", {
- #  skip("original")
-     expect_true(checkFileVersionPossiblyModify(pathToPack, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) ####
-    #1
-    expect_message(checkFileVersionPossiblyModify(pt1, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE), msg1) # change it
-    expect_true(checkFileVersionPossiblyModify(pt1, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
-         unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-    #2
-    expect_message(checkFileVersionPossiblyModify(pt2, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE), msg2) # change it
-    expect_true(checkFileVersionPossiblyModify(pt2, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
-         unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-    #3
-    expect_message(checkFileVersionPossiblyModify(pt3, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE), msg3) # change it
-    expect_true(checkFileVersionPossiblyModify(pt3, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
-         unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-    #4
-    expect_message(checkFileVersionPossiblyModify(pt4, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE), msg4) # change it
-    expect_false(checkFileVersionPossiblyModify(pt4, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # difference
-         unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-    #5
-    expect_message(checkFileVersionPossiblyModify(pt5, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE), msg5) # change it
-    expect_true(checkFileVersionPossiblyModify(pt5, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
-         unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-}) # EOT
-
-test_that("checkFileVersionPossiblyModify", {
-   skip("not the solution")
-    expect_true(checkFileVersionPossiblyModify(pathToPack, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) ####
-    #1
-    expect_message(checkFileVersionPossiblyModify(pt1, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # change it
-    expect_true(checkFileVersionPossiblyModify(pt1, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
-         unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-    #2
-    expect_message(checkFileVersionPossiblyModify(pt2, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # change it
-    expect_true(checkFileVersionPossiblyModify(pt2, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
-         unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-    #3
-    expect_message(checkFileVersionPossiblyModify(pt3, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # change it
-    expect_true(checkFileVersionPossiblyModify(pt3, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
-        unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-    #4
-    expect_message(checkFileVersionPossiblyModify(pt4, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # change it
-    expect_false(checkFileVersionPossiblyModify(pt4, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # difference
-        unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-    #5
-    expect_message(checkFileVersionPossiblyModify(pt5, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # change it
-    expect_true(checkFileVersionPossiblyModify(pt5, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName, onTest=TRUE)) # no difference
-        unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal) # go back
-}) # EOT
-
-######################################
-aaa <- getUnisEnvirVariables(uev)
-localSettingsPath <- paste0(taPaSH_system, "/", setFiName)
-test_that("checkSettings", {
-    expect_true(checkSettings(aaa, onTest=TRUE, taPaSH_system, taPaSettingsPath, localSettingsPath))
-}) # EOT
-
-# now clean up
-unlink(paste0(td, "/dopaem"), TRUE)
-unlink(paste0(td, "/", tempSysHome), TRUE)
-unlink(paste0(td, "/", "UnisetFiles_R-pkg_'dogPack'"), TRUE)
-
-
 

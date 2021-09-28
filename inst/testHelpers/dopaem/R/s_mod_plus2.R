@@ -25,26 +25,34 @@ stn <- list(
 	willBeDeleted1 = 5,							## you can specify any type of variable
 	block1_nameThemWhateverYouWant = "Henry", 
 	anyName = "anyValue", 
+	# problem with varAdd0
 
 
 
 	## block 2 (describe what this collection of variables is about)
+	varAdd_0 = TRUE, 
 	block2 = "bar",	
+	varAdd1 = 23,
+	varAdd2 = 3993,
 	block2_2 = 12345,	
 	comboDelete1 = "theo",
 	block2_oneMoreVariable = FALSE,
+	varAdd3 = 55, 
 
 
 
 	## block 3 (describe what this collection of variables is about)
 	block3_giveMeaningfulNames = TRUE,  
+	varAdd4 = TRUE,
 	favouriteColor = "blue", 
 	willBeDeleted2 = "darkred", 
 	comboDelete2 = TRUE, 
 	comboDelete3 = FALSE, 
+	varAdd5 = "very green", 
 
 
 
+	varAdd6 = 234234, 
 	block4 = "you get the picture",	
 	blabla = TRUE, 
 	andSoOn = 999999,
@@ -53,15 +61,7 @@ stn <- list(
 	mouse = "grey", 
 
 
-	# newBlock added yea
-	newBlock1 = TRUE,
-	newBlock2 = FALSE,
-	newBlock3 = "charly",
-	# nb1
-	# nb2
 
-
-	below_newBlock4 = "blond", 
 	obey = TRUE,
 	willBeDeleted3 = FALSE,
 	strength = 5000,

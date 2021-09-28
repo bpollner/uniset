@@ -37,6 +37,7 @@ stn <- list(
 
 
 	## block 2 (describe what this collection of variables is about)
+	myAddTNH = "haha", 
 	block2 = "bar",	
 	block2_2 = 12345,	
 	myAdd2 = 10, 

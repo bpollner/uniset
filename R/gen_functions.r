@@ -452,226 +452,33 @@ uniset_test <- function(unisetEnv) {
 	return(invisible(out))
 } # EOF
 ####################################################################
-####################################################################
-getParamName <- function(rowString) {
-	sep <- "="
-	if (!grepl(sep, rowString)) {
-		if (grepl("<-", rowString)) {
-			sep <- "<-"
-		} else { # so none of both is present!
-		#	stop("Sorry, a problem in updating one of the input files occurred.", call.=FALSE)
-			return(NULL)
-		}
-	}
-	if (grepl("=", rowString) & grepl("<-", rowString)) {
-	#	stop("There are '=' and '<-' at the same time in one row in one of the input-files.\nThis can cause problems, sorry.", call.=FALSE)
-		return(NULL)
-	}
-	check <- grep(sep, rowString)
-	if (length(check) == 0) {
-	#	message("Warning no good name (no equal)")
-		return(NULL)
-	}
-	a <- strsplit(rowString, sep)[[1]][1] # get everything before the separator sep
-	b <- strsplit(a, "\t")[[1]] # split by eventual tabs
-	b <- b[length(b)] # get the last element
-	return(trimws(b))
-} # EOF
-
-getMissingNameIndex <- function(char, txt) {
-	ind <- grep(char, txt)
-	if (length(ind) == 0) {return(NULL)}
-	if (length(ind) == 1) {return(ind)}
-	for (i in 1:length(ind)) {
-		paramName <- getParamName(txt[ind[i]])
-		if (paramName == char) {
-			return(ind[i])
-		} else {
-			stop("Uiui problem here...")
-		}
-	} # end for i
-} # EOF
-
-lookForParamNameInLocalFile <- function(paramName, ftLoc) {
-	if (is.null(paramName)) {
-		return(NULL)
-	}
-	ind <- getMissingNameIndex(paramName, ftLoc)
-	if (length(ind) == 0) {
-		return(NULL)
-	} else {
-		return(ind)
-	}
-} # EOF
-
-modifyIndexFrame <- function(indF) {
-	lookBack <- NULL # for satisfying the check
-	indF <- indF[order(indF[,1]),] # sort the data frame
-	rownames(indF) <- 1:nrow(indF)
-	vals <- rle(indF[,3])$lengths # count how many values in each "group" there are in the third column
-	if (length(vals) > 1) {
-		corec <- c(0, (vals[1:(length(vals)-1)])) # start with a zero and cut away the lates value
-	} else {
-		corec <- 0 # because in only one group / single element the correction is only zero
-	}
-	corec <- cumsum(corec)
-	corecVec <- rep(corec, vals)
-	out <- cbind(indF, data.frame(correction=corecVec)) # the correction is due to the frameshift that gets introduced whenever a previous insertion is being made
-	minCheck <- plyr::ddply(out, "nextLocalInd", plyr::summarise, minLook=min(lookBack)) # get the minimum value of looking back in each group of next local indices
-	if (max(minCheck$minLook) > 1) { # that means we have a parameter that is starting a new block!
-		return(NULL)
-	}
-	return(out)
-} # EOF
-
-expandFillInLocalTxt <- function(ftPack, ftLocal, missNames) {
-	if (!is.null(missNames)) {
-		mi <- NULL # the missIndex, indexing the whole row
-		for (i in 1: length(missNames)) {
-			ind <- getMissingNameIndex(missNames[i], ftPack) # the index of the missing item in the package-txt
-			mi <- c(mi, ind) # collect them all
-		} # end for i
-		# get the anchor, that is the first lower indexed existing name in ftLocal and pair it with ..
-		indF <- as.data.frame(matrix(NA, ncol=3, nrow=length(mi))) # for collecting the results
-		colnames(indF) <- c("MissInd", "lookBack", "nextLocalInd")
-		for (i in 1: length(mi)) {
-			found <- FALSE
-			lookBack <- 1
-			while(!found) {
-				si <- mi[i] - lookBack # si: search index
-				a <- getParamName(ftPack[si])
-				locInd <- lookForParamNameInLocalFile(a, ftLocal)
-				if (is.null(locInd)) {
-					lookBack <- lookBack+1
-				} else {
-					indF[i,] <- c(mi[i], lookBack, locInd)
-					found <- TRUE
-				}
-			} # end while
-		} # end for i
-		indF <- modifyIndexFrame(indF) # sorting and adapting following to previous inserts, i.e. adding the correction vector
-		if (is.null(indF)) { # gets returned NULL if one parameter is at the start of a new block !
-			return(NULL)
-		}
-		newTxt <- rep(TRUE, (length(ftLocal)+length(missNames)))
-		newValInd <- apply(indF[,-1, drop=FALSE], 1, sum) # gives the position in the expanded file where the new values will be placed
-		newTxt[newValInd] <- FALSE
-		newTxt[newTxt==TRUE] <- ftLocal  # fill in the users local text in the expanded vector
-		newTxt[newValInd] <- ftPack[indF[,1]] # get the rows from the package text
-	} else { # so we have nothing to add
-		newTxt <- ftLocal
-	}
-	return(newTxt)
-} # EOF
-
-copyFreshTemplate <- function(pathToPack, folderLocal, fileName, tmpl) {
-	suff <- tmpl
+getCheckForDoubleNames <- function(pathToLocal, pathToPack, pmu) {
 	#
-	toPath <- paste0(folderLocal, "/", fileName, suff, ".R  ")
-	ok <- file.copy(pathToPack, toPath, overwrite=TRUE)
-	if (ok) {
-		cat("A fresh template of the ", fileName, " file has been copied from the package.\n")
-	} else {
-		stop(paste0("Sorry, an error while copying the template for the '", fileName, "' file has occurred."), call.=FALSE)
-	}
-} # EOF
-
-checkFileVersionPossiblyModify_old <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL, onTest=FALSE) {
-	pv_suffixForTemplates <- tmpl
-	#
-	loc <- pathToLocal <- paste0(folderLocal, "/", nameLocal)
-	pac <- pathToPack
-	if (is.null(pm)) {
-		pm <- ""
-	} else {
-		pm <- paste0("$", pm)
-	}
+	checkIt <- function(charVec, what) {
+		aa <- length(charVec)
+		bb <- length(unique(charVec))
+		if (bb < aa) {
+			rl <- rle(sort(charVec)) # but they already come in sorted *
+			ind <- which(rl$lengths > 1)
+			vals <- rl$values[ind]
+			stop(paste0("Sorry, the keys '", paste0(vals, collapse="', '"), "' ", "seem to appear more than once in the ", what, "settings.R file."), call.=FALSE)
+		} # end if
+	} # EOIF
+	##
 	lenv <- new.env()
-	sys.source(loc, envir=lenv)
-	txt <- paste0("sort(names(lenv", pm, "))")
+	sys.source(pathToLocal, envir=lenv)
+	txt <- paste0("sort(names(lenv", pmu, "))") # *
 	locNames <- eval(parse(text=txt))
 	penv <- new.env()
-	sys.source(pac, envir=penv)
-	txt <- paste0("sort(names(penv", pm, "))")
+	sys.source(pathToPack, envir=penv)
+	txt <- paste0("sort(names(penv", pmu, "))") # *
 	pacNames <- eval(parse(text=txt))
-	if (!identical(locNames, pacNames)) {
-		okInd <- which(pacNames %in% locNames)
-		miss <- pacNames[-okInd]
-		delInd <- which(locNames %in% pacNames)
-		del <- locNames[-delInd]
-		if (length(miss) == 0) {miss <- NULL}
-		if (length(del) == 0) {del <- NULL}
-		msgNew <- "The new variables are:"
-		msgDel <- "The following variables have been deleted:"
-		#
-		fconPack <- file(pac, open="r")
-		ftPack <- readLines(fconPack) # the full settings.r text from the package
-		close(fconPack)
-		fconLocal <- file(loc, open="r")
-		ftLocal <- readLines(fconLocal) # the full settings.r text fromt the local file
-		close(fconLocal)
-		## add the missing parameters
-		newTxt <- try(expandFillInLocalTxt(ftPack, ftLocal, missNames=miss), silent=TRUE) # returns the unchanged local text if there is nothing to add
-		if(class(newTxt) == "try-error") {
-			newTxt <- NULL
-		}
-		## now delete the obsolete parameters
-		if (!is.null(del) & (!is.null(newTxt))) {
-			delInd <- NULL
-			for (i in 1: length(del)) {
-				ind <- getMissingNameIndex(del[i], newTxt) # the index of the items to be deleted
-				delInd <- c(delInd, ind) # collect them all
-			} # end for i
-			newTxt <- newTxt[-delInd]
-		}
-		#
-		if (!is.null(newTxt)) { # so we maybe had to add something (what went well), and we maybe also had to delete some parameters
-			fconLocal <- file(loc, open="w")
-			writeLines(newTxt, fconLocal) # write the new file to settings.r in pathSH
-			close(fconLocal)
-			msg <- paste0("Your '", nameLocal, "' file in the folder \n", folderLocal, "\nhas been updated.\n***Everything is ok.***")
-			doCopyMove <- FALSE
-		} else { # so we could NOT modify the local file
-			msg <- paste0("There appears to be a newer version of the '", nameLocal, "' file in the package '", taPaName, "'.")
-			doCopyMove <- TRUE
-		}
-		message(msg) # actually display here a message !!
-		fillLeft <- "   " # to have some space from the left side
-		if ((!is.null(miss)) & is.null(del)) {
-			message(msgNew) ;   message(paste0(fillLeft, paste(miss, collapse=", "))) # "The new variables are:"
-		} else {
-			if (is.null(miss) & (!is.null(del)) ) {
-				message(msgDel); 	message(paste0(fillLeft, paste(del, collapse=", ")))  #"The following variables have been deleted:"
-			} else {
-				message(msgNew) ;   message(paste0(fillLeft, paste(miss, collapse=", ")))
-				message(msgDel); 	message(paste0(fillLeft, paste(del, collapse=", ")))
-			}
-		}
-		if (doCopyMove) {
-			if (!onTest) {
-				message(paste0("Do you want to copy it now into the folder \n'", folderLocal, "'\n as a template ('", nameLocal, pv_suffixForTemplates, "') for modifying the existing '", nameLocal, "' file?\n( y / n )"))
-				a <- readLines(n=1)
-			} else { # so we are running a test
-				a <- "y"
-			} # end else
-			if (a != "y" & a != "Y") {
-				message("Please be aware that the package will not work properly if your '", nameLocal, "' file is not up to date.")
-				return(FALSE)
-			} else {
-				copyFreshTemplate(pathToPack, folderLocal, nameLocal, tmpl)
-				message(paste0("Please update your '", nameLocal, "' file according to the template."))
-				return(FALSE)
-			}
-		} else { ## if (doCopyMove) == FALSE
-			return(TRUE) # so we successfully copied / deleted the parameter(s) and wrote the new file via writeLines; no copying of the file.
-		}
-	} else { 	# so the variable names in the two settings files are identical
-		return(TRUE)
-	}
-	stop(paste0("Sorry, there is an unexpected error in file check (", nameLocal, ")")) # theoretically this should never happen...
+	#
+	checkIt(locNames, "local ")
+	checkIt(pacNames, "package ")
+	#
+	return(list(locNames=locNames, pacNames=pacNames))
 } # EOF
-####################################################################
-# up from there old
 
 getStnCenter <- function(pac, taPaObj) {
 		fconPack <- file(pac, open="r")
@@ -697,35 +504,48 @@ getMissingKVPs <- function(ftPack, ftPackR, missingKeys) {
 	return(out)
 } # EOF
 
-getTxtsBetweenLocal <- function(ftLocal, indLocHook, indLocNext) {
+getTxtsBetweenLocal <- function(ftLocal, ftLocalR, indLocHook, indLocNext, ftPack, ftPackR, indKey, maxS) {
+# 	indKey is in ftPack/R dimension
 #	txtBetweenLocal: tbl
 #	txtBetweenLocalUpper: tbl_U
 #	txtBetweenLocalLower: tbl_L
 	#
 	if (indLocHook+1 == indLocNext) { # so there is no between text
-		return(list(tbl=NULL, tbl_U=NULL, tbl_L=NULL))
+		return(list(tbl=NULL, tbl_U=NULL, tbl_L=NULL)) # direct insertion between two adjacent lines
 	} # end if
 	#
 	tbl <- ftLocal[(indLocHook+1):(indLocNext-1)]
-	if (all(tbl == "")) {
-		return(list(tbl=tbl, tbl_U=tbl, tbl_L=NULL)) # classic case for new block
-	} # end if
-	if (all(tbl != "")) {
-		return(list(tbl=tbl, tbl_U=NULL, tbl_L=tbl)) # can be either or (top or bottom, no way to know)
-	} # end if
-	# by now tbl has to be longer than 1
-	indFirstSpace <- which(tbl == "")[1]
-	if (indFirstSpace == 1) {
+	######
+	indPacHook <- which(ftPackR == ftLocalR[indLocHook])
+	if (indPacHook+1 == indKey) { # there is no space above; the new key is directly below the hook
 		return(list(tbl=tbl, tbl_U=NULL, tbl_L=tbl))
 	} # end if
 	#
-	tbl_U <- tbl[1:(indFirstSpace-1)]
+	indPacNext <- which(ftPackR == ftLocalR[indLocNext])
+	if (indPacNext-1 == indKey) { # there is no space below, the new key is directly above the next
+		return(list(tbl=tbl, tbl_U=tbl, tbl_L=NULL))
+	} # end if	
+	#######
+	if (all(trimws(tbl) == "")) {
+		return(list(tbl=tbl, tbl_U=tbl, tbl_L=NULL)) # classic case for new block
+	} # end if
+	if (all(trimws(tbl) != "")) {
+		return(list(tbl=tbl, tbl_U=rep("", maxS), tbl_L=tbl)) # can be either or (top or bottom, no way to know). But we are "somewhere in the middle", so insert empty lines above
+	} # end if
+	# by now tbl has to be longer than 1
+	# and by now the new key HAS to be "somewhere in the middle"
+	indFirstSpace <- which(trimws(tbl) == "")[1] # so the text could belong more to below
+	if (indFirstSpace == 1) {
+		return(list(tbl=tbl, tbl_U=rep("", maxS), tbl_L=tbl))
+	} # end if
+	#
+	tbl_U <- tbl[1:(indFirstSpace-1)] 
 	tbl_L <- tbl[indFirstSpace: length(tbl)]
-	return(list(tbl=tbl, tbl_U=tbl_U, tbl_L=tbl_L))
+	return(list(tbl=tbl, tbl_U=c(tbl_U, rep("", maxS)), tbl_L=tbl_L)) # because we have to be "in the middle" somewhere
 } # EOF
 
-getTextBetweenPac <- function(pacNames, singleMissingKey, ftPackR, ftPack, indKey) {
-	pacHookAbove <- pacNames[which(pacNames == singleMissingKey)-1]	
+getTextBetweenPac <- function(pacNames, singleMissingKey, ftPackR, ftPack, indKey, ftLocal) {
+	pacHookAbove <- pacNames[which(pacNames == singleMissingKey)-1]
 	indPacHook <- which(ftPackR == pacHookAbove)
 	keyIndFT <- which(ftPackR == singleMissingKey)
 	if (indPacHook == (keyIndFT-1)) { # so there is no space between the two keys
@@ -733,20 +553,100 @@ getTextBetweenPac <- function(pacNames, singleMissingKey, ftPackR, ftPack, indKe
 	} # end if
 	#
 	txtBetweenPac <- ftPack[(indPacHook+1):(indKey-1)]
-	# cut away everything above that is above an empty line	
+	# cut away everything above that is above an empty line
 	txtT <- trimws(txtBetweenPac)
 	if (all(txtT == "")) {
 		return(NULL)
 	} # end if
 	aa <- max(which(txtT == "")) 	# get the index of the last empty line
-	return(txtBetweenPac[(aa+1):(length(txtBetweenPac))])		
+	if (aa == length(txtBetweenPac)) { # so if the last line is empty, that means we do not have text directly above the key
+		return(NULL)
+	} # end if
+	out <- txtBetweenPac[(aa+1):(length(txtBetweenPac))]
+	ind <- which(out %in% ftLocal)
+	if (length(ind) != 0) {
+		out <- out[-ind] # make sure that we do not copy anything that is already in the local file		
+	} # end if
+	if (length(out) == 0) {
+		out <- NULL # just to be sure
+	} # end if
+	return(out)
 } # EOF
 
-checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL, onTest=FALSE){
+getTxtEmptyBelowPacKey <- function(indKey, pacNames, ftPack, ftPackR, ftLocal) { # indKey is in ftPackR-dimension
+	aa <- which(pacNames == ftPackR[indKey])+1
+	indPacNext <- which(ftPackR == pacNames[aa])
+	if (indKey+1 == indPacNext) { # so there is no space between
+		return(NULL)
+	} # end if
+	txtPackBelowKey <- ftPackR[(indKey+1):(indPacNext-1)]
+	txtPackBelowKey_Full <- ftPack[(indKey+1):(indPacNext-1)]
+
+	if (all(txtPackBelowKey == "")) {
+		return(txtPackBelowKey)
+	} # end if
+	if (all(txtPackBelowKey != "")) {
+		return(NULL)
+	} # end if
+	rl <- rle(txtPackBelowKey == "")
+	if (rl$values[1]) { # we have some empty lines as first block
+		return(rep("", rl$lengths[1]))
+	} else {
+		txt <- txtPackBelowKey_Full[1:rl$lengths[1]] # first get the characters
+		aa <- which(txt %in% ftLocal)
+		txt <- txt[-aa]
+		empty <- rep("", rl$lengths[2]) # then get the empty lines
+		return(c(txt, empty))
+	} # end else
+ 	return("\t# something went wrong...") # we should never get here
+} # EOF
+
+getMaxSpace <- function(ftLocal) {
+	aa <- trimws(ftLocal)
+	rl <- rle(aa=="")
+	out <- max(rl$lengths[rl$values])
+	return(out) 
+} # EOF
+
+reduceEmptyLines <- function(ftLocal, maxS, maxSD) { # maxSD is after deleting (is the higher one)
+	# find the indices where the too big space maxSD is
+	if (maxSD > maxS) { # so we have to cut down on big empty spaces
+		ftT <- trimws(ftLocal)
+		rl <- rle(ftT == "")
+		aboveSIndRL <- which(rl$lengths > maxS & rl$values)
+		indDelOut <- NULL
+		for (i in 1: length(aboveSIndRL)) {
+			ind <- aboveSIndRL[i]
+			thisLeng <- rl$lengths[ind]
+			cutAwayLeng <- thisLeng - maxS
+			maxIndTxt <- sum(rl$lengths[1:ind])
+			minIndTxt <- maxIndTxt - cutAwayLeng +1 
+			indDelOut <- c(indDelOut, (minIndTxt : maxIndTxt)) # cut down delete to the max empty lines of before deletion
+		} # end for i
+		return(ftLocal[-indDelOut])
+	} else {
+	return(ftLocal) # nothing to cut away, return the original
+	}
+} # EOF
+
+tellKeyAddDelete <- function(keys, folderLocal, nameLocal, what="add") {
+	if (what == "add") {
+		whatTxt <- " added to"
+	} else {
+		whatTxt <- " deleted from"
+	}
+	if (length(keys) > 1) {
+		plS <- "s"; plC <- " were"
+	} else {
+		plS <- ""; plC <- " was"
+	}
+	cat(paste0("The following ", length(keys), " key", plS, plC, whatTxt, " the settings-file '", nameLocal, "' in \n'", folderLocal, "':\n\t", paste0(keys, collapse=", "), "\n\n"))
+} # EOF
+
+checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL){
 	pv_suffixForTemplates <- tmpl
 	taPaObj <- pm
 	splitChar <- "="
-	txtBetweenPack <- NULL # so that it can be commented out below
 	#
 	loc <- pathToLocal <- paste0(folderLocal, "/", nameLocal)
 	pac <- pathToPack
@@ -755,39 +655,41 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 	} else {
 		pmu <- paste0("$", taPaObj)
 	}
-	lenv <- new.env()
-	sys.source(pathToLocal, envir=lenv)
-	txt <- paste0("sort(names(lenv", pmu, "))")
-	locNames <- eval(parse(text=txt))
-	penv <- new.env()
-	sys.source(pathToPack, envir=penv)
-	txt <- paste0("sort(names(penv", pmu, "))")
-	pacNames <- eval(parse(text=txt))
-	if (identical(locNames, pacNames)) {
-		return(TRUE)
+	aa <- getCheckForDoubleNames(pathToLocal, pathToPack, pmu) # is checking for non-unique keys
+	if (identical(aa$locNames, aa$pacNames)) {
+		return(invisible(TRUE))
 	} # end if identical
 
 	# we only continue, if the locNames and pacNames are NOT identical
 
 	######## first we will ADD any possible keys
 	# get the name of the keys that are missing in local / added in pathToPack
+	lenv <- new.env()
+	sys.source(pathToLocal, envir=lenv)
 	txt <- paste0("names(lenv", pmu, ")") # NOT sorted
 	locNames <- c(taPaObj, eval(parse(text=txt))) # add taPaObj as first in case of a first key is introduced. Need a hook then.
+	penv <- new.env()
+	sys.source(pathToPack, envir=penv)
 	txt <- paste0("names(penv", pmu, ")") # NOT sorted
 	pacNames <- c(taPaObj, eval(parse(text=txt)))
 	missingKeys <- pacNames[which(!pacNames %in% locNames)]
 	#
+	#get parts before and after the list (TaPaPbj)
+	fconPack <- file(pathToPack, open="r")
+	ftPack <- readLines(fconPack)   # read in the pac file
+	close(fconPack)
+	fconLocal <- file(pathToLocal, open="r")
+	ftLocal <- ftLocalBackup <- readLines(fconLocal)   # read in the local file
+	close(fconLocal)
+	indPm <- which(startsWith(trimws(ftLocal), taPaObj)) # on which line number is the "stn" object
+	indBracket <- which(startsWith(trimws(ftLocal), ")"))
+	txtAbove <- ftLocal[1:(indPm-1)] # get the txtAbove and txtBelow from the local file. The user could have written something in there that should stay.
+	txtBelow <- ftLocal[(indBracket+1):length(ftLocal)]
+	#
+	ftLocal <- getStnCenter(pathToLocal, taPaObj) # might need that in the deletions. !!! gets possibly modified in the additions below
+	maxS <- getMaxSpace(ftLocal) # get the maximum number of continuous empty lines
+	#
 	if (length(missingKeys != 0)) { # so we do have to add something
-		#get parts before and after the list (TaPaPbj)
-		fconPack <- file(pathToPack, open="r")
-		ftPack <- readLines(fconPack)   # read in the pac file
-		close(fconPack)
-		indPm <- which(startsWith(trimws(ftPack), taPaObj)) # on which line number is the "stn" object
-		indBracket <- which(startsWith(trimws(ftPack), ")"))
-		txtAbove <- ftPack[1:(indPm-1)]
-		txtBelow <- ftPack[(indBracket+1):length(ftPack)]
-		#
-		ftLocal <- getStnCenter(pathToLocal, taPaObj)
 		ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj)
 		ftPack <- getStnCenter(pathToPack, taPaObj)
 		ftPackR <- getKeysOnlyFromText(ftPack, splitChar, taPaObj)
@@ -796,20 +698,21 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 			indKey <- which(ftPackR == missingKeys[i])  # the pac index of a key missing in loc
 			if (length(indKey) > 1) {stop("Sorry, it seems that a key name appears twice.", call.=FALSE)}
 			newKVP <- missingKVPs[i]
-			
+
 			# now look up for the next hook
 			pacHook <- pacNames[which(pacNames == missingKeys[i])-1]
 			locHookKeyInd <- which(locNames == pacHook)
 			locHook <- locNames[locHookKeyInd] # the name of the key in loc one higher than the missing one
-			
-			# get the comments above the pacHook (if there are any)
-			txtBetweenPack <- getTextBetweenPac(pacNames, missingKeys[i],ftPackR, ftPack, indKey)
-				
-			# get all lines between hook and new key
+
+			# get the comments above and empty spaces below the pacHook (if there are any)
+			txtBetweenPack <- getTextBetweenPac(pacNames, missingKeys[i],ftPackR, ftPack, indKey, ftLocal)
+			txtEmptyBelowPacKey <- getTxtEmptyBelowPacKey(indKey, pacNames, ftPack, ftPackR, ftLocal)
+
+			# get all local lines between hook and next
 			indLocHook <- which(ftLocalR == locHook) # next higher hook in local file !!
 			locNext <- locNames[which(locNames == locHook)+1] # the name of the next key present in the local file
 			indLocNext <- which(ftLocalR == locNext)
-			aa <- getTxtsBetweenLocal(ftLocal, indLocHook, indLocNext) # here it is decided where in the between text the new KVP is put
+			aa <- getTxtsBetweenLocal(ftLocal, ftLocalR, indLocHook, indLocNext, ftPack, ftPackR, indKey, maxS) # here it is decided where in the between text the new KVP is put
 				txtBetweenLocal <- aa$tbl
 				txtBetweenLocalUpper <- aa$tbl_U
 				txtBetweenLocalLower <- aa$tbl_L
@@ -817,40 +720,79 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 			txtLower <- ftLocal[(indLocNext):length(ftLocal)]
 			#
 			# put together the text, add to locNames etc. as well.
-			ftLocal <- c(txtUpper, txtBetweenLocalUpper, txtBetweenPack, newKVP, txtBetweenLocalLower, txtLower)
-			ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj)
+			ftLocal <- c(txtUpper, txtBetweenLocalUpper, txtBetweenPack, newKVP, txtEmptyBelowPacKey, txtBetweenLocalLower, txtLower) ## CORE ##
+			ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj) # could be removed (is done at the top of the loop already)
 			locNames <- c(locNames[1:locHookKeyInd], missingKeys[i], locNames[(locHookKeyInd+1):length(locNames)])
-	##########
-	#		print(txtUpper);
-	#		print(locHook)
-	#		print(txtBetweenLocalUpper);
-	#		print(txtBetweenPack); 
-	#		print(newKVP);
-	#		print(txtBetweenLocalLower);
-	#		print(locNext);
-	#		print(txtLower)
-	#		#
-	#		print(ftLocal)
-	#		print("----------------"); print("--------------")
-  	#		wait()
-	###########
-		} # end for i
-	} # end if length(missingKeys) != 0 # until here, things were added. OR not.
+			if (TRUE) {
+		#		print(txtUpper);
+				print(locHook)
+				print(txtBetweenLocalUpper);
+				print(txtBetweenPack);
+				print(newKVP);
+		#		print(txtEmptyBelowPacKey);
+		#		print(txtBetweenLocalLower);
+				print(locNext);
+		#		print(txtLower)
+		#		#
+		#		print(ftLocal)
+				print("---------------------------");
+	  			wait()
+			} # end if TRUE  # dev helpers, is printing things.
+		} # end for i (going through missing keys)
+		maxSD <- getMaxSpace(ftLocal) # the max space after adding keys
+		ftLocal <- reduceEmptyLines(ftLocal, maxS, maxSD)
+		#
+		tellKeyAddDelete(missingKeys, folderLocal, nameLocal, what="add")
+	} ########### end if length(missingKeys) != 0 # until here, things were added. OR not.
 	##
-	
-	# now write into local settings file !! move down to after deleting !!
+
+	######## now maybe delete things. we only take the ftLocal from above, where it was possibly modified.
+	surplusKeys <- locNames[which(!locNames %in% pacNames)]
+	# !!!!! ftLocal comes from above !!!!!!
+	if (length(surplusKeys != 0)) { # so we do have to delete something
+		ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj) # the incoming ftLocal is "stn" only, and was possibly modified above in the additions
+		indUp <- NULL
+		allIndKeys <- which(ftLocalR %in% surplusKeys) # the index of every key to be deleted
+		for (i in 1: length(surplusKeys)) { # we are collecting possible single line comments above a block
+			indKey <- allIndKeys[i]
+			aa <- trimws(ftLocal) # so that tabs etc go to ""
+			if ( (aa[indKey-1] != "")  & (aa[indKey-2] == "") ) { # that means we have a single line of comment above a key
+				ikm <- indKey-1 # now this could be a key, check....
+				if (ftLocalR[ikm] %in% locNames) {
+					ikm <- NULL
+				} # end if
+				indUp <- c(indUp, ikm)
+			} # end if
+		} # end for i going through surplusKeys
+		indKD <- unique(sort(c(allIndKeys, indUp))) # index keys to be deleted indKD
+		#
+		maxS <- getMaxSpace(ftLocal) # get the maximum number of continuous empty lines
+		ftLocal <- ftLocal[-indKD] # delete here ####
+		maxSD <- getMaxSpace(ftLocal) # the max space after deleting keys
+		ftLocal <- reduceEmptyLines(ftLocal, maxS, maxSD)
+		#
+		tellKeyAddDelete(surplusKeys, folderLocal, nameLocal, what="delete")
+	} # end if (length(surplusKeys != 0))
+	###########
+	##
+
+	# now write into local settings file
 	fconLocal <- file(loc, open="w")
 	writeLines(c(txtAbove, ftLocal, txtBelow), fconLocal) # write the new file to settings.r in pathSH
 	close(fconLocal)
-
-	#### now go delete things
-	
-	####  have some comments on what was added and what was deleted
-	
-	
+	#
+	# just to be sure, check again
+	aa <- getCheckForDoubleNames(pathToLocal, pathToPack, pmu)
+	if (!identical(aa$locNames, aa$pacNames)) { # this should never happen
+		message("Sorry, for unknown reasons the keys in the settings file could not be updated.")
+		fconLocal <- file(loc, open="w")
+		writeLines(ftLocalBackup, fconLocal) # write the new file to settings.r in pathSH
+		close(fconLocal)
+		return(invisible(FALSE))
+	} # end if identical
+	#
+	return(invisible(TRUE))
 } # EOF
-
-# down from here new
 ####################################################################
 checkCreateSHfolder <- function(systemHome, fn_taPaSH) {
 	if (!dir.exists(paste0(systemHome, "/", fn_taPaSH))) {
