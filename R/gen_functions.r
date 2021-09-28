@@ -643,52 +643,8 @@ tellKeyAddDelete <- function(keys, folderLocal, nameLocal, what="add") {
 	cat(paste0("The following ", length(keys), " key", plS, plC, whatTxt, " the settings-file '", nameLocal, "' in \n'", folderLocal, "':\n\t", paste0(keys, collapse=", "), "\n\n"))
 } # EOF
 
-checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL){
-	pv_suffixForTemplates <- tmpl
-	taPaObj <- pm
-	splitChar <- "="
-	#
-	loc <- pathToLocal <- paste0(folderLocal, "/", nameLocal)
-	pac <- pathToPack
-	if (is.null(pm)) {
-		pmu <- ""
-	} else {
-		pmu <- paste0("$", taPaObj)
-	}
-	aa <- getCheckForDoubleNames(pathToLocal, pathToPack, pmu) # is checking for non-unique keys
-	if (identical(aa$locNames, aa$pacNames)) {
-		return(invisible(TRUE))
-	} # end if identical
-
-	# we only continue, if the locNames and pacNames are NOT identical
-
-	######## first we will ADD any possible keys
-	# get the name of the keys that are missing in local / added in pathToPack
-	lenv <- new.env()
-	sys.source(pathToLocal, envir=lenv)
-	txt <- paste0("names(lenv", pmu, ")") # NOT sorted
-	locNames <- c(taPaObj, eval(parse(text=txt))) # add taPaObj as first in case of a first key is introduced. Need a hook then.
-	penv <- new.env()
-	sys.source(pathToPack, envir=penv)
-	txt <- paste0("names(penv", pmu, ")") # NOT sorted
-	pacNames <- c(taPaObj, eval(parse(text=txt)))
+addMissingKeys <- function(ftLocal, splitChar, taPaObj, pathToPack, folderLocal, nameLocal, pacNames, locNames, maxS) {
 	missingKeys <- pacNames[which(!pacNames %in% locNames)]
-	#
-	#get parts before and after the list (TaPaPbj)
-	fconPack <- file(pathToPack, open="r")
-	ftPack <- readLines(fconPack)   # read in the pac file
-	close(fconPack)
-	fconLocal <- file(pathToLocal, open="r")
-	ftLocal <- ftLocalBackup <- readLines(fconLocal)   # read in the local file
-	close(fconLocal)
-	indPm <- which(startsWith(trimws(ftLocal), taPaObj)) # on which line number is the "stn" object
-	indBracket <- which(startsWith(trimws(ftLocal), ")"))
-	txtAbove <- ftLocal[1:(indPm-1)] # get the txtAbove and txtBelow from the local file. The user could have written something in there that should stay.
-	txtBelow <- ftLocal[(indBracket+1):length(ftLocal)]
-	#
-	ftLocal <- getStnCenter(pathToLocal, taPaObj) # might need that in the deletions. !!! gets possibly modified in the additions below
-	maxS <- getMaxSpace(ftLocal) # get the maximum number of continuous empty lines
-	#
 	if (length(missingKeys != 0)) { # so we do have to add something
 		ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj)
 		ftPack <- getStnCenter(pathToPack, taPaObj)
@@ -723,7 +679,7 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 			ftLocal <- c(txtUpper, txtBetweenLocalUpper, txtBetweenPack, newKVP, txtEmptyBelowPacKey, txtBetweenLocalLower, txtLower) ## CORE ##
 			ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj) # could be removed (is done at the top of the loop already)
 			locNames <- c(locNames[1:locHookKeyInd], missingKeys[i], locNames[(locHookKeyInd+1):length(locNames)])
-			if (TRUE) {
+			if (FALSE) {
 		#		print(txtUpper);
 				print(locHook)
 				print(txtBetweenLocalUpper);
@@ -743,12 +699,12 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 		ftLocal <- reduceEmptyLines(ftLocal, maxS, maxSD)
 		#
 		tellKeyAddDelete(missingKeys, folderLocal, nameLocal, what="add")
-	} ########### end if length(missingKeys) != 0 # until here, things were added. OR not.
-	##
+	} ########### end if length(missingKeys) != 0 # until here, things were added. OR not.	
+	return(ftLocal)
+} # EOF
 
-	######## now maybe delete things. we only take the ftLocal from above, where it was possibly modified.
+deleteSurplusKeys <- function(folderLocal, nameLocal, ftLocal, splitChar, taPaObj, locNames, pacNames, maxS) {
 	surplusKeys <- locNames[which(!locNames %in% pacNames)]
-	# !!!!! ftLocal comes from above !!!!!!
 	if (length(surplusKeys != 0)) { # so we do have to delete something
 		ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj) # the incoming ftLocal is "stn" only, and was possibly modified above in the additions
 		indUp <- NULL
@@ -757,8 +713,11 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 			indKey <- allIndKeys[i]
 			aa <- trimws(ftLocal) # so that tabs etc go to ""
 			if ( (aa[indKey-1] != "")  & (aa[indKey-2] == "") ) { # that means we have a single line of comment above a key
-				ikm <- indKey-1 # now this could be a key, check....
-				if (ftLocalR[ikm] %in% locNames) {
+				ikm <- indKey-1 # ikm: index key minus
+				if (ftLocalR[ikm] %in% locNames) { # now this above could be a key, check....
+					ikm <- NULL
+				} # end if
+				if (ftLocalR[indKey+1] %in% locNames) { # means we have an other key directly below the one to be deleted, so we will *not* delete the one comment line above
 					ikm <- NULL
 				} # end if
 				indUp <- c(indUp, ikm)
@@ -766,16 +725,67 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 		} # end for i going through surplusKeys
 		indKD <- unique(sort(c(allIndKeys, indUp))) # index keys to be deleted indKD
 		#
-		maxS <- getMaxSpace(ftLocal) # get the maximum number of continuous empty lines
-		ftLocal <- ftLocal[-indKD] # delete here ####
+		ftLocal <- ftLocal[-indKD] # delete here #### ******************
 		maxSD <- getMaxSpace(ftLocal) # the max space after deleting keys
 		ftLocal <- reduceEmptyLines(ftLocal, maxS, maxSD)
 		#
 		tellKeyAddDelete(surplusKeys, folderLocal, nameLocal, what="delete")
+		ind <- which(locNames %in% surplusKeys)
+		locNames <- locNames[-ind]
 	} # end if (length(surplusKeys != 0))
-	###########
-	##
+	return(list(ftLocal=ftLocal, locNames=locNames))	
+} # EOF
 
+checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, pm=NULL, tmpl, taPaName=NULL){
+	pv_suffixForTemplates <- tmpl
+	taPaObj <- pm
+	splitChar <- "="
+	#
+	loc <- pathToLocal <- paste0(folderLocal, "/", nameLocal)
+	pac <- pathToPack
+	if (is.null(pm)) {
+		pmu <- ""
+	} else {
+		pmu <- paste0("$", taPaObj)
+	}
+	aa <- getCheckForDoubleNames(pathToLocal, pathToPack, pmu) # is checking for non-unique keys
+	if (identical(aa$locNames, aa$pacNames)) {
+		return(invisible(TRUE))
+	} # end if identical
+
+	# we only continue, if the locNames and pacNames are NOT identical
+
+	######## first we will ADD any possible keys
+	# get the name of the keys that are missing in local / added in pathToPack
+	lenv <- new.env()
+	sys.source(pathToLocal, envir=lenv)
+	txt <- paste0("names(lenv", pmu, ")") # NOT sorted
+	locNames <- c(taPaObj, eval(parse(text=txt))) # add taPaObj as first in case of a first key is introduced. Need a hook then.
+	penv <- new.env()
+	sys.source(pathToPack, envir=penv)
+	txt <- paste0("names(penv", pmu, ")") # NOT sorted
+	pacNames <- c(taPaObj, eval(parse(text=txt)))
+	#
+	#get parts before and after the list (TaPaPbj)
+	fconPack <- file(pathToPack, open="r")
+	ftPack <- readLines(fconPack)   # read in the pac file
+	close(fconPack)
+	fconLocal <- file(pathToLocal, open="r")
+	ftLocal <- ftLocalBackup <- readLines(fconLocal)   # read in the local file
+	close(fconLocal)
+	indPm <- which(startsWith(trimws(ftLocal), taPaObj)) # on which line number is the "stn" object
+	indBracket <- which(startsWith(trimws(ftLocal), ")"))
+	txtAbove <- ftLocal[1:(indPm-1)] # get the txtAbove and txtBelow from the local file. The user could have written something in there that should stay.
+	txtBelow <- ftLocal[(indBracket+1):length(ftLocal)]
+	#
+	ftLocal <- getStnCenter(pathToLocal, taPaObj) # might need that in the deletions. !!! gets possibly modified in the additions below
+	maxS <- getMaxSpace(ftLocal) # get the maximum number of continuous empty lines
+	#######
+	aa <- deleteSurplusKeys(folderLocal, nameLocal, ftLocal, splitChar, taPaObj, locNames, pacNames, maxS) # ***************
+		ftLocal <- aa$ftLocal
+		locNames <- aa$locNames # locNames have to updated due a possible deletion of keys
+	ftLocal <- addMissingKeys(ftLocal, splitChar, taPaObj, pathToPack, folderLocal, nameLocal, pacNames, locNames, maxS) # **************
+	#######
 	# now write into local settings file
 	fconLocal <- file(loc, open="w")
 	writeLines(c(txtAbove, ftLocal, txtBelow), fconLocal) # write the new file to settings.r in pathSH
@@ -786,7 +796,7 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 	if (!identical(aa$locNames, aa$pacNames)) { # this should never happen
 		message("Sorry, for unknown reasons the keys in the settings file could not be updated.")
 		fconLocal <- file(loc, open="w")
-		writeLines(ftLocalBackup, fconLocal) # write the new file to settings.r in pathSH
+		writeLines(ftLocalBackup, fconLocal) # write the backup file to settings.r in pathSH
 		close(fconLocal)
 		return(invisible(FALSE))
 	} # end if identical
