@@ -982,7 +982,15 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 	} # end else if !renvExists
 } # EOF
 
-checkSettings_test <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL) {
+# M1
+# M2
+# The folder `dogPack_SH` as settings-home directory has been created in `/Users/runner`.
+# The required '.Renviron' file in '/Users/runner' has been created for you.
+# The initial path of `dogPack_SH` in the .Renviron file (`/Users/runner/.Renviron`) has been set to `/Users/runner/dogPack_SH`. 
+# If you want, you can open the .Renviron file (e.g. using R-Studio) and modify the variable `dogPack_SH` (holding the path to the  `settings-home` directory) so that it points to a folder of your liking.
+# Restart R for the changes to become effective.
+
+checkSettings_test <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL, sysHome_R=NULL) {
 	#
 	aaa <- taPaList
 		taPaName <- aaa$taPaName
@@ -998,14 +1006,17 @@ checkSettings_test <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaS
 	fn_taPaSH <- taPaSH # makes the name of the variable and the name of the final folder identical
 	#
 	taPaSH_creationMsg <- paste0("The initial path of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`) has been set to `", systemHome_R, "/", fn_taPaSH, "`. \nIf you want, you can open the .Renviron file (e.g. using R-Studio) and modify the variable `", taPaSH, "` (holding the path to the  `settings-home` directory) so that it points to a folder of your liking.")
-	addInfo <- "Restart R for the changes to become effective."
+	addInfo <- "Restart R for the changes to become effective." # This in github testing
 	restartMsg <- "Please restart R for the changes in the .Renviron file to become effective."
 	#
 	# first check for existence of the .Renviron file
 	renvExists <- file.exists(fullRenvPath)
  	message("M1") # test ok up to here
 	if (!renvExists) {
-		message("M2")
+		message("M2") # ha! systemHome_R does not match the test-conditions (not in the tempDir)
+		if (onTest) {
+			systemHome_R <- sysHome_R
+		} # end if
 		return(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo)) #############
 	}  else { # so the .Renviron file is existing
 		# check if taPaSH is existing in the system: if yes, check if pointing to a valid directory; if no check if it is existing on the .Renviron file
@@ -1015,7 +1026,7 @@ checkSettings_test <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaS
 		} # end if !onTest
 		if (taPaSH_system == "") {
 			message("M3")
-			return(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo))	#############
+			return(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo))	############# **
 		} else { # (taPaSH_system != "") --> so taPaSH IS existing in the system
 			if (!dir.exists(taPaSH_system)) {  # check if pointing to a valid folder
 				message("M4")
