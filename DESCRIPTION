@@ -1,6 +1,6 @@
 Package: uniset
 Type: Package
-Title: Universal Settings file for R
+Title: Universal Settings File for R
 Version: 0.1.1
 Author: Bernhard Pollner, Zoltan Kovacs
 Maintainer: Bernhard Pollner <bernhard.pollner@mac.com>
