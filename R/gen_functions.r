@@ -952,7 +952,6 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 	#
 	# first check for existence of the .Renviron file
 	renvExists <- file.exists(fullRenvPath)
-# 	return(TRUE) # ok up to here
 	if (!renvExists) {
 		return(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo)) #############
 	}  else { # so the .Renviron file is existing
@@ -965,7 +964,7 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 			return(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo))	#############
 		} else { # (taPaSH_system != "") --> so taPaSH IS existing in the system
 			if (!dir.exists(taPaSH_system)) {  # check if pointing to a valid folder
-				return(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system, restartMsg))
+				return(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system, restartMsg)) #############
 			} else { # end if !dir.exists
 				# so now everything should be good, file and system unisono etc.
 				# check if a settings file is here, If no, please copy it.
@@ -976,7 +975,63 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 				if (!file.exists(localSettingsPath)) {
 					return(pleaseCopyFreshSettings(taPaSettingsPath, taPaSH_system, setFiName))
 				} else { # so the settings.r file does exist  - we can, finally, go to checking the content of the settings.r file
-		return(TRUE)
+					return(checkFileVersionPossiblyModify(pathToPack=taPaSettingsPath, folderLocal=taPaSH_system, nameLocal=setFiName, pm=taPaObj, taPaName, tmpl=tmplName))  # returns TRUE or FALSE
+				} # end else
+			} # end else !dir.exists
+		} # end else taPaSH_system == ""
+	} # end else if !renvExists
+} # EOF
+
+checkSettings_test <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL) {
+	#
+	aaa <- taPaList
+		taPaName <- aaa$taPaName
+		taPaEnv <- aaa$taPaEnv
+		taPaSH <- aaa$taPaSH
+		taPaObj <- aaa$taPaObj
+		tmplName <- aaa$tmplName
+		setFiName <- aaa$setFiName
+	#########
+	systemHome <- Sys.getenv("HOME")
+	systemHome_R <- gsub("\\\\", "/", systemHome)
+	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
+	fn_taPaSH <- taPaSH # makes the name of the variable and the name of the final folder identical
+	#
+	taPaSH_creationMsg <- paste0("The initial path of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`) has been set to `", systemHome_R, "/", fn_taPaSH, "`. \nIf you want, you can open the .Renviron file (e.g. using R-Studio) and modify the variable `", taPaSH, "` (holding the path to the  `settings-home` directory) so that it points to a folder of your liking.")
+	addInfo <- "Restart R for the changes to become effective."
+	restartMsg <- "Please restart R for the changes in the .Renviron file to become effective."
+	#
+	# first check for existence of the .Renviron file
+	renvExists <- file.exists(fullRenvPath)
+ 	message("M1") # test ok up to here
+	if (!renvExists) {
+		message("M2")
+		return(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo)) #############
+	}  else { # so the .Renviron file is existing
+		# check if taPaSH is existing in the system: if yes, check if pointing to a valid directory; if no check if it is existing on the .Renviron file
+		if (!onTest) {
+			pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
+			taPaSH_system <- eval(parse(text=pat))  # returns `""` if not existing in Sys.getenv()
+		} # end if !onTest
+		if (taPaSH_system == "") {
+			message("M3")
+			return(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo))	#############
+		} else { # (taPaSH_system != "") --> so taPaSH IS existing in the system
+			if (!dir.exists(taPaSH_system)) {  # check if pointing to a valid folder
+				message("M4")
+				return(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system, restartMsg)) #############
+			} else { # end if !dir.exists
+				# so now everything should be good, file and system unisono etc.
+				# check if a settings file is here, If no, please copy it.
+				if (!onTest) {
+					taPaSettingsPath <- paste0(path.package(taPaName), "/",  setFiName)
+					localSettingsPath <- paste0(taPaSH_system, "/", setFiName)
+				} # end if
+				if (!file.exists(localSettingsPath)) {
+					message("M5")
+					return(pleaseCopyFreshSettings(taPaSettingsPath, taPaSH_system, setFiName))
+				} else { # so the settings.r file does exist  - we can, finally, go to checking the content of the settings.r file
+					message("done")
 					return(checkFileVersionPossiblyModify(pathToPack=taPaSettingsPath, folderLocal=taPaSH_system, nameLocal=setFiName, pm=taPaObj, taPaName, tmpl=tmplName))  # returns TRUE or FALSE
 				} # end else
 			} # end else !dir.exists

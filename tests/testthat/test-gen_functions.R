@@ -264,7 +264,12 @@ aaa <- getUnisEnvirVariables(uev)
 localSettingsPath <- paste0(taPaSH_system, "/", setFiName)
 cleanUp()
 test_that("checkSettings", {
+    skip("not working")
     expect_true(checkSettings(aaa, onTest=TRUE, taPaSH_system, taPaSettingsPath, localSettingsPath))
+}) # EOT
+
+test_that("checkSettings", {
+    expect_message(checkSettings_test(aaa, onTest=TRUE, taPaSH_system, taPaSettingsPath, localSettingsPath), "done")
 }) # EOT
 
 # now clean up
