@@ -2,7 +2,7 @@
 % Please edit documentation in R/gen_functions.R
 \name{uniset_updateSettings}
 \alias{uniset_updateSettings}
-\title{Update settings of target package}
+\title{Update Settings of Target Package}
 \usage{
 uniset_updateSettings(unisetEnv, silent = FALSE)
 }

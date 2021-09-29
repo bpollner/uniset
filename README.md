@@ -23,7 +23,7 @@ The target package has to list 'uniset' as an 'import', and then you can use the
 ***
 
 ## Installation
-From Cran XXX
+From CRAN XXX (not yet)
 ```
 xxxxxx
 ```
@@ -44,7 +44,7 @@ from <- paste0(path.package("uniset"), "/examples/dogPack")
 file.copy(from, to, recursive = TRUE) 
 ```
 ### Generate Files
-There are two ways to set up a target packag (in our example the package called "dogPack") to make use of "uniset":
+There are two ways to set up a target package (in our example the package called "dogPack") to make use of "uniset":
 
 * **1) Export and Move Files**
 With everything left at the defaults, this call to 'uniset_getFiles' creates a folder containing the three required files on the desktop. 
@@ -66,7 +66,7 @@ You can define functions **in dogPack** that can call the following three functi
 * uniset::uniset_updateSettings(get("uev"))
 * uniset::uniset_autoUpS(get("uev"))  
 *uev* is a global constant defined in 'dogPack', handing over the name of the environment where necessary variables are stored.
-'uniset_test' is merely a testing function to see if the handover of environments etc. is workign properly.  
+'uniset_test' is merely a testing function to see if the handover of environments etc. is working properly.  
   
 'uniset_updateSettings' and 'uniset_autoUpS' is:
 * When called for the **first time**
@@ -83,10 +83,10 @@ The latter function is intended to be placed at the beginning of any function of
 ```
 color <- .doe$stn$favouriteColor # does not work yet
 ```
-In this example we obtain the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environmen name, object name) can of course be customized when using the functions *uniset_getFiles* or *uniset_copyFilesToPackage*.  
+In this example we obtain the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environment name, object name) can of course be customized when using the functions *uniset_getFiles* or *uniset_copyFilesToPackage*.  
 
 ### The real world test
-Open the RProject project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
+Open the RStudio project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
 ```
 library(dogPack)
 dogPackTest() # should give a nice printout
@@ -103,7 +103,7 @@ Use the auto-update function within your code when you want to automatically sou
 ```
 dogPack_autoUpS()
 ```
-Now, it is possible to obain values from 'dogPack_settings.R' directly via:
+Now, it is possible to obtain values from 'dogPack_settings.R' directly via:
 ```
 color <- .doe$stn$favouriteColor
 color
@@ -129,8 +129,8 @@ color <- .doe$stn$favouriteColor
 color # should be the value you assigned before
 ```
 #### Adding / deleting keys
-If you are the developer of package 'dogPack', at some time after you publihsed 'dogPack' you might want to add keys to or delete from the settings file.  
-Do that now: Add e.g. a new *key=value,* pair (do not forget the comma ',') at the *end* of a block in the settings-file **in the folder 'inst' of 'dogPack'**, and re-install 'dogPack'.  Or, as an alternative shortcut for this demonstration, go to root of the *installed* dogPack package
+If you are the developer of package 'dogPack', at some time after you published 'dogPack' you might want to add keys to or delete from the settings file.  
+Do that now: Add e.g. a new *key=value,* pair (do not forget the comma ',') at the *end* of a block in the settings-file **in the folder 'inst' of 'dogPack'**, and re-install 'dogPack'.  Or, as an alternative shortcut for this demonstration, go to root of the *installed* 'dogPack' package
 ```
 path.package("dogPack")
 ```
@@ -141,6 +141,5 @@ Now the *user of dogPack* will run again an update settings function:
 dogPack_updateSettings()
 ```
 The *user of dogPack* will then have the new key added to the local file 'dogPack_settings.R' in the folder 'dogPack_SH' in the home directory (default location).  
-(Please see the comments on the bottom of the file 'dogPack_settings.R' for limitations when creating a new block.)
 
 Enjoy !

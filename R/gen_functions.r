@@ -999,7 +999,7 @@ getUnisEnvirVariables <- function(unisetEnv) {
 	return(list(taPaName=taPaName, taPaEnv=taPaEnv, taPaSH=taPaSH, taPaObj=taPaObj, tmplName=tmplName, setFiName=setFiName))
 } # EOF
 
-#' @title Update settings of target package
+#' @title Update Settings of Target Package
 #' @description Manually read in the settings-file in the target package settings
 #' home directory as specified in the .Renviron file.
 #' @section Note: If not present, the required `.Renviron` file will be
