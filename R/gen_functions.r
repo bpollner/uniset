@@ -982,14 +982,6 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 	} # end else if !renvExists
 } # EOF
 
-# M1
-# M2
-# The folder `dogPack_SH` as settings-home directory has been created in `/Users/runner`.
-# The required '.Renviron' file in '/Users/runner' has been created for you.
-# The initial path of `dogPack_SH` in the .Renviron file (`/Users/runner/.Renviron`) has been set to `/Users/runner/dogPack_SH`. 
-# If you want, you can open the .Renviron file (e.g. using R-Studio) and modify the variable `dogPack_SH` (holding the path to the  `settings-home` directory) so that it points to a folder of your liking.
-# Restart R for the changes to become effective.
-
 checkSettings_test <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL, sysHome_R=NULL) {
 	#
 	aaa <- taPaList
@@ -1002,11 +994,11 @@ checkSettings_test <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaS
 	#########
 	systemHome <- Sys.getenv("HOME")
 	systemHome_R <- gsub("\\\\", "/", systemHome)
-	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
-	fn_taPaSH <- taPaSH # makes the name of the variable and the name of the final folder identical
 	if (onTest) {
 			systemHome_R <- sysHome_R
 	} # end if
+	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
+	fn_taPaSH <- taPaSH # makes the name of the variable and the name of the final folder identical
 	#
 	taPaSH_creationMsg <- paste0("The initial path of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`) has been set to `", systemHome_R, "/", fn_taPaSH, "`. \nIf you want, you can open the .Renviron file (e.g. using R-Studio) and modify the variable `", taPaSH, "` (holding the path to the  `settings-home` directory) so that it points to a folder of your liking.")
 	addInfo <- "Restart R for the changes to become effective." # This in github testing
