@@ -5,6 +5,7 @@ Version: 0.1.1
 Author: Bernhard Pollner, Zoltan Kovacs
 Maintainer: Bernhard Pollner <bernhard.pollner@mac.com>
 Description: Package 'uniset' provides the means to outfit a package (the 'target package') with an easily accessible, user-friendly and easy to read text file where settings resp. various parameters can be saved. This settings file remains in place and can remain unchanged even when the target package is updated or re-installed. Values modified by the user will always be preserved. 
+Language: en-US
 License: GPL (>=2)
 Encoding: UTF-8
 LazyData: true
