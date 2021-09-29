@@ -263,17 +263,6 @@ test_that("checkFileVersionPossiblyModify - 4, 5, 6, 7", {
 aaa <- getUnisEnvirVariables(uev)
 localSettingsPath <- paste0(taPaSH_system, "/", setFiName)
 
-folderLocal # B
-nameLocal
-pathToPack # A
-
-
-taPaSH_system # B       #  SH folder name in td
-localSettingsPath # B+setFiName      # full path to settings in SH in td
-taPaSettingsPath # A    #  path to settings in dopaem (target package)
-
-systemHome_R
-
 cleanUp()
 test_that("checkSettings", {
     skip("not working")
