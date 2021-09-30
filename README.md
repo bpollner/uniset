@@ -20,7 +20,7 @@ In case that the '.onLoad' function already is defined, add the six lines of cod
 
 ### Accessing values from within target package
 Every variable defined in the 'xxx_settings.R' file is accessible in the code of the target package. See the created 'xxx_settings.r' file for an example.  
-The target package has to list `uniset` as an import, and then you can use the functions 'uniset_updateSettings' or 'uniset_autoUpS' called from a function **defined in the target package** to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'xxx_settings.R' file and have them accessible in an environment created by the target package. See the examples at the documentation for `?uniset` and below.
+The target package has to list `uniset` as an import, and then you can use the functions `uniset_updateSettings` or `uniset_autoUpS` called from a function **defined in the target package** to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'xxx_settings.R' file and have them accessible in an environment created by the target package. See the examples at the documentation for `?uniset` and below.
 ***
 
 ## Installation
@@ -48,7 +48,7 @@ file.copy(from, to, recursive = TRUE)
 There are two ways to set up a target package (in our example the package called `dogPack`) to make use of `uniset`:
 
 * **1) Export and Move Files**
-With everything left at the defaults, this call to `uniset_getFiles` creates a folder containing the three required files on the desktop.  
+With everything left at the defaults, a call to `uniset_getFiles` creates a folder containing the three required files on the desktop.  
 
 ```
 uniset_getFiles("dogPack")
@@ -71,7 +71,7 @@ You can define functions **in dogPack** (what is in this example the target pack
 `uniset_test` is merely a testing function to see if the handover of environments etc. is working properly.  
   
 
-`uniset_updateSettings` and `uniset_autoUpS` is:
+The functions `uniset_updateSettings` and `uniset_autoUpS` are:
 * When called for the **first time**
   * Creating the required environment variable in your .Renviron file, and
   * copying the 'dogPack_settings.R' file to a folder in the users home directory. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package `dogPack`.
@@ -87,7 +87,7 @@ The latter function is intended to be placed at the beginning of any function of
 ```
 color <- .doe$stn$favouriteColor # does not work yet
 ```
-In this example we obtain the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environment name, object name) can of course be customized when using the functions *uniset_getFiles* or *uniset_copyFilesToPackage*.  
+In this example we obtain the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environment name, object name) can of course be customized when using the functions `uniset_getFiles` or `uniset_copyFilesToPackage`.  
 
 
 ### The real world test
@@ -97,7 +97,7 @@ library(dogPack)
 dogPack_test_targetPackageParams() # gives a printout of the target package parameters
 dogPack_demo_updateSettings()
 ```
-You might have to restart R now for the changes in the environment variable in your .Renviron file to become effective.  
+You probably have to restart R now for the changes in the environment variable in your .Renviron file to become effective.  
 Now call again:
 ```
 dogPack_demo_updateSettings()
@@ -109,7 +109,7 @@ color <- .doe$stn$favouriteColor
 color
 ```
 
-Use the auto-update function within your code (ideally immediately at the beginning of a function) when you want to automatically source all the values from the local 'dogPack_settings.R' file into the environment '.doe':
+Use the auto-update function within the code in the target package (ideally immediately at the beginning of a function) when you want to automatically source all the values from the local 'dogPack_settings.R' file into the environment '.doe':
 
 ```
 dogPack_demo_autoUpS()
@@ -128,14 +128,14 @@ Of course it is also possible to locally set the value of a key in the 'stn' obj
 ```
 .doe$stn$favouriteColor <- "lightyellow"
 ```
-**Cave:** Be aware that a call to an update function is re-instating the values as written in the 'dogPack_settings.R' file (but not for 'uniset::uniset_autoUpS()' if you changed the key 'gen_autoUpdateSettings' to 'FALSE':
+**Cave:** Be aware that a call to the auto-update function (defined in `uniset`) is re-instating the values from the 'dogPack_settings.R' file to the object 'stn' in the environment '.doe', but not when used with the key 'gen_autoUpdateSettings' previously set to 'FALSE'.
 
 ```
 .doe$stn$favouriteColor # should be "lightyellow"
 dogPack_demo_autoUpS(F)
 .doe$stn$favouriteColor # should be the value you assigned before
 ```
-Including the auto-update function `uniset::uniset_autoUpS` as demonstrated in `dogPack_demo_autoUpS` is of course not required – the key=value pairs in the settings file can be accessed anyway. Practically, it makes sense to include the auto-update in every function that the user can call, and to not include it in all the other functions.
+Including the auto-update function `uniset::uniset_autoUpS` as demonstrated in `dogPack_demo_autoUpS` is of course not required – the key=value pairs in the settings file can be accessed anyway. Practically, it makes sense to include the auto-update in every function that the user of the target package can call, and to not include it in all the other functions.
 ```
 .doe$stn$favouriteColor # your value
 .doe$stn$favouriteColor <- "green"
@@ -153,18 +153,18 @@ Do that now: Add e.g. a new 'key=value,' pair (do not forget the comma ',') anyw
 ```
 path.package("dogPack")
 ```
-and simply modify there the file 'dogPack_settings.R'.
+and simply modify (add a key) there the file 'dogPack_settings.R'.
 
-Now the **user of dogPack** calls a function that includes the auto-update function `uniset::uniset_autoUpS`:
+Now the **user** of `dogPack` calls a function that includes the auto-update function `uniset::uniset_autoUpS`:
 
 ```
 dogPack_demo_autoUpS()
 ```
-The *user of dogPack* will then have the new key added to the local file 'dogPack_settings.R' in the folder 'dogPack_SH' in the home directory (default location).  
+The **user** of `dogPack` will then have the new key added to the local file 'dogPack_settings.R' in the folder 'dogPack_SH' in the home directory (default location).  
 
 The same is true for deleting keys: again, open the file 'dogPack_settings.R' in the root of `path.package("dogPack")` and delete any key. 
 
-Now the **user of dogPack** calls again a function that includes the auto-update function `uniset::uniset_autoUpS`:
+Now the **user** of `dogPack` calls again a function that includes the auto-update function `uniset::uniset_autoUpS`:
 
 ```
 dogPack_demo_autoUpS()
