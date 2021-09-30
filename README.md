@@ -1,8 +1,12 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/bpollner/uniset/workflows/R-CMD-check/badge.svg)](https://github.com/bpollner/uniset/actions)
+[![codecov](https://codecov.io/gh/bpollner/uniset/branch/master/graph/badge.svg)](https://codecov.io/gh/bpollner/uniset)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/uniset)](https://cran.r-project.org/package=uniset)
+[![metacran downloads](https://cranlogs.r-pkg.org/badges/grand-total/uniset)](https://cran.r-project.org/package=uniset)
+<img src='man/figures/logo.png' align="right" height="139" />
 <!-- badges: end -->
 
-# uniset
+# uniset 
 Package `uniset` provides an easily accessible, user-friendly text file as settings-file for your R-package.
 
 ### Description 
