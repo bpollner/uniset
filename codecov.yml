@@ -1,5 +1,8 @@
 comment: false
 
+codecov:
+  token: 96fd7467-69dd-4522-aa47-26964809369e
+
 coverage:
   status:
     project:
@@ -12,5 +15,3 @@ coverage:
         target: auto
         threshold: 1%
         informational: true
-codecov:
-  token: 96fd7467-69dd-4522-aa47-26964809369e
