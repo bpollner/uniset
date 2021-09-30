@@ -158,7 +158,7 @@ and simply modify (add a key) there the file 'dogPack_settings.R'.
 Now the **user** of `dogPack` calls a function that includes the auto-update function `uniset::uniset_autoUpS`:
 
 ```
-dogPack_demo_autoUpS()
+dogPack_demo_autoUpS(F)
 ```
 The **user** of `dogPack` will then have the new key added to the local file 'dogPack_settings.R' in the folder 'dogPack_SH' in the home directory (default location).  
 
@@ -167,7 +167,7 @@ The same is true for deleting keys: again, open the file 'dogPack_settings.R' in
 Now the **user** of `dogPack` calls again a function that includes the auto-update function `uniset::uniset_autoUpS`:
 
 ```
-dogPack_demo_autoUpS()
+dogPack_demo_autoUpS(F)
 ```
 and surplus keys will be deleted from the local file 'dogPack_settings.R'.
 
