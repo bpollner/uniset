@@ -183,17 +183,39 @@ pathToPack <- paste0(td, "/dopaem/inst/", setFiName)
 folderLocal <- paste0(td, "/", tempSysHome, "/", fn_taPaSH) # same as taPaSH_system above
 nameLocal <- setFiName
 tmpl <- "_TEMPLATE"
-pt1 <-  paste0(td, "/dopaem/R/", "s_mod_plus.R"); msg1 <- "varAdd1, varAdd2, varAdd3"
-pt11 <-  paste0(td, "/dopaem/R/", "s_mod_plus_my.R"); msg11 <- "myAdd01, myAdd02, myAdd1, myAddTNH, myAdd2, myAdd3, myAdd4"
-pt12 <-  paste0(td, "/dopaem/R/", "s_mod_plus_my2.R"); msg12 <- "peter, paul, mary, newHeaderKey"
-pt13 <-  paste0(td, "/dopaem/R/", "s_mod_plus_my3.R"); msg13 <- "changed, John"
-pt10 <-  paste0(td, "/dopaem/R/", "s_mod_plus2.R"); msg10 <- "varAdd_0, varAdd1, varAdd2, varAdd3, varAdd4, varAdd5, varAdd6"
-pt2 <-  paste0(td, "/dopaem/R/", "s_mod_minus.R"); msg2 <- "willBeDeleted1, willBeDeleted2, willBeDeleted3"
-pt3 <-  paste0(td, "/dopaem/R/", "s_mod_plus_minus.R"); msg3 <- "comboAdd1, comboAdd2, comboAdd3"
-pt4 <-  paste0(td, "/dopaem/R/", "s_block_new.R"); msg4 <- "newBlock1, newBlock2, newBlock3, below_newBlock4"
-pt5 <-  paste0(td, "/dopaem/R/", "s_block_delete.R"); msg5 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable"
-pt6 <-  paste0(td, "/dopaem/R/", "s_block_delete2.R"); msg6 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable, block3_giveMeaningfulNames, favouriteColor, willBeDeleted2, comboDelete2, comboDelete3"
-pt7 <-  paste0(td, "/dopaem/R/", "s_block_delete3.R"); msg7 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable, block4, blabla, andSoOn, petterson, findus, mouse"
+
+pt1 <-  paste0(td, "/dopaem/R/", "s_mod_plus.R")
+msg1 <- "varAdd1, varAdd2, varAdd3"
+
+pt11 <-  paste0(td, "/dopaem/R/", "s_mod_plus_my.R")
+msg11 <- "myAdd01, myAdd02, myAdd1, myAddTNH, myAdd2, myAdd3, myAdd4"
+
+pt12 <-  paste0(td, "/dopaem/R/", "s_mod_plus_my2.R")
+msg12 <- "peter, paul, mary, newHeaderKey"
+
+pt13 <-  paste0(td, "/dopaem/R/", "s_mod_plus_my3.R")
+msg13 <- "changed, John"
+
+pt10 <-  paste0(td, "/dopaem/R/", "s_mod_plus2.R")
+msg10 <- "varAdd_0, varAdd1, varAdd2, varAdd3, varAdd4, varAdd5, varAdd6"
+
+pt2 <-  paste0(td, "/dopaem/R/", "s_mod_minus.R")
+msg2 <- "willBeDeleted1, willBeDeleted2, willBeDeleted3"
+
+pt3 <-  paste0(td, "/dopaem/R/", "s_mod_plus_minus.R")
+msg3 <- "comboAdd1, comboAdd2, comboAdd3"
+
+pt4 <-  paste0(td, "/dopaem/R/", "s_block_new.R")
+msg4 <- "newBlock1, newBlock2, newBlock3, below_newBlock4"
+
+pt5 <-  paste0(td, "/dopaem/R/", "s_block_delete.R")
+msg5 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable"
+
+pt6 <-  paste0(td, "/dopaem/R/", "s_block_delete2.R")
+msg6 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable, block3_giveMeaningfulNames, favouriteColor, willBeDeleted2, comboDelete2, comboDelete3"
+
+pt7 <-  paste0(td, "/dopaem/R/", "s_block_delete3.R")
+msg7 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable, block4, blabla, andSoOn, petterson, findus, mouse"
 
 cleanUp <- function(onTest=TRUE){
     unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal, onTest) # go back to original

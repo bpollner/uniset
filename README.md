@@ -24,9 +24,9 @@ The target package has to list `uniset` as an import, and then you can use the f
 ***
 
 ## Installation
-From CRAN XXX (not yet)
+Install release version from CRAN via
 ```
-xxxxxx
+install.packages("uniset") 
 ```
 Or download from github:
 ```

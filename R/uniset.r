@@ -40,6 +40,9 @@
 #' the target package will be preserved. So the author of the target package can add or
 #' delete keys from the xxx_settings.R file without worrying that this will cause any
 #' effort or troubles for the user of the target package.
+#' @section Links: Please see \url{https://bpollner.github.io/uniset/} for a 
+#' practical example; bug reports can be made at 
+#' \url{https://github.com/bpollner/uniset/issues}.
 #' @author Bernhard Pollner, Zoltan Kovacs
 #' @section Maintainer: Bernhard Pollner <bernhard.pollner@@mac.com>
 #' @section Important Functions: \code{\link{uniset_copyFilesToPackage}},

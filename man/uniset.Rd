@@ -55,6 +55,12 @@ delete keys from the xxx_settings.R file without worrying that this will cause a
 effort or troubles for the user of the target package.
 }
 
+\section{Links}{
+ Please see \url{https://bpollner.github.io/uniset/} for a 
+practical example; bug reports can be made at 
+\url{https://github.com/bpollner/uniset/issues}.
+}
+
 \section{Maintainer}{
  Bernhard Pollner <bernhard.pollner@mac.com>
 }

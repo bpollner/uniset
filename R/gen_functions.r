@@ -682,19 +682,19 @@ addMissingKeys <- function(ftLocal, splitChar, taPaObj, pathToPack, folderLocal,
 			ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj) # could be removed (is done at the top of the loop already)
 			locNames <- c(locNames[1:locHookKeyInd], missingKeys[i], locNames[(locHookKeyInd+1):length(locNames)])
 			if (FALSE) {
-		#		print(txtUpper);
+		#		print(txtUpper)
 				print(locHook)
-				print(txtBetweenLocalUpper);
-				print(txtBetweenPack);
-				print(newKVP);
-		#		print(txtEmptyBelowPacKey);
-		#		print(txtBetweenLocalLower);
-				print(locNext);
+				print(txtBetweenLocalUpper)
+				print(txtBetweenPack)
+				print(newKVP)
+		#		print(txtEmptyBelowPacKey)
+		#		print(txtBetweenLocalLower)
+				print(locNext)
 		#		print(txtLower)
 		#		#
 		#		print(ftLocal)
-				print("---------------------------");
-	  			wait()
+				print("---------------------------")
+	  	#		wait()
 			} # end if TRUE  # dev helpers, is printing things.
 		} # end for i (going through missing keys)
 		maxSD <- getMaxSpace(ftLocal) # the max space after adding keys
