@@ -31,7 +31,7 @@ dogPack_demo_updateSettings <- function() {
 #' @title Demo Autoupdate
 #' @description AutoUpdate Settings. Is also reading the value of the
 #' key 'favouriteColor' from the 'dogPack_settings.R' file.
-#' param txt Character
+#' @param txt Character
 #' @export
 dogPack_demo_autoUpS <- function(txt="My favourite color is ") {
 

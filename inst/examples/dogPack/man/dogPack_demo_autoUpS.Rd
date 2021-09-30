@@ -6,8 +6,10 @@
 \usage{
 dogPack_demo_autoUpS(txt = "My favourite color is ")
 }
+\arguments{
+\item{txt}{Character}
+}
 \description{
 AutoUpdate Settings. Is also reading the value of the
 key 'favouriteColor' from the 'dogPack_settings.R' file.
-param txt Character
 }
