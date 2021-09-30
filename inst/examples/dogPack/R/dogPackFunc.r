@@ -34,9 +34,10 @@ dogPack_demo_updateSettings <- function(silent=FALSE) {
 #' @title Demo Autoupdate
 #' @description AutoUpdate Settings. Is also reading the value of the
 #' key 'favouriteColor' from the 'dogPack_settings.R' file.
+#' @param tellMe Logical. If the favourite color should be printed. 
 #' @param txt Character
 #' @export
-dogPack_demo_autoUpS <- function(txt="My favourite color is ") {
+dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 	
 	uniset::uniset_autoUpS(get("uev"))
 	# As the developer of the target package, in our example the package 'dogPack', you would 
@@ -73,8 +74,9 @@ dogPack_demo_autoUpS <- function(txt="My favourite color is ") {
 	favColor <- stn$favouriteColor # we defined 'stn' in the beginning of the function
 	
 	txtOut <- paste0(trimws(txt), ": \n", favColor, "\n")
-	cat(txtOut)	
-	
+	if (tellMe) {
+		cat(txtOut)	
+	} # end if
 	return(invisible(NULL))
 } # EOF
 
@@ -84,9 +86,10 @@ dogPack_demo_autoUpS <- function(txt="My favourite color is ") {
 #' @description A function that is \strong{not} auto-updating the values from 
 #' the settings file. Is also reading the value of the key 'favouriteColor' 
 #' from the 'dogPack_settings.R' file.
+#' @param tellMe Logical. If the favourite color should be printed. 
 #' @param txt Character
 #' @export
-dogPack_demo_No_autoUpS<- function(txt="My favourite color is ") {
+dogPack_demo_No_autoUpS<- function(tellMe=TRUE, txt="My favourite color is ") {
 	
 	stn <- get("stn", envir=get(".doe"))
 	# Read in the 'stn' object from the environment '.doe'. Subsequently, cou can access values via
@@ -110,8 +113,8 @@ dogPack_demo_No_autoUpS<- function(txt="My favourite color is ") {
 	favColor <- stn$favouriteColor # we defined 'stn' in the beginning of the function
 	
 	txtOut <- paste0(trimws(txt), ": \n", favColor, "\n")
-	cat(txtOut)	
-	
+	if (tellMe) {
+		cat(txtOut)	
+	} # end if	
 	return(invisible(NULL))
-
 } # EOF
