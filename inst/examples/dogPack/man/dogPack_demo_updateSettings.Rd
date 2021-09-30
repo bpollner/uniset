@@ -4,7 +4,13 @@
 \alias{dogPack_demo_updateSettings}
 \title{Demo Update Settings}
 \usage{
-dogPack_demo_updateSettings()
+dogPack_demo_updateSettings(silent = FALSE)
+}
+\arguments{
+\item{silent}{Logical. If a confirmation should be printed. Defaults to 'FALSE'.}
+}
+\value{
+A (invisible) list containing the key=value pairs from the settings file.
 }
 \description{
 Update Settings

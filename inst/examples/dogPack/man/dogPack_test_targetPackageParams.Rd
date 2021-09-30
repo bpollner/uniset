@@ -8,7 +8,8 @@ dogPack_test_targetPackageParams()
 }
 \value{
 Prints target package name, environment name, name of list-object,
-name of folder where the local 'dogPack_settings.R' resides etc.
+name of folder where the local 'dogPack_settings.R' resides etc, 
+and gives it back as (invisible) list.
 }
 \description{
 Simple test if setup is ok.

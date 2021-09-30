@@ -89,7 +89,7 @@ In this example we obtain the value from the key 'favouriteColor' from the list 
 Assuming you copied or moved the required files as described above, open the RStudio project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
 ```
 library(dogPack)
-dogPack_test_targetPackageParams() # should give a nice printout of the target package parameters
+dogPack_test_targetPackageParams() # gives a printout of the target package parameters
 dogPack_demo_updateSettings()
 ```
 You might have to restart R now for the changes in the environment variable in your .Renviron file to become effective.  
