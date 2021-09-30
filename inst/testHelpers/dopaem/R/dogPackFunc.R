@@ -1,15 +1,6 @@
-#' @title test
-#' @description test test
-#' @param uev XXX
+#' @title Test Target Package Parameters
+#' @description Test Target Package Parameters
 #' @export
-dogPackTest <- function(){
+dogPack_test_targetPackageParams <- function(){
     uniset::uniset_test(get("uev"))
 } # EOF
-
-#' @title Update Settings
-#' @description Update Settings
-#' @param uev XXX
-#' @export
-dogPack_demo_updateSettings <- function() {
-        uniset::uniset_updateSettings(get("uev"))
-} # eof

@@ -54,14 +54,14 @@ uniset_getFiles("dogPack")
 Move the 'dogPack_settings.r' file into the 'inst' folder (create one if not already done) of 'dogPack'. Move the file 'zzz.r" and the file 'uniset_globals' to the 'R' folder of 'dogPack'.  
 In case that the '.onLoad' function already is defined, add the six lines of code from the file 'zzz.R' to your existing '.onLoad' function.  
 
-* **2) Write files directly to target package (recommended)**
-With everything left at the defaults, this call to *uniset_copyFilesToPackage()* copies the three required files directly into the target package -- called 'dogPack' in our example, living directly on the desktop.
+* **2) Write files directly to target package**
+(recommended) With everything left at the defaults, this call to *uniset_copyFilesToPackage()* copies the three required files directly into the target package -- called 'dogPack' in our example, living directly on the desktop.
 ```
 path <- "~/desktop/dogPack"
 uniset_copyFilesToPackage(path)
 ```
 ### Some more explanations
-You can define functions **in dogPack** that can call the following three functions from 'uniset': 
+You can define functions **in dogPack** (what is in this example the target package) that can call the following three functions from 'uniset': 
 * uniset::uniset_test(get("uev"))
 * uniset::uniset_updateSettings(get("uev"))
 * uniset::uniset_autoUpS(get("uev"))  
@@ -72,10 +72,10 @@ You can define functions **in dogPack** that can call the following three functi
 * When called for the **first time**
   * Creating the required environment variable in your .Renviron file, and
   * copying the 'dogPack_settings.R' file to a folder in the users home directory. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package 'dogPack'.
-* When called subsequently, simply updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the 'dogPack' installation folder. Thus, whenever the developer of package 'dogPack' is introducing new or deleting obsolete key=value pairs, they will be automatically added to or deleted from the user´s file. Any values that the user modified will be preserved. Thus, a new update or installation of package 'dogPack' will not force the user of package 'dogPack' to completely re-customize the 'dogPack_settings.R' file. 
+* When called subsequently, simply updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the 'dogPack' installation folder. Thus, whenever the developer of package 'dogPack' is introducing new or deleting obsolete key=value pairs, they will be automatically added to or deleted from the user´s file. Any values that the user modified will be preserved. Thus, **a new update or installation of package 'dogPack' will not force the user of package 'dogPack' to completely re-customize the 'dogPack_settings.R' file**. 
   
 **In package 'dogPack'**, you could now define functions as follows:
-> dogPackTest <- function(){uniset::uniset_test(get("uev"))}  
+> dogPack_test_targetPackageParams <- function(){uniset::uniset_test(get("uev"))}  
 > dogPack_demo_updateSettings <- function(){uniset::uniset_updateSettings(get("uev"))}  
 > dogPack_demo_autoUpS <- function(){uniset::uniset_autoUpS(get("uev"))}  
 
@@ -86,10 +86,10 @@ color <- .doe$stn$favouriteColor # does not work yet
 In this example we obtain the value from the key 'favouriteColor' from the list called 'stn' in the environment called '.doe'. All these names (environment name, object name) can of course be customized when using the functions *uniset_getFiles* or *uniset_copyFilesToPackage*.  
 
 ### The real world test
-Open the RStudio project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
+Assuming you copied or moved the required files as described above, open the RStudio project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
 ```
 library(dogPack)
-dogPackTest() # should give a nice printout
+dogPack_test_targetPackageParams() # should give a nice printout of the target package parameters
 dogPack_demo_updateSettings()
 ```
 You might have to restart R now for the changes in the environment variable in your .Renviron file to become effective.  

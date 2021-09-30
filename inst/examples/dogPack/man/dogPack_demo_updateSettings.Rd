@@ -2,7 +2,7 @@
 % Please edit documentation in R/dogPackFunc.r
 \name{dogPack_demo_updateSettings}
 \alias{dogPack_demo_updateSettings}
-\title{Update Settings}
+\title{Demo Update Settings}
 \usage{
 dogPack_demo_updateSettings()
 }

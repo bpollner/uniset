@@ -2,11 +2,12 @@
 % Please edit documentation in R/dogPackFunc.r
 \name{dogPack_demo_autoUpS}
 \alias{dogPack_demo_autoUpS}
-\title{Test Autoupdate}
+\title{Demo Autoupdate}
 \usage{
-dogPack_demo_autoUpS()
+dogPack_demo_autoUpS(txt = "My favourite color is ")
 }
 \description{
 AutoUpdate Settings. Is also reading the value of the
 key 'favouriteColor' from the 'dogPack_settings.R' file.
+param txt Character
 }
