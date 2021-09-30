@@ -202,9 +202,9 @@ createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsP
 #' @details The importance of providing rather short characters at the arguments
 #' 'taPaEnv' and 'taPaObj' lies in the fact that those two names will be used to
 #' get any parameter stored in the settings file of the target package. For example,
-#' if you provide '.dpe' at the argument 'taPaEnv' and 'stn' at the argument
+#' if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
 #' 'taPaObj', then all the values stored in the settings file can be retrieved by
-#' calling \code{.dpe$stn$XXX}, with 'XXX' being any of the keys defined in the
+#' calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
 #' settings file.
 #' @param taPaName Character length one. The name of the target package.
 #' @param taPaEnv Character length one. The name of the environment where the
@@ -323,9 +323,9 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where="
 #' @details The importance of providing rather short characters at the arguments
 #' 'taPaEnv' and 'taPaObj' lies in the fact that those two names will be used to
 #' get any parameter stored in the settings file of the target package. For example,
-#' if you provide '.dpe' at the argument 'taPaEnv' and 'stn' at the argument
+#' if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
 #' 'taPaObj', then all the values stored in the settings file can be retrieved by
-#' calling \code{.dpe$stn$XXX}, with 'XXX' being any of the keys defined in the
+#' calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
 #' settings file.
 #' @param pathToPackage Character length one. The path to the root of the
 #' target package.
