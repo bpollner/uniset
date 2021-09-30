@@ -72,12 +72,12 @@ You can define functions **in dogPack** that can call the following three functi
 * When called for the **first time**
   * Creating the required environment variable in your .Renviron file, and
   * copying the 'dogPack_settings.R' file to a folder in the users home directory. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package 'dogPack'.
-* When called subsequently, simply updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the 'dogPack' installation folder. Thus, whenever the developer of package 'dogPack' is introducing new or deleting obsolete key=value pairs, they will be (usually) automatically added to or deleted from the user´s file. Any values that the user modified will be preserved. Thus, a new update or installation of package 'dogPack' will not force the user of package 'dogPack' to completely re-customize the 'dogPack_settings.R' file. 
+* When called subsequently, simply updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the 'dogPack' installation folder. Thus, whenever the developer of package 'dogPack' is introducing new or deleting obsolete key=value pairs, they will be automatically added to or deleted from the user´s file. Any values that the user modified will be preserved. Thus, a new update or installation of package 'dogPack' will not force the user of package 'dogPack' to completely re-customize the 'dogPack_settings.R' file. 
   
 **In package 'dogPack'**, you could now define functions as follows:
 > dogPackTest <- function(){uniset::uniset_test(get("uev"))}  
-> dogPack_updateSettings <- function(){uniset::uniset_updateSettings(get("uev"))}  
-> dogPack_autoUpS <- function(){uniset::uniset_autoUpS(get("uev"))}  
+> dogPack_demo_updateSettings <- function(){uniset::uniset_updateSettings(get("uev"))}  
+> dogPack_demo_autoUpS <- function(){uniset::uniset_autoUpS(get("uev"))}  
 
 The latter function is intended to be placed at the beginning of any function of package 'dogPack' to always (if desired) automatically source the local 'dogPack_settings.R' file into the environment called '.doe' (in our example). Thus, any values stored in the local 'dogPack_settings.R' file can be obtained via
 ```
@@ -90,18 +90,18 @@ Open the RStudio project file in the folder 'dogPack' on your desktop, build and
 ```
 library(dogPack)
 dogPackTest() # should give a nice printout
-dogPack_updateSettings()
+dogPack_demo_updateSettings()
 ```
 You might have to restart R now for the changes in the environment variable in your .Renviron file to become effective.  
 Now call again:
 ```
-dogPack_updateSettings()
+dogPack_demo_updateSettings()
 ```
 Now everything should be ready and set up.  
 
 Use the auto-update function within your code when you want to automatically source all the values from the local 'dogPack_settings.R' file into the environment '.doe':
 ```
-dogPack_autoUpS()
+dogPack_demo_autoUpS()
 ```
 Now, it is possible to obtain values from 'dogPack_settings.R' directly via:
 ```
@@ -112,7 +112,7 @@ Change the value of the key 'favouriteColor' in the file 'dogPack_settings.R' in
 ```
 color <- .doe$stn$favouriteColor
 color # should be the same as before
-dogPack_autoUpS()
+dogPack_demo_autoUpS()
 color <- .doe$stn$favouriteColor
 color # should have the new value
 ```
@@ -124,7 +124,7 @@ Be aware that a call to an update function is re-instating the values as written
 ```
 color <- .doe$stn$favouriteColor
 color # should be "lightyellow"
-dogPack_autoUpS()
+dogPack_demo_autoUpS()
 color <- .doe$stn$favouriteColor
 color # should be the value you assigned before
 ```
@@ -138,7 +138,7 @@ and simply modify there the file 'dogPack_settings.R'.
 
 Now the *user of dogPack* will run again an update settings function:
 ```
-dogPack_updateSettings()
+dogPack_demo_updateSettings()
 ```
 The *user of dogPack* will then have the new key added to the local file 'dogPack_settings.R' in the folder 'dogPack_SH' in the home directory (default location).  
 

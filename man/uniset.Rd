@@ -14,16 +14,17 @@ package to make use of the functionality offered by package 'uniset', three
 files have to be exported by 'uniset' and be placed into the target package.
 }
 \details{
-There are two ways to generate the required files:
+There are two ways to generate the files required for the target
+package to make use of 'uniset':
 \describe{
-\item{Export and move manually}{Use \code{\link{uniset_getFiles}}, then move
+\item{-) Export and move manually}{Use \code{\link{uniset_getFiles}}, then move
 the 'xxx_settings.r' file ('xxx' for the name of your package) into the 'inst'
 folder (create one if not already done) of the package that you want to enable
 to use the package 'uniset' (the target package). Move the file 'zzz.r" and the
 file 'uniset_globals' to the 'R' folder of the target package. In case that the
 '.onLoad' function already is defined, add the six lines of code from the file
 'zzz.R' to your existing '.onLoad' function.}
-\item{Write directly to target package}{(Recommended) Use
+\item{-) Write directly to target package}{(Recommended) Use
 \code{\link{uniset_copyFilesToPackage}} to copy the required files directly into
 the target package.}
 }

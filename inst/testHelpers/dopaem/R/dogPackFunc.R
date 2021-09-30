@@ -10,7 +10,6 @@ dogPackTest <- function(){
 #' @description Update Settings
 #' @param uev XXX
 #' @export
-dogPack_updateSettings <- function() {
-
+dogPack_demo_updateSettings <- function() {
         uniset::uniset_updateSettings(get("uev"))
 } # eof

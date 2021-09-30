@@ -2,10 +2,14 @@
 % Please edit documentation in R/dogPackFunc.r
 \name{dogPackTest}
 \alias{dogPackTest}
-\title{test}
+\title{dogPack TEst}
 \usage{
 dogPackTest()
 }
+\value{
+Prints target package name, environment name, name of list-object,
+name of folder where the local 'dogPack_settings.R' resides etc.
+}
 \description{
-test test
+Simple test if setup is ok.
 }
