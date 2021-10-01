@@ -10,7 +10,7 @@
 Package `uniset` provides an easily accessible, user-friendly text file as settings-file for your R-package.
 
 ### Description 
-Package `uniset` provides the means to outfit your package (the 'target package') with an accessible, user-friendly and easy to read text file where settings resp. various parameters can be saved. This settings file remains in place and can remain unchanged even when the target package is updated or re-installed.  
+Package `uniset` enables any package (the 'target package') to provide its users an easily accessible, user-friendly and human readable text file where key=value pairs (used by functions defined in the target package) can be saved. This settings file lives in a location defined by the user of the target package, and its user-defined values remain unchanged even when the author of the target package is introducing or deleting keys, or when the target package is updated or re-installed. 
 In order to enable the target package to make use of the functionality offered by package `uniset`, three files have to be exported by `uniset` and be placed into the target package.
 
 ### Advantage
