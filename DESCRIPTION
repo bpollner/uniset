@@ -1,12 +1,12 @@
 Package: uniset
 Type: Package
-Title: Dynamic Settings File for R
-Version: 0.1.1
+Title: Dynamic Settings File
+Version: 0.1.2
 Authors@R: c(
     person("Bernhard", "Pollner", email = "bernhard.pollner@mac.com", role = c("cre","aut")),
     person("Zoltan", "Kovacs", email = "kovacs@correltech.hu", role = "aut"))
 Maintainer: Bernhard Pollner <bernhard.pollner@mac.com>
-Description: Package 'uniset' enables any package (the 'target package') to provide its users an easily accessible, user-friendly and human readable text file where key=value pairs (used by functions defined in the target package) can be saved. This settings file lives in a location defined by the user of the target package, and its user-defined values remain unchanged even when the author of the target package is introducing or deleting keys, or when the target package is updated or re-installed. 
+Description: Any package (subsequently called 'target package') is enabled to provide its users an easily accessible, user-friendly and human readable text file where key=value pairs (used by functions defined in the target package) can be saved. This settings file lives in a location defined by the user of the target package, and its user-defined values remain unchanged even when the author of the target package is introducing or deleting keys, or when the target package is updated or re-installed. 
 URL: https://bpollner.github.io/uniset/
 BugReports: https://github.com/bpollner/uniset/issues
 Language: en-US
