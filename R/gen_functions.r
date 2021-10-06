@@ -105,6 +105,8 @@ printFinalCodeMessage <- function(taPaEnv, taPaObj, expSettingsName) {
 ###############
 readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) {
 	#
+	nsp_replace <- glob_nsp_replace 							# YYY_pkgUniset_envs
+	nsp <- glob_nsp												# pkgUniset_envs
 	unisEnvName <- glob_unisetEnvName  							# XXX_unisetEnv
 	taPackName <- glob_targetPackageName 						# XXX_packageName
 	taPackSHname <- glob_targetPackageSettingsHomeVarName		# XXX_SH
@@ -145,6 +147,7 @@ readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) 
 	expSettingsName <- paste0(taPaName, "_", filnameSettings) # put the package name and 'settings.r' together
 	thisUnisetEnvName <-  paste0(".", taPaName, unisetEnvSuffix) # the underscore '_' between is already above     # here we dictate the . in the beginning.
 	#
+	zzzTxt <-gsub(nsp_replace, nsp, zzzTxt)			# fill in the name for the search path
 	zzzTxt <-gsub(unisEnvName, thisUnisetEnvName, zzzTxt) # replace the uniset environment name with a package-prefix
 	zzzTxt <-gsub(taPackName, taPaName, zzzTxt)	# fill in the provided target package name
 	zzzTxt <-gsub(taPackSHname, taPaSH, zzzTxt) # settings home
@@ -999,6 +1002,26 @@ getUnisEnvirVariables <- function(unisetEnv) {
 	return(list(taPaName=taPaName, taPaEnv=taPaEnv, taPaSH=taPaSH, taPaObj=taPaObj, tmplName=tmplName, setFiName=setFiName))
 } # EOF
 
+checkSearchPath <- function(nsp, taPaName) {
+	if (! nsp %in% search()) {
+		stop(paste0("Sorry, it seems that when loading the package '", taPaName, "' the required object on the search path could not be attached.\nPlease restart R and reload the package '", taPaName, "'.\n"), call.=FALSE)
+	} # end if
+} # EOF
+
+sourceSettingsToEnv <- function(taPaSH, setFiName, taPaEnv, nsp, taPaName, silent) {
+	pathSettings <- paste0(Sys.getenv(taPaSH), "/", setFiName) # the path to the local settings file as defined in the .Renviron file
+	#
+	pat <- paste0("assign(\"", taPaEnv, "\", new.env(), pos=\"", nsp, "\")") # create a new environment called taPaEnv, searchable at specified location called nsp in searchpath
+	eval(parse(text=pat))
+	sys.source(pathSettings, envir=get(taPaEnv, pos=nsp))	# source the settings file to the new environment
+	#
+	if (!silent) {
+		cat(paste(taPaName, "settings updated\n"))
+	}
+	pat <- paste0("return(invisible(", taPaEnv, "$", taPaObj, "))")  #		return(invisible(.ap2$stn)) # was that
+	eval(parse(text=pat)) # is returning the settings list
+} # EOF
+
 #' @title Update Settings of Target Package
 #' @description Manually read in the settings-file in the target package settings
 #' home directory as specified in the .Renviron file.
@@ -1031,19 +1054,12 @@ uniset_updateSettings <- function(unisetEnv, silent=FALSE) {
 		taPaObj <- aaa$taPaObj
 		tmplName <- aaa$tmplName
 		setFiName <- aaa$setFiName
+	nsp <- glob_nsp	 # the name search path
 	######
+	checkSearchPath(nsp, taPaName) # the search path object should have been attached when loading the target package
 	ok <- checkSettings(taPaList=aaa) # makes sure that we have the latest version of the settings.r file in the settings-home directory defined in .Renviron
 	if (ok) {
-		pathSettings <- paste0(Sys.getenv(taPaSH), "/", setFiName) # the path to the local settings file as defined in the .Renviron file
-		pat <- paste0(".GlobalEnv$", taPaEnv, " <- new.env()") # create a new environment
-		eval(parse(text=pat)) # possibly also an other way
-		sys.source(pathSettings, envir=get(taPaEnv, pos=".GlobalEnv"))
-		#
-		if (!silent) {
-			cat(paste(taPaName, "settings updated\n"))
-		}
-		pat <- paste0("return(invisible(", taPaEnv, "$", taPaObj, "))")  #		return(invisible(.ap2$stn)) # was that
-		eval(parse(text=pat))
+		return(invisible(sourceSettingsToEnv(taPaSH, setFiName, taPaEnv, nsp, taPaName, silent))) # is sourcing the settings file to taPaEnv and returns the (invisible) settings list
 	} else { # so if the settings check was not ok
 		return(invisible(NULL))
 	}

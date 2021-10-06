@@ -1,6 +1,8 @@
 # global definitions. Maybe not necessary. We will see.
 # any character with XXX will be replaced by user input
 # has to match the values (characters) in the templates in the settings.r, the zzz.r file and the uniset_globals.r file
+glob_nsp_replace <- "YYY_pkgUniset_envs"
+glob_nsp <- "pkgUniset_envs"								# the name to be used o the search path for everything uniset related
 glob_unisetEnvName <- "XXX_unisetEnv" 						# the character to be replaced in the template # the idea is that every package has its own environment with the same name for variables in that
 glob_targetPackageName <- "XXX_packageName"					#
 glob_targetPackageSettingsHomeVarName <- "XXX_SH"			#
