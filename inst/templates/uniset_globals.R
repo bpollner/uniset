@@ -15,7 +15,7 @@
 uev <- uniset_env_name <-  "XXX_unisetEnv" 
 
 # Explanation: 
-# this is the name of the environment holding the !!uniset!! variables defining the target package name etc. in the '.onLoad' function in file 'zzz.r'
+# this is the name of the environment holding the !!uniset!! variables defining the target package name etc. in the '.onLoad' function in file 'zzz.R'
 # it is recommended that the name of the object is kept rather short, as it has to be passed on to the functions from 'uniset'.
 # it is highly recommended that the package name is included in the name of the environment, so that the resulting name of the environment is unique.
 # This is necessary so that more than one loaded package can make use of 'uniset'

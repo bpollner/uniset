@@ -12,12 +12,27 @@ in the target package holding the name of the uniset-environment for the
 specific target package ('uniset_env_name' or 'uev', see examples at
 \code{\link{uniset}}.)}
 }
+\value{
+No return value, function is called for its side effects, i.e to 
+automatically update / (re-)source the settings file into an environment defined 
+by the target package. If the the update was unsuccessful, 'stop' is called.
+}
 \description{
 Use this function within your code to automatically update the
 settings from the users settings file
 }
 \details{
-If 'autoUpdateSettings' in xxx_settings.r is left at 'TRUE', the
+If 'autoUpdateSettings' in xxx_settings.R is left at 'TRUE', the
 settings will be checked resp. updated automatically every time a function in
 the target package is calling \code{\link{uniset_autoUpS}}.
 }
+\section{Important}{
+ This function is meant to be called from within the 
+target package.
+}
+
+\section{Examples}{
+ Please refer to \code{\link{uniset}} for a link to examples 
+and a real-world demo.
+}
+

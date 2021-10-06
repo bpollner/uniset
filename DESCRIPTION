@@ -16,7 +16,7 @@ LazyData: true
 RoxygenNote: 7.1.2
 Depends:
     R (>= 3.3.2)
-Imports:
+Imports: easycsv
 Suggests: 
     covr,
     testthat (>= 3.0.0)

@@ -16,9 +16,13 @@ specific target package ('uniset_env_name' or 'uev', see examples at
 to 'FALSE'}
 }
 \value{
-An (invisible) list with the settings resp. a list called as defined
-in argument 'taPaObj' in the environment called as defined in argument 'taPaEnv'.
-See \code{\link{uniset}} for examples.
+This function is called for its side effects, i.e to 
+manually update / (re-)source the settings file into an environment 
+defined by the target package. An (invisible) list with the settings resp. a 
+list called as defined in argument 'taPaObj' in the environment called as 
+defined in argument 'taPaEnv' in the functions \code{\link{uniset_getFiles}} 
+or \code{\link{uniset_copyFilesToPackage}} gets returned additionally.
+If the the update was unsuccessful, invisible(NULL) is returned.
 }
 \description{
 Manually read in the settings-file in the target package settings
@@ -36,5 +40,15 @@ It is possible to manually provide a different path in the
 variable as defined in argument `taPaSH` in the .Renviron file, pointing
 to any folder where then the xxx_settings.R file will reside.
 XXX Improve this text please.
+}
+
+\section{Important}{
+ This function is meant to be called from within the 
+target package.
+}
+
+\section{Examples}{
+ Please refer to \code{\link{uniset}} for a link to examples 
+and a real-world demo.
 }
 

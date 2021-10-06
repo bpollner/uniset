@@ -36,6 +36,10 @@ dogPack_demo_updateSettings <- function(silent=FALSE) {
 #' key 'favouriteColor' from the 'dogPack_settings.R' file.
 #' @param tellMe Logical. If the favourite color should be printed. 
 #' @param txt Character
+#' @return Is called for its side effects, i.e. to automatically update 
+#' resp. (re-)source the settings file. If 'tellMe' is left at the default 
+#' 'TRUE', the value of the key 'favouriteColor' in the settings file is 
+#' printed. Returns (invisible) NULL. 
 #' @export
 dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 	
@@ -88,6 +92,9 @@ dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 #' from the 'dogPack_settings.R' file.
 #' @param tellMe Logical. If the favourite color should be printed. 
 #' @param txt Character
+#' @return Does NOT update resp. (re-)sourece the settings file. If 'tellMe' is 
+#' left at the default 'TRUE', the value of the key 'favouriteColor' in the settings 
+#' file is printed. Returns (invisible) NULL.
 #' @export
 dogPack_demo_No_autoUpS<- function(tellMe=TRUE, txt="My favourite color is ") {
 	

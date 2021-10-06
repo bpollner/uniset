@@ -14,16 +14,16 @@ Package `uniset` enables any package (the 'target package') to provide its users
 In order to enable the target package to make use of the functionality offered by package `uniset`, three files have to be exported by `uniset` and be placed into the target package.
 
 ### Advantage
-The most imminent advantage of the `uniset` settings-file system over using simply a csv-file or an excel-file for permanently storing settings for any package is the fact that the key=value pairs in the 'xxx_settings.R' file get updated (added / deleted) dynamically. So the developer of a package can delete keys or introduce new ones, and the new key=value pairs will be automatically added to or deleted from the local 'xxx_settings.R' file. Values changed by the user of the target package will be preserved. So the author of the target package can add or delete keys from the 'xxx_settings.R' file without worrying that this will cause any effort or troubles for the user of the target package.
+The most imminent advantage of the `uniset` settings-file system over using any static file for permanently storing settings for any package is the fact that the key=value pairs in the 'xxx_settings.R' file get updated (added / deleted) dynamically. So the developer of a package can delete keys or introduce new ones, and the new key=value pairs will be automatically added to or deleted from the local 'xxx_settings.R' file. Values changed by the user of the target package will be preserved. So the author of the target package can add or delete keys from the 'xxx_settings.R' file without worrying that this will cause any effort or troubles for the user of the target package.
 
 ### Two ways to generate the required files
 * **Export and Move Files**  Use **`uniset_getFiles`**, then move the 'xxx_settings.R' file ('xxx' for the name of your package) into the 'inst' folder (create one if not already done) of the target package. Move the file 'zzz.R" and the file 'uniset_globals.R' to the 'R' folder of the target package.  
-In case that the '.onLoad' function already is defined, add the six lines of code from the file 'zzz.R' to your existing '.onLoad' function. 
+In case that the '.onLoad' function already is defined, add the eight lines of code from the file 'zzz.R' to your existing '.onLoad' function. 
 
 * **Write files directly to target package (recommended)**  Alternatively, use **`uniset_copyFilesToPackage`** to copy the required files directly into the target package.  
 
 ### Accessing values from within target package
-Every variable defined in the 'xxx_settings.R' file is accessible in the code of the target package. See the created 'xxx_settings.r' file for an example.  
+Every variable defined in the 'xxx_settings.R' file is accessible in the code of the target package. See the created 'xxx_settings.R' file for an example.  
 The target package has to list `uniset` as an import, and then you can use the functions `uniset_updateSettings` or `uniset_autoUpS` called from a function **defined in the target package** to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'xxx_settings.R' file and have them accessible in an environment created by the target package. See the examples at the documentation for `?uniset` and below.
 ***
 
@@ -57,8 +57,8 @@ With everything left at the defaults, a call to `uniset_getFiles` creates a fold
 ```
 uniset_getFiles("dogPack")
 ```
-Move the 'dogPack_settings.r' file into the 'inst' folder (create one if not already done) of `dogPack`. Move the file 'zzz.r" and the file 'uniset_globals' to the 'R' folder of `dogPack`.  
-In case that the '.onLoad' function already is defined, add the six lines of code from the file 'zzz.R' to your existing '.onLoad' function.  
+Move the 'dogPack_settings.R' file into the 'inst' folder (create one if not already done) of `dogPack`. Move the file 'zzz.R" and the file 'uniset_globals' to the 'R' folder of `dogPack`.  
+In case that the '.onLoad' function already is defined, add the eight lines of code from the file 'zzz.R' to your existing '.onLoad' function.  
 
 * **2) Write files directly to target package**
 (recommended) With everything left at the defaults, this call to `uniset_copyFilesToPackage()` copies the three required files directly into the target package -- called `dogPack` in our example, living directly on the desktop. 

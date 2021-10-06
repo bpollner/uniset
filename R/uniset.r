@@ -1,39 +1,41 @@
-#' @title Universal Settings File for R
-#' @description Package 'uniset' provides the means to outfit your package
-#' (the 'target package') with an easily accessible, user-friendly and easy
-#' to read text file where settings resp. various parameters can be saved.
-#' This settings file remains in place and can remain unchanged even when the
-#' target package is updated or re-installed. In order to enable the target
-#' package to make use of the functionality offered by package 'uniset', three
-#' files have to be exported by 'uniset' and be placed into the target package.
+#' @title Dynamic Settings File
+#' @description Any package (subsequently called 'target package') is enabled 
+#' to provide its users an easily accessible, user-friendly and human readable 
+#' text file where key=value pairs (used by functions defined in the target 
+#' package) can be saved. This settings file lives in a location defined by the 
+#' user of the target package, and its user-defined values remain unchanged even 
+#' when the author of the target package is introducing or deleting keys, or 
+#' when the target package is updated or re-installed. In order to enable the 
+#' target package to make use of the functionality offered by package 'uniset', 
+#' three files have to be exported by 'uniset' and placed into the target package.
 #' @details There are two ways to generate the files required for the target
 #' package to make use of 'uniset':
 #' \describe{
 #' \item{-) Export and move manually}{Use \code{\link{uniset_getFiles}}, then move
-#' the 'xxx_settings.r' file ('xxx' for the name of your package) into the 'inst'
+#' the 'xxx_settings.R' file ('xxx' for the name of your package) into the 'inst'
 #' folder (create one if not already done) of the package that you want to enable
-#' to use the package 'uniset' (the target package). Move the file 'zzz.r" and the
+#' to use the package 'uniset' (the target package). Move the file 'zzz.R" and the
 #' file 'uniset_globals' to the 'R' folder of the target package. In case that the
-#' '.onLoad' function already is defined, add the six lines of code from the file
+#' '.onLoad' function already is defined, add the eight lines of code from the file
 #' 'zzz.R' to your existing '.onLoad' function.}
 #' \item{-) Write directly to target package}{(Recommended) Use
 #' \code{\link{uniset_copyFilesToPackage}} to copy the required files directly into
 #' the target package.}
 #' }
-#' Every variable defined in the xxx_settings.r file is accessible in the code of
-#' the target package. See the created 'xxx_settings.r' file for an example.
+#' Every variable defined in the xxx_settings.R file is accessible in the code of
+#' the target package. See the created 'xxx_settings.R' file for an example.
 #' The target package has to list 'uniset' as an 'import', and then you can
 #' use the function \code{\link{uniset_updateSettings}} or
 #' \code{\link{uniset_autoUpS}} to manually or automatically update the settings,
-#' i.e. to read in the key=value pairs stored in the xxx_settings.r file and have
+#' i.e. to read in the key=value pairs stored in the xxx_settings.R file and have
 #' them accessible in an environment created by the target package.
 #' For an introduction and more detailed information please see
 #' \url{https://bpollner.github.io/uniset/}.
 #' @section Important: In case that the '.onLoad' function already is defined, add
-#' the six lines of code from the file 'zzz.R' to your existing '.onLoad' function.
+#' the eight lines of code from the file 'zzz.R' to your existing '.onLoad' function.
 #' @section Advantage: The most imminent advantage of the 'uniset' settings-file
-#' system over using simply a csv-file or an excel-file for permanently storing
-#' settings for any package is the fact that the key=value pairs in the xxx_settings.R
+#' system over using any static file for permanently storing settings for any 
+#' package is the fact that the key=value pairs in the xxx_settings.R
 #' file get updated (added / deleted) dynamically. So the developer of a package can
 #' delete keys or introduce new ones, and the new key=value pairs will be automatically
 #' added to or deleted from the local xxx_settings.R file. Values changed by the user of
@@ -45,55 +47,18 @@
 #' \url{https://github.com/bpollner/uniset/issues}.
 #' @author Bernhard Pollner, Zoltan Kovacs
 #' @section Maintainer: Bernhard Pollner <bernhard.pollner@@mac.com>
-#' @section Important Functions: \code{\link{uniset_copyFilesToPackage}},
-#' \code{\link{uniset_getFiles}}
-#' @examples
-#' \dontrun{
-#' # for an imaginary package called 'dogPack':
-#' uniset_getFiles("dogPack", ".dpe", "stn")
-#' 	# 'dpe' could be for 'dogPack Environment', 'stn' could be for 'settings'
-#' 	# see ?uniset_getFiles
-#' 	# now move the three files into their target folder
-#' 	# add and modify the key=value pairs in the file 'xxx_settings.r'
-#' 	# You can access the values in the xxx_settings.r file with (in this example):
-#' 	.dpe$stn$XXX  # with 'XXX' being any defined key in the xxx_settings.r file
-#' ################
-#' # or leave everything at their defaults:
-#' uniset_getFiles("dogPack")
-#' # or use:
-#' aa <- "~/desktop/dogPack" # the path to root of package 'dogPack'
-#' uniset_copyFilesToPackage(aa) # uses the defaults for all arguments, will produce
-#' code that enables you to access the key=value pairs as follows:
-#' color <- .doe$stn$favouriteColor # 'favouriteColor' being e.g. a defined key
-#' ################
-#' 	# from 'dogPack', you would call:
-#' updateSettings <- function() { # this function would be defined in package 'dogPack' !
-#' 	  	uniset::uniset_updateSettings(get("uniset_env_name"))
-#' 			# you have to hand over the name of the environment
-#' 			# (via 'get') where all the necessary uniset-variables
-#' 			# are defined. This name is defined as
-#' 			# global variable in the file 'uniset_globals.R'.
-#' } # EOF
-#' updateSettings <- function() { # this function is defined in package 'dogPack' !
-#' 	  	uniset::uniset_updateSettings(get("uev"))	# same as above, short version
-#' } # EOF
-#' ################
-#' # For using the auto-update function (assuming we left everything at default at
-#' # uniset_copyFilesToPackage(aa) above)
-#' someDogPackFunc <- function(m=2) { # this function would defined in package 'dogPack' !
-#'		uniset::uniset_autoUpS(get("uev"))
-#' 		myColor <- .doe$stn$favouriteColor # read in a color from the settings
-#' 		if (.doe$stn$anyDecision == TRUE) { # read in a logical
-#'			plot(1:10, type="l", col=myColor)
-#' 		} else {
-#' 			print(.doe$stn$strength * m) # read in a number
-#' 		}
-#' } # EOF
-#' ################
-#' # look at the sourced key=value pairs via e.g.
-#' str(.doe$stn) # (in our example)
-#' } # end dontrun
+#' @section Functions for preparing the target package: 
+#' \code{\link{uniset_copyFilesToPackage}}, \code{\link{uniset_getFiles}}
+#' @section Functions to be called from the target package:
+#' \code{\link{uniset_updateSettings}}, \code{\link{uniset_autoUpS}}
+#' @section Examples: As the functions to update the settings file and to 
+#' (automatically) source this settings are intended to be called from 
+#' \strong{within} the (installed) target package, please go to 
+#' \url{https://bpollner.github.io/uniset/} for a walk-through, and for 
+#' a real-life demonstration and examples how to use these update functions 
+#' in the code of the target package. 
 #' @importFrom utils str
+#' @importFrom easycsv choose_dir
 #' @docType package
 #' @name uniset
 NULL

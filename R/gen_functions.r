@@ -224,25 +224,20 @@ createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsP
 #' @param where Character length one. The location where the folder with the
 #' resulting three files should be copied to. Defaults to '~/desktop'.
 #' @param taPaSH Character length one. The name of the variable to be defined in
-#' the '.Renviron' file, leading to the place where the settings.r file for the
+#' the '.Renviron' file, leading to the place where the settings.R file for the
 #' target package will be stored. If left at the default 'def', \code{taPaName_SH}
 #' will be used, with 'taPaName' being the value provided at the argument
 #' 'taPaName'.
 #' @param tmpl Character length one. the Character string that will be appended
 #' to the fresh settings file that is possibly copied (by the target package)
 #' to the users settings home directory. Can be left at the default '_TEMPLATE'.
-#' @return Creates a folder at the location specified at argument 'where' with
+#' @return Creates a folder at the location specified at argument 'where' with the
 #' three files to be moved into the target package in it. Returns an (invisible)
 #' character holding the path of the folder where the three files were written
 #' into.
 #' @seealso \code{\link{uniset_copyFilesToPackage}}
-#' @examples
-#' \dontrun{
-#' # for an imaginary package called 'dogPack':
-#' uniset_getFiles("dogPack", ".dpe", "stn")
-#' 	# 'dpe' could be for 'dogPack Environment', 'stn' could be for 'settings'
-#' 	# see details.
-#' }
+#' @section Examples: Please refer to \code{\link{uniset}} for a link to examples 
+#' and a real-world demo.
 #' @export
 uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where="~/desktop", taPaSH="def", tmpl= "_TEMPLATE") {
 	#
@@ -336,14 +331,8 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where="
 #' @return Writes the three required files directly into a valid R-package folder
 #' structure. Returns (invisible) NULL.
 #' @seealso \code{\link{uniset_getFiles}}
-#' @examples
-#' \dontrun{
-#' # for an imaginary package called 'dogPack':
-#' aa <- "~/desktop/dogPack"
-#' uniset_copyFilesToPackage(aa) # uses the defaults for all arguments
-#' uniset_copyFilesToPackage(aa, ".dpe", "sn")
-#' 	# see details.
-#' }
+#' @section Examples: Please refer to \code{\link{uniset}} for a link to examples 
+#' and a real-world demo.
 #' @export
 uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE") {
 	#
@@ -395,7 +384,7 @@ uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn
 		if (filenameZZZ %in% fls) { # se we already got a file called zzz.R, we must not overwrite or remove it
 			oldZZZname <- filenameZZZ
 			filenameZZZ <- paste0(substr(filenameZZZ, 1, nchar(filenameZZZ)-2), zzzAdd)
-			msg <- paste0("It seems that there already is a file called '", oldZZZname, "' in the 'R' folder of your package. \nIn case there is already an '.onLoad' function defined, please add the six lines of code from the file '", filenameZZZ, "' to your existing '.onLoad' function.")
+			msg <- paste0("It seems that there already is a file called '", oldZZZname, "' in the 'R' folder of your package. \nIn case there is already an '.onLoad' function defined, please add the eight lines of code from the file '", filenameZZZ, "' to your existing '.onLoad' function.")
 			message(msg)
 		} # end if zzz already here
 		if (filenameZZZ %in% fls) { # now this would be zzz_2.R an other #2 already here -- this one must go
@@ -430,16 +419,15 @@ uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn
 #' @title Simple Test
 #' @description Test if your input regarding environment name, package name
 #' etc. was correct / successful. This function is meant to be called from the
-#' target package. See examples.
-#' @param unisetEnv Character length one. The name of the environment holding the uniset
-#' definitions for a single package.
-#' @return An (invisible) list.
-#' @examples
-#' \dontrun{
-#' targetPackageTest <- function() { # this function is defined in the target package
-#'     uniset::uniset_test(get("uev"))
-#' } # eof
-#' }
+#' target package.
+#' @param unisetEnv Character length one. The name of the environment holding 
+#' the uniset definitions for a single package.
+#' @return Is printing the parameters defined by the target package, and is 
+#' returning those parameters in an (invisible) list.
+#' @section Important: This function is meant to be called from within the 
+#' target package.
+#' @section Examples: Please refer to \code{\link{uniset}} for a link to examples 
+#' and a real-world demo.
 #' @export
 uniset_test <- function(unisetEnv) {
 	env <- get(unisetEnv) # gives back the environment
@@ -1008,7 +996,13 @@ checkSearchPath <- function(nsp, taPaName) {
 	} # end if
 } # EOF
 
-sourceSettingsToEnv <- function(taPaSH, setFiName, taPaEnv, nsp, taPaName, silent) {
+sourceSettingsToEnv <- function(taPaList, nsp, silent) {
+	taPaName <- taPaList$taPaName
+	taPaEnv <- taPaList$taPaEnv
+	taPaSH <- taPaList$taPaSH
+	taPaObj <- taPaList$taPaObj
+	setFiName <- taPaList$setFiName
+	
 	pathSettings <- paste0(Sys.getenv(taPaSH), "/", setFiName) # the path to the local settings file as defined in the .Renviron file
 	#
 	pat <- paste0("assign(\"", taPaEnv, "\", new.env(), pos=\"", nsp, "\")") # create a new environment called taPaEnv, searchable at specified location called nsp in searchpath
@@ -1021,6 +1015,12 @@ sourceSettingsToEnv <- function(taPaSH, setFiName, taPaEnv, nsp, taPaName, silen
 	pat <- paste0("return(invisible(", taPaEnv, "$", taPaObj, "))")  #		return(invisible(.ap2$stn)) # was that
 	eval(parse(text=pat)) # is returning the settings list
 } # EOF
+
+
+uniset_setup <- function() {
+	taPaSH <- easycsv::choose_dir()	
+} # EOF
+
 
 #' @title Update Settings of Target Package
 #' @description Manually read in the settings-file in the target package settings
@@ -1042,24 +1042,28 @@ sourceSettingsToEnv <- function(taPaSH, setFiName, taPaEnv, nsp, taPaName, silen
 #' \code{\link{uniset}}.)
 #' @param silent Logical. If a confirmation should be printed. Defaults
 #' to 'FALSE'
-#' @return An (invisible) list with the settings resp. a list called as defined
-#' in argument 'taPaObj' in the environment called as defined in argument 'taPaEnv'.
-#' See \code{\link{uniset}} for examples.
+#' @section Important: This function is meant to be called from within the 
+#' target package.
+#' @return This function is called for its side effects, i.e to 
+#' manually update / (re-)source the settings file into an environment 
+#' defined by the target package. An (invisible) list with the settings resp. a 
+#' list called as defined in argument 'taPaObj' in the environment called as 
+#' defined in argument 'taPaEnv' in the functions \code{\link{uniset_getFiles}} 
+#' or \code{\link{uniset_copyFilesToPackage}} gets returned additionally.
+#' If the the update was unsuccessful, invisible(NULL) is returned. 
+#' @section Examples: Please refer to \code{\link{uniset}} for a link to examples 
+#' and a real-world demo.
 #' @export
 uniset_updateSettings <- function(unisetEnv, silent=FALSE) {
+	nsp <- glob_nsp	 # the name search path
+	#
 	aaa <- getUnisEnvirVariables(unisetEnv)
 		taPaName <- aaa$taPaName
-		taPaEnv <- aaa$taPaEnv
-		taPaSH <- aaa$taPaSH
-		taPaObj <- aaa$taPaObj
-		tmplName <- aaa$tmplName
-		setFiName <- aaa$setFiName
-	nsp <- glob_nsp	 # the name search path
 	######
 	checkSearchPath(nsp, taPaName) # the search path object should have been attached when loading the target package
 	ok <- checkSettings(taPaList=aaa) # makes sure that we have the latest version of the settings.r file in the settings-home directory defined in .Renviron
 	if (ok) {
-		return(invisible(sourceSettingsToEnv(taPaSH, setFiName, taPaEnv, nsp, taPaName, silent))) # is sourcing the settings file to taPaEnv and returns the (invisible) settings list
+		return(invisible(sourceSettingsToEnv(taPaList=aaa, nsp, silent))) # is sourcing the settings file to taPaEnv and returns the (invisible) settings list
 	} else { # so if the settings check was not ok
 		return(invisible(NULL))
 	}
@@ -1068,10 +1072,17 @@ uniset_updateSettings <- function(unisetEnv, silent=FALSE) {
 #' @title Automatically update Settings
 #' @description Use this function within your code to automatically update the
 #' settings from the users settings file
-#' @details If 'autoUpdateSettings' in xxx_settings.r is left at 'TRUE', the
+#' @details If 'autoUpdateSettings' in xxx_settings.R is left at 'TRUE', the
 #' settings will be checked resp. updated automatically every time a function in
-#' the target package is calling \code{\link{uniset_autoUpS}}.
+#' the target package is calling \code{\link{uniset_autoUpS}}. 
 #' @inheritParams uniset_updateSettings
+#' @section Important: This function is meant to be called from within the 
+#' target package.
+#' @return No return value, function is called for its side effects, i.e to 
+#' automatically update / (re-)source the settings file into an environment defined 
+#' by the target package. If the the update was unsuccessful, 'stop' is called.
+#' @section Examples: Please refer to \code{\link{uniset}} for a link to examples 
+#' and a real-world demo.
 #' @export
 uniset_autoUpS <- function(unisetEnv) { # stops if somethings goes wrong
 	aaa <- getUnisEnvirVariables(unisetEnv)

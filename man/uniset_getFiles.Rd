@@ -33,7 +33,7 @@ Defaults to 'stn'.}
 resulting three files should be copied to. Defaults to '~/desktop'.}
 
 \item{taPaSH}{Character length one. The name of the variable to be defined in
-the '.Renviron' file, leading to the place where the settings.r file for the
+the '.Renviron' file, leading to the place where the settings.R file for the
 target package will be stored. If left at the default 'def', \code{taPaName_SH}
 will be used, with 'taPaName' being the value provided at the argument
 'taPaName'.}
@@ -43,7 +43,7 @@ to the fresh settings file that is possibly copied (by the target package)
 to the users settings home directory. Can be left at the default '_TEMPLATE'.}
 }
 \value{
-Creates a folder at the location specified at argument 'where' with
+Creates a folder at the location specified at argument 'where' with the
 three files to be moved into the target package in it. Returns an (invisible)
 character holding the path of the folder where the three files were written
 into.
@@ -63,14 +63,11 @@ if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
 calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
 settings file.
 }
-\examples{
-\dontrun{
-# for an imaginary package called 'dogPack':
-uniset_getFiles("dogPack", ".dpe", "stn")
-	# 'dpe' could be for 'dogPack Environment', 'stn' could be for 'settings'
-	# see details.
+\section{Examples}{
+ Please refer to \code{\link{uniset}} for a link to examples 
+and a real-world demo.
 }
-}
+
 \seealso{
 \code{\link{uniset_copyFilesToPackage}}
 }

@@ -7,21 +7,25 @@
 uniset_test(unisetEnv)
 }
 \arguments{
-\item{unisetEnv}{Character length one. The name of the environment holding the uniset
-definitions for a single package.}
+\item{unisetEnv}{Character length one. The name of the environment holding 
+the uniset definitions for a single package.}
 }
 \value{
-An (invisible) list.
+Is printing the parameters defined by the target package, and is 
+returning those parameters in an (invisible) list.
 }
 \description{
 Test if your input regarding environment name, package name
 etc. was correct / successful. This function is meant to be called from the
-target package. See examples.
+target package.
 }
-\examples{
-\dontrun{
-targetPackageTest <- function() { # this function is defined in the target package
-    uniset::uniset_test(get("uev"))
-} # eof
+\section{Important}{
+ This function is meant to be called from within the 
+target package.
 }
+
+\section{Examples}{
+ Please refer to \code{\link{uniset}} for a link to examples 
+and a real-world demo.
 }
+

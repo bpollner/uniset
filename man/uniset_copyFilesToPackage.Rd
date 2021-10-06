@@ -30,7 +30,7 @@ target package. It is recommended to use a rather short name. See details.
 Defaults to 'stn'.}
 
 \item{taPaSH}{Character length one. The name of the variable to be defined in
-the '.Renviron' file, leading to the place where the settings.r file for the
+the '.Renviron' file, leading to the place where the settings.R file for the
 target package will be stored. If left at the default 'def', \code{taPaName_SH}
 will be used, with 'taPaName' being the value provided at the argument
 'taPaName'.}
@@ -59,15 +59,11 @@ if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
 calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
 settings file.
 }
-\examples{
-\dontrun{
-# for an imaginary package called 'dogPack':
-aa <- "~/desktop/dogPack"
-uniset_copyFilesToPackage(aa) # uses the defaults for all arguments
-uniset_copyFilesToPackage(aa, ".dpe", "sn")
-	# see details.
+\section{Examples}{
+ Please refer to \code{\link{uniset}} for a link to examples 
+and a real-world demo.
 }
-}
+
 \seealso{
 \code{\link{uniset_getFiles}}
 }
