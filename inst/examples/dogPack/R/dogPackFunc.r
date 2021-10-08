@@ -13,6 +13,26 @@ dogPack_test_targetPackageParams <- function(){
 } # EOF
 
 
+#' @title Perform Setup
+#' @description Is setting up the local system for the use of the dynamic
+#' settings file. 
+#' @param where Character length one. Holding the path to the folder where the 
+#' local settings.R file should be stored. 
+#' @return No return value, demo function called for its side effects, i.e. to
+#' perform the setup. 
+#' @export
+dogPack_demo_setupSystem <- function(where=NULL) {
+
+	uniset::uniset_setup(where, get("uev"))
+	# provide a function like this, with the one line above in it, to the user of 
+	# the target package. This function 'uniset_setup' only has to be called once.
+	# In the target package, instruct / inform the user to call a function of the target
+	# package (like this one) in order to setup the local system to make use the 
+	# dynamic settings file. 
+	return(invisible(NULL))	
+} # EOF
+
+
 
 #' @title Demo Update Settings
 #' @description Update Settings

@@ -50,11 +50,12 @@
 #' @section Functions for preparing the target package: 
 #' \code{\link{uniset_copyFilesToPackage}}, \code{\link{uniset_getFiles}}
 #' @section Functions to be called from the target package:
-#' \code{\link{uniset_updateSettings}}, \code{\link{uniset_autoUpS}}
+#' \code{\link{uniset_autoUpS}}, \code{\link{uniset_updateSettings}}, 
+#' \code{\link{uniset_test}}, and only once: \code{\link{uniset_setup}}.
 #' @section Examples: As the functions to update the settings file and to 
 #' (automatically) source this settings are intended to be called from 
 #' \strong{within} the (installed) target package, please go to 
-#' \url{https://bpollner.github.io/uniset/} for a walk-through, and for 
+#' \url{https://bpollner.github.io/uniset/} for a walk-through and for 
 #' a real-life demonstration and examples how to use these update functions 
 #' in the code of the target package. 
 #' @importFrom utils str

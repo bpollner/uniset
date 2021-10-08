@@ -24,8 +24,16 @@ target package.
 target package.
 }
 
-\section{Examples}{
+\section{Note}{
  Please refer to \code{\link{uniset}} for a link to examples 
 and a real-world demo.
 }
 
+\examples{
+{
+\dontrun{
+# to be called from within the target package
+uniset_test(get("uev"))
+}
+}
+}

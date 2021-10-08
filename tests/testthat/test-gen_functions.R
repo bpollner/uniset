@@ -1,4 +1,13 @@
  library(testthat)
+# library(devtools)
+
+ # delete all in tempdir !!
+ rm(list=ls(all.names = TRUE))
+ detach(name="pkg_dogPack_envs")
+
+#  devtools::load_all(".")
+
+
 #
 ######## the easy part #######-----
 # ptp <- "~/Documents/RPS/uniset_R/uniset"
@@ -88,17 +97,30 @@ test_that("uniset_copyFilesToPackage", {
 
 # here have an other template settings file (in td/dopaem/inst finally)  for better testing
 a <- file.copy(paste0(pso, "/R/dogPack_settings.R"), paste0(ptp, "/inst"), overwrite = TRUE)
+pathSettings_test <- paste0(ptp, "/inst")
+pathSettings_fn_test <- paste0(ptp, "/inst/dogPack_settings.R")
+a <- file.copy(paste0(pso, "/R/Renviron_template_change"), paste0(ptp, "/inst"), overwrite = TRUE)
+a <- file.copy(paste0(pso, "/R/Renviron_template_missing"), paste0(ptp, "/inst"), overwrite = TRUE)
+a <- file.copy(paste0(pso, "/R/Renviron_template_multiple"), paste0(ptp, "/inst"), overwrite = TRUE)
+
 
 ########### the tricky part ######## -----
+uev <- uniset_env_name <-  ".dogPack_unisetEnv"
+
+test_that("getUnisEnvirVariables", {
+    expect_error(getUnisEnvirVariables(uev)) # it has not been loaded / attached in real life
+}) # EOT
 
 # siumlate the "dogPack"
-.GlobalEnv$.dogPack_unisetEnv <- new.env()
-.dogPack_unisetEnv$pkgUniset_UserPackageName <- "dogPack"
-.dogPack_unisetEnv$pkgUniset_RenvironSettingsHomeName <- "dogPack_SH"
-.dogPack_unisetEnv$pkgUniset_EnvironmentName <- ".doe"
-.dogPack_unisetEnv$pkgUniset_SettingsObjectName <- "stn"
-.dogPack_unisetEnv$pkgUniset_SuffixForTemplate <- "_TEMPLATE"
-uev <- uniset_env_name <-  ".dogPack_unisetEnv"
+nsp <- "pkg_dogPack_envs"
+if (!any(grepl(nsp, search()))) {attach(what=NULL, name=nsp)}
+assign(".dogPack_unisetEnv", new.env(), pos=nsp)
+assign("pkgUniset_UserPackageName","dogPack", envir=.dogPack_unisetEnv)
+assign("pkgUniset_RenvironSettingsHomeName","dogPack_SH", envir=.dogPack_unisetEnv)
+assign("pkgUniset_EnvironmentName",".doe", envir=.dogPack_unisetEnv)
+assign("pkgUniset_SettingsObjectName","stn", envir=.dogPack_unisetEnv)
+assign("pkgUniset_SuffixForTemplate","_TEMPLATE", envir=.dogPack_unisetEnv)
+
 test_that("uniset_test", {
     expect_type(uniset_test(uev), "list")
     expect_output(uniset_test(uev))
@@ -109,6 +131,32 @@ test_that("getUnisEnvirVariables", {
     expect_error(getUnisEnvirVariables(uev="blabla"))
 }) # EOT
 
+taPaList <- getUnisEnvirVariables(uev)
+
+test_that("sourceSettingsToEnv", {
+    expect_type(sourceSettingsToEnv(taPaList, nsp, silent=TRUE, pathSettings_fn_test), "list")
+}) # EOT
+
+test_that("get a value from stn in .doe", {
+    expect_identical(.doe$stn$favouriteColor, "blue")
+}) # EOT
+
+
+#### test the setup functions ####
+test_that("suStop", {
+    expect_error(suStop())
+}) # EOT
+
+test_that("checkPathToFolder", {
+    expect_true(checkPathToFolder(where=td, what="where"))
+    expect_error(checkPathToFolder(where=paste0(td, "/blabla"), what="where"))
+}) # EOT
+
+test_that("getCheckPathToFolder", {
+    expect_identical(getCheckPathToFolder(where=td, what="where"), td)
+#    expect_error(getCheckPathToFolder(where=NULL, what="where"), td) # is interactive, does not work in test
+}) # EOT
+
 td <- tempdir()
 tempSysHome <- "tempSysHome"
 taPaName <- "dogPack"
@@ -116,6 +164,116 @@ fn_taPaSH <- "dogPack_SH"
 fullPath <- paste0(td, "/", tempSysHome)
 dogSH <- paste0(fullPath, "/", fn_taPaSH)
 dir.create(fullPath, showWarnings=FALSE) # we create the tempSystemHome
+userLoc <- paste0(td, "/userLoc") # this is the folder where the user wants the settings-home to be
+dir.create(userLoc, showWarnings=FALSE)
+
+# a <- performSetup_create_taPaSH(userLoc, taPaList)
+test_that("performSetup_create_taPaSH", {
+    expect_message(performSetup_create_taPaSH(userLoc, taPaList), "has been created")
+    expect_message(performSetup_create_taPaSH(userLoc, taPaList), "already existed")
+}) # EOT
+
+# a <- performSetup_copySettingsFile(userLoc, taPaList, pathSettings_test)
+test_that("performSetup_copySettingsFile", {
+    expect_message(performSetup_copySettingsFile(userLoc=paste0(td, "/blabla"), taPaList, pathSettings_test), "not possible to create")
+    expect_message(performSetup_copySettingsFile(userLoc, taPaList, paste0(td, "/blabla")), "not possible to copy")
+    expect_message(performSetup_copySettingsFile(userLoc, taPaList, pathSettings_test), "has been copied")
+    expect_message(performSetup_copySettingsFile(userLoc, taPaList, pathSettings_test), "already existed")
+}) # EOT
+
+systemHome_R <- fullPath
+fullRenvPath <- paste0(systemHome_R, "/.Renviron")
+fn_taPaSH <- taPaSH <- "dogPack_SH"
+
+#
+### Check .Renviron   #
+# a <- performSetup_checkCreateModRenv(userLoc, taPaList, systemHome_R) # for looking at the fu ll message
+# case 1: no Renviron existing
+test_that("performSetup_checkCreateModRenv", {
+    expect_message(performSetup_checkCreateModRenv(userLoc, taPaList, paste0(td, "/blabla")), "failed")
+    expect_message(performSetup_checkCreateModRenv(userLoc, taPaList, systemHome_R), "has been created")
+}) # EOT
+
+# case 2: Renv does exist, but the variable is not present
+a <- file.copy(paste0(ptp, "/inst/Renviron_template_missing"), paste0(systemHome_R, "/.Renviron"), overwrite=TRUE)
+test_that("performSetup_checkCreateModRenv", {
+    expect_message(performSetup_checkCreateModRenv(userLoc, taPaList, systemHome_R), "has been appended")
+}) # EOT
+
+# case 3+4: Renv does exist, but the variable has to be changed; then all is good
+a <- file.copy(paste0(ptp, "/inst/Renviron_template_change"), paste0(systemHome_R, "/.Renviron"), overwrite=TRUE)
+test_that("performSetup_checkCreateModRenv", {
+    expect_message(performSetup_checkCreateModRenv(userLoc, taPaList, systemHome_R), "was corrected to")
+    expect_message(performSetup_checkCreateModRenv(userLoc, taPaList, systemHome_R), "was correctly set to")
+}) # EOT
+
+# case 5+4: Renv does exist, more than one occurrence of variable; then all is good
+a <- file.copy(paste0(ptp, "/inst/Renviron_template_multiple"), paste0(systemHome_R, "/.Renviron"), overwrite=TRUE)
+test_that("performSetup_checkCreateModRenv", {
+    expect_message(performSetup_checkCreateModRenv(userLoc, taPaList, systemHome_R), "occurrences of the variable")
+    expect_message(performSetup_checkCreateModRenv(userLoc, taPaList, systemHome_R), "was correctly set to")
+}) # EOT
+
+###
+# case 5+4 from above is required !!
+bupDir <- paste0(td, "/backup")
+test_that("checkRenvContent_maybeCopyBackup", {
+    expect_true(checkRenvContent_maybeCopyBackup(systemHome_R, bupDir))
+#    expect_false(checkRenvContent_maybeCopyBackup(systemHome_R, bupDir))
+}) # EOT
+a <- file.copy(paste0(ptp, "/inst/Renviron_template_change"), paste0(td,  "/backup/.Renviron"), overwrite=TRUE)
+test_that("checkRenvContent_maybeCopyBackup", {
+    expect_false(checkRenvContent_maybeCopyBackup(systemHome_R, bupDir)) # is written back from backup
+    expect_true(checkRenvContent_maybeCopyBackup(systemHome_R, bupDir)) # no difference
+}) # EOT
+
+###
+# now all together
+unlink(paste0(td, "/backup"), TRUE)
+unlink(paste0(td, "/", tempSysHome, "/.Renviron"), TRUE)
+unlink(paste0(td, "/userLoc/", taPaSH), TRUE)
+test_that("performSetup_sys", {
+    expect_true(performSetup_sys(userLoc, taPaList, pathSettings_test, systemHome_R))
+    expect_true(performSetup_sys(userLoc, taPaList, pathSettings_test, systemHome_R))
+}) # EOT
+
+userLoc2 <- paste0(td, "/userLoc2")
+a <- dir.create(userLoc2, showWarnings = FALSE)
+test_that("performSetup_sys", {
+    expect_true(performSetup_sys(userLoc2, taPaList, pathSettings_test, systemHome_R))
+}) # EOT
+
+a <- file.copy(paste0(ptp, "/inst/Renviron_template_missing"), paste0(systemHome_R, "/.Renviron"), overwrite=TRUE)
+test_that("performSetup_sys", {
+    expect_true(performSetup_sys(userLoc2, taPaList, pathSettings_test, systemHome_R))
+}) # EOT
+
+a <- file.copy(paste0(ptp, "/inst/Renviron_template_multiple"), paste0(systemHome_R, "/.Renviron"), overwrite=TRUE)
+test_that("performSetup_sys", {
+    expect_true(performSetup_sys(userLoc2, taPaList, pathSettings_test, systemHome_R))
+    expect_true(performSetup_sys(userLoc2, taPaList, pathSettings_test, systemHome_R))
+}) # EOT
+
+test_that("performSetup_sys", {
+    expect_error(performSetup_sys(userLoc2, taPaList, pathSettings_test, paste0(td, "/blabla")))
+    expect_true(performSetup_sys(userLoc2, taPaList, pathSettings_test, systemHome_R))
+}) # EOT
+
+test_that("performSetup_sys", {
+    expect_error(performSetup_sys(paste0(td, "/blabla"), taPaList, pathSettings_test, systemHome_R))
+    expect_error(performSetup_sys(userLoc2, taPaList, paste0(td, "/blabla"), systemHome_R))
+}) # EOT
+
+
+
+
+
+
+
+
+stop("I stop here")
+##### test setup check #####
+
 test_that("checkCreateSHfolder", {
     expect_true(checkCreateSHfolder(fullPath, fn_taPaSH)) # now we create it
     expect_true(checkCreateSHfolder(fullPath, fn_taPaSH)) # nothing happening
@@ -129,11 +287,7 @@ test_that("checkCreateSHfolder", {
     expect_true(checkCreateSHfolder(fullPath, fn_taPaSH)) # now we create ogain
 }) # EOT
 
-systemHome_R <- fullPath
-fullRenvPath <- paste0(fullPath, "/.Renviron")
-fn_taPaSH <- taPaSH <- "dogPack_SH"
-taPaSH_creationMsg <- "creation Message"
-addInfo <- "addInfo Message"
+
 test_that("ifNotRenvExists", {
     expect_message(ifNotRenvExists(systemHome_R="blabla", fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo), "Sorry, the creation of the .Renviron file")
     expect_false(ifNotRenvExists(systemHome_R="blabla", fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo))

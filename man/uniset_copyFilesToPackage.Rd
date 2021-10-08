@@ -59,11 +59,23 @@ if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
 calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
 settings file.
 }
-\section{Examples}{
+\section{Note}{
  Please refer to \code{\link{uniset}} for a link to examples 
 and a real-world demo.
 }
 
+\examples{
+{
+library(uniset)
+# first copy the target package example into tempdir
+to <- tempdir()
+from <- paste0(path.package("uniset"), "/examples/dogPack")
+file.copy(from, to, recursive = TRUE) 
+# now copy the three required files directly into the package 'dogPack'
+path <- paste0(to, "/dogPack")
+uniset_copyFilesToPackage(path)
+}
+}
 \seealso{
 \code{\link{uniset_getFiles}}
 }

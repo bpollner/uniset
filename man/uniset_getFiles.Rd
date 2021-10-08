@@ -8,7 +8,7 @@ uniset_getFiles(
   taPaName = NULL,
   taPaEnv = "def",
   taPaObj = "stn",
-  where = "~/desktop",
+  where = NULL,
   taPaSH = "def",
   tmpl = "_TEMPLATE"
 )
@@ -30,7 +30,10 @@ target package. It is recommended to use a rather short name. See details.
 Defaults to 'stn'.}
 
 \item{where}{Character length one. The location where the folder with the
-resulting three files should be copied to. Defaults to '~/desktop'.}
+resulting three files should be copied to. Defaults to 'NULL'. If left at the 
+default 'NULL', the location should be selectabel interactively. Provide a 
+character length one holding a valid path to an existing folder to copy the 
+folder containing the three required files there.}
 
 \item{taPaSH}{Character length one. The name of the variable to be defined in
 the '.Renviron' file, leading to the place where the settings.R file for the
@@ -63,11 +66,24 @@ if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
 calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
 settings file.
 }
-\section{Examples}{
+\section{Note}{
  Please refer to \code{\link{uniset}} for a link to examples 
 and a real-world demo.
 }
 
+\examples{
+{
+library(uniset)
+# first copy the target package example into tempdir
+to <- tempdir()
+from <- paste0(path.package("uniset"), "/examples/dogPack")
+file.copy(from, to, recursive = TRUE) 
+# now copy the three required files
+uniset_getFiles("dogPack", where=to)
+# Manually move the three files according to the instructions contained 
+# in them.
+}
+}
 \seealso{
 \code{\link{uniset_copyFilesToPackage}}
 }

@@ -11,6 +11,12 @@ dogPack_demo_autoUpS(tellMe = TRUE, txt = "My favourite color is ")
 
 \item{txt}{Character}
 }
+\value{
+Is called for its side effects, i.e. to automatically update 
+resp. (re-)source the settings file. If 'tellMe' is left at the default 
+'TRUE', the value of the key 'favouriteColor' in the settings file is 
+printed. Returns (invisible) NULL.
+}
 \description{
 AutoUpdate Settings. Is also reading the value of the
 key 'favouriteColor' from the 'dogPack_settings.R' file.

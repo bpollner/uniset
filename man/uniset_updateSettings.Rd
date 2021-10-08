@@ -40,6 +40,9 @@ It is possible to manually provide a different path in the
 variable as defined in argument `taPaSH` in the .Renviron file, pointing
 to any folder where then the xxx_settings.R file will reside.
 XXX Improve this text please.
+
+ Please refer to \code{\link{uniset}} for a link to examples 
+and a real-world demo.
 }
 
 \section{Important}{
@@ -47,8 +50,11 @@ XXX Improve this text please.
 target package.
 }
 
-\section{Examples}{
- Please refer to \code{\link{uniset}} for a link to examples 
-and a real-world demo.
+\examples{
+{
+\dontrun{
+# to be called from within the target package
+uniset_updateSettings(get("uev"))
 }
-
+}
+}
