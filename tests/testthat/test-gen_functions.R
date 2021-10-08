@@ -2,10 +2,9 @@
 # library(devtools)
 
  # delete all in tempdir !!
- rm(list=ls(all.names = TRUE))
- detach(name="pkg_dogPack_envs")
-
-#  devtools::load_all(".")
+# rm(list=ls(all.names = TRUE))
+# detach(name="pkg_dogPack_envs")
+# devtools::load_all(".")
 
 
 #
@@ -162,7 +161,7 @@ tempSysHome <- "tempSysHome"
 taPaName <- "dogPack"
 fn_taPaSH <- "dogPack_SH"
 fullPath <- paste0(td, "/", tempSysHome)
-dogSH <- paste0(fullPath, "/", fn_taPaSH)
+# dogSH <- paste0(fullPath, "/", fn_taPaSH)
 dir.create(fullPath, showWarnings=FALSE) # we create the tempSystemHome
 userLoc <- paste0(td, "/userLoc") # this is the folder where the user wants the settings-home to be
 dir.create(userLoc, showWarnings=FALSE)
@@ -260,81 +259,38 @@ test_that("performSetup_sys", {
 }) # EOT
 
 test_that("performSetup_sys", {
-    expect_error(performSetup_sys(paste0(td, "/blabla"), taPaList, pathSettings_test, systemHome_R))
-    expect_error(performSetup_sys(userLoc2, taPaList, paste0(td, "/blabla"), systemHome_R))
+   expect_error(performSetup_sys(paste0(td, "/blabla"), taPaList, pathSettings_test, systemHome_R))
 }) # EOT
 
+###
 
-
-
-
-
-
-
-stop("I stop here")
-##### test setup check #####
-
-test_that("checkCreateSHfolder", {
-    expect_true(checkCreateSHfolder(fullPath, fn_taPaSH)) # now we create it
-    expect_true(checkCreateSHfolder(fullPath, fn_taPaSH)) # nothing happening
-    unlink(dogSH, TRUE)
-    expect_message(checkCreateSHfolder(fullPath, fn_taPaSH)) # create again
-    unlink(dogSH, TRUE)
-    expect_true(checkCreateSHfolder(fullPath, fn_taPaSH)) # create again
-    unlink(dogSH, TRUE)
-    expect_false(checkCreateSHfolder("blabla", fn_taPaSH))
-    expect_message(checkCreateSHfolder("blabla", fn_taPaSH))
-    expect_true(checkCreateSHfolder(fullPath, fn_taPaSH)) # now we create ogain
-}) # EOT
-
-
-test_that("ifNotRenvExists", {
-    expect_message(ifNotRenvExists(systemHome_R="blabla", fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo), "Sorry, the creation of the .Renviron file")
-    expect_false(ifNotRenvExists(systemHome_R="blabla", fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo))
-    expect_false(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo))
-    unlink(fullRenvPath, TRUE)
-    expect_message(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo), "The required '.Renviron' file")
-}) # EOT
-
-restartMsg <- "restart message"
-test_that("taPaSH_System_missing", {
-    expect_false(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo))
-    expect_message(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo), restartMsg)
-    # now we have to delete the contents of the .Renviron
-    fcon <- file(fullRenvPath, open="w")
-    newContent <- ""
-    writeLines(newContent, fcon)
-    close(fcon)
-    expect_message(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo), taPaSH_creationMsg)
-    # we leave with the .Renviron file filled with text
-}) # EOT
-
-taPaSH_system <- paste0(td, "/", tempSysHome, "/", taPaSH)
-taPaSH_system_wrong <- aa <-  paste0(td, "/", tempSysHome, "/bliblablu")
-test_that("taPaSH_System_OK_noDir", {
-    expect_message(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system, restartMsg), "Sorry, the path")
-    expect_message(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system=aa, restartMsg), restartMsg)
-}) # EOT
-
+taPaSH_system <- paste0(td, "/userLoc/", taPaSH)
+taPaSH_system_wrong <- aa <-  paste0(td, "/userLoc/", "blablabla")
 setFiName <- "dogPack_settings.R"
 taPaSettingsPath <- paste0(td, "/dopaem/inst/", setFiName)
-taPaSH_system <- paste0(td, "/", tempSysHome, "/", fn_taPaSH)
-test_that("pleaseCopyFreshSettings", {
-    expect_true(pleaseCopyFreshSettings(taPaSettingsPath, taPaSH_system, setFiName))
-    expect_message(pleaseCopyFreshSettings(taPaSettingsPath, taPaSH_system, setFiName), "Sorry, for unknown")
-}) # EOT
 
 test_that("pleaaseCopyAsTemplate", {
     expect_true(pleaaseCopyAsTemplate(taPaSettingsPath, taPaSH_system, setFiName))
 }) # EOT
-print("")
+
+
+
+
+
+##### test setup check #####
+
+
+
 print("------------------------------------------------------------")
 print("------------------------------------------------------------")
 print("------------------------------------------------------------")
 print("------------------------------------------------------------")
 
+
+
+
 pathToPack <- paste0(td, "/dopaem/inst/", setFiName)
-folderLocal <- paste0(td, "/", tempSysHome, "/", fn_taPaSH) # same as taPaSH_system above
+folderLocal <- paste0(td,  "/userLoc/", fn_taPaSH) # same as taPaSH_system above
 nameLocal <- setFiName
 tmpl <- "_TEMPLATE"
 
@@ -372,9 +328,13 @@ pt7 <-  paste0(td, "/dopaem/R/", "s_block_delete3.R")
 msg7 <- "block2, block2_2, comboDelete1, block2_oneMoreVariable, block4, blabla, andSoOn, petterson, findus, mouse"
 
 cleanUp <- function(onTest=TRUE){
-    unlink(paste0(dogSH, "/", setFiName)); a <- pleaseCopyFreshSettings(pathToPack, folderLocal, nameLocal, onTest) # go back to original
+    a <- file.copy(taPaSettingsPath, paste0(td, "/userLoc/", taPaSH), overwrite = TRUE)
+    message("clean")
 } # EOF
 cleanUp()
+
+
+#  stop("I stop here")
 
 test_that("checkFileVersionPossiblyModify - original", {
     expect_true(checkFileVersionPossiblyModify(pathToPack, folderLocal, nameLocal, pm=taPaObj, tmpl, taPaName)) ####
@@ -444,8 +404,13 @@ test_that("checkSettings", {
 }) # EOT
 
 
+
 # now clean up
 unlink(paste0(td, "/dopaem"), TRUE)
+unlink(paste0(td, "/backup"), TRUE)
+unlink(paste0(td, "/userLoc"), TRUE)
+unlink(paste0(td, "/userLoc2"), TRUE)
 unlink(paste0(td, "/", tempSysHome), TRUE)
 unlink(paste0(td, "/", "UnisetFiles_R-pkg_'dogPack'"), TRUE)
+unlink(paste0(td, "/name"), TRUE)
 

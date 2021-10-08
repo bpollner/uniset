@@ -956,7 +956,7 @@ pleaaseCopyAsTemplate <- function(taPaSettingsPath, taPaSH_system, setFiName) {
 			message("Sorry, for unknown reasons the required template file could not be copied.\n")
 			return(invisible(FALSE))
 		} else {
-		message(paste0("The '", paste0(setFiName, tmpl), "' file has been copied into `", taPaSH_system, "`."))
+		message(paste0("The file '", paste0(setFiName, tmpl), "' has been copied into \n'", taPaSH_system, "'\n"))
 		return(invisible(TRUE))
 		} # end else
 } # EOF
