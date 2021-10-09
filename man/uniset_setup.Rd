@@ -9,7 +9,7 @@ uniset_setup(where = NULL, unisetEnv)
 \arguments{
 \item{where}{Character length one, holding the path to the location where the 
 folder containing the settings.R file should be located. Defaults to 'NULL'. 
-If left at the default 'NULL', the location should be selectabel interactively.}
+If left at the default 'NULL', the location should be selectable interactively.}
 
 \item{unisetEnv}{Character length one. Hand over the global variable defined
 in the target package holding the name of the uniset-environment for the
@@ -42,8 +42,8 @@ However, if called repeatedly, it enables the user of the target package to
 conveniently change the settings-home directory and its corresponding variable 
 in the .Renviron file. In that case, a factory-fresh version of the settings.R 
 file will be copied into the new settings-home directory. For the user-defined 
-values in the settings.R file not to be lost, the user then has to manually  
-target package to not loose XXXXX
+values in the 'old' settings.R file not to be lost, the user then has to 
+manually move / copy the settings from the old location to the new one.
 }
 \section{Important}{
  This function is meant to be called from within the 

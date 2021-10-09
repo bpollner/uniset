@@ -241,7 +241,7 @@ createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsP
 #' Defaults to 'stn'.
 #' @param where Character length one. The location where the folder with the
 #' resulting three files should be copied to. Defaults to 'NULL'. If left at the 
-#' default 'NULL', the location should be selectabel interactively. Provide a 
+#' default 'NULL', the location should be selectable interactively. Provide a 
 #' character length one holding a valid path to an existing folder to copy the 
 #' folder containing the three required files there. 
 #' @param taPaSH Character length one. The name of the variable to be defined in
@@ -722,19 +722,19 @@ addMissingKeys <- function(ftLocal, splitChar, taPaObj, pathToPack, folderLocal,
 			ftLocalR <- getKeysOnlyFromText(ftLocal, splitChar, taPaObj) # could be removed (is done at the top of the loop already)
 			locNames <- c(locNames[1:locHookKeyInd], missingKeys[i], locNames[(locHookKeyInd+1):length(locNames)])
 			if (FALSE) {
-		#		print(txtUpper)
-				print(locHook)
-				print(txtBetweenLocalUpper)
-				print(txtBetweenPack)
-				print(newKVP)
-		#		print(txtEmptyBelowPacKey)
-		#		print(txtBetweenLocalLower)
-				print(locNext)
-		#		print(txtLower)
-		#		#
-		#		print(ftLocal)
-				print("---------------------------")
-	  	#		wait()
+		# #		print(txtUpper)
+# 				print(locHook)
+# 				print(txtBetweenLocalUpper)
+# 				print(txtBetweenPack)
+# 				print(newKVP)
+# 		#		print(txtEmptyBelowPacKey)
+# 		#		print(txtBetweenLocalLower)
+# 				print(locNext)
+# 		#		print(txtLower)
+# 		#		#
+# 		#		print(ftLocal)
+# 				print("---------------------------")
+# 	  	#		wait()
 			} # end if TRUE  # dev helpers, is printing things.
 		} # end for i (going through missing keys)
 		maxSD <- getMaxSpace(ftLocal) # the max space after adding keys
@@ -1098,9 +1098,7 @@ performSetup_copySettingsFile <- function(userLoc, taPaList, taPaSettingsPath_te
 	} else { # so the settings.R file does exist
 		message(paste0("The file '", setFiName, "' already existed in \n'", userLoc_SH, "'\n"))
 		return(TRUE)
-	} # end else
-	
-	
+	} # end else	
 } # EOF
 
 checkRenvContent_maybeCopyBackup <- function(systemHome_R, bupDir) { # in #3
@@ -1287,11 +1285,11 @@ performSetup_sys <- function(userLoc, taPaList, taPaSettingsPath_test=NULL, sysH
 #' conveniently change the settings-home directory and its corresponding variable 
 #' in the .Renviron file. In that case, a factory-fresh version of the settings.R 
 #' file will be copied into the new settings-home directory. For the user-defined 
-#' values in the settings.R file not to be lost, the user then has to manually  
-#' target package to not loose XXXXX
+#' values in the 'old' settings.R file not to be lost, the user then has to 
+#' manually move / copy the settings from the old location to the new one.
 #' @param where Character length one, holding the path to the location where the 
 #' folder containing the settings.R file should be located. Defaults to 'NULL'. 
-#' If left at the default 'NULL', the location should be selectabel interactively.
+#' If left at the default 'NULL', the location should be selectable interactively.
 #' @inheritParams uniset_updateSettings
 #' @section Important: This function is meant to be called from within the 
 #' target package.

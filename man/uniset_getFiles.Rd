@@ -31,7 +31,7 @@ Defaults to 'stn'.}
 
 \item{where}{Character length one. The location where the folder with the
 resulting three files should be copied to. Defaults to 'NULL'. If left at the 
-default 'NULL', the location should be selectabel interactively. Provide a 
+default 'NULL', the location should be selectable interactively. Provide a 
 character length one holding a valid path to an existing folder to copy the 
 folder containing the three required files there.}
 
