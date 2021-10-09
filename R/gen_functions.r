@@ -942,25 +942,6 @@ taPaSH_System_OK_noDir <- function(systemHome_R, taPaSH, taPaSH_system, restartM
 	return(FALSE)
 } # EOF
 
-pleaaseCopyAsTemplate <- function(taPaSettingsPath, taPaSH_system, setFiName) {
-		tmpl <- "_TEMPLATE.R"
-		#
-		td <- tempdir()
-		ok <- file.copy(taPaSettingsPath, td, overwrite = TRUE)
-		nfn <- paste0(td, "/", setFiName)
-		nfn_T <- paste0(nfn, tmpl)
-		ok <- file.rename(nfn, nfn_T)
-		ok <- file.copy(nfn_T, taPaSH_system, overwrite = TRUE)
-		unlink(nfn_T)
-		if (!ok) {
-			message("Sorry, for unknown reasons the required template file could not be copied.\n")
-			return(invisible(FALSE))
-		} else {
-		message(paste0("The file '", paste0(setFiName, tmpl), "' has been copied into \n'", taPaSH_system, "'\n"))
-		return(invisible(TRUE))
-		} # end else
-} # EOF
-
 pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName, onTest=FALSE) {
 	# please simply copy the settings
 	ok <- file.copy(taPaSettingsPath, taPaSH_system)
@@ -1032,6 +1013,21 @@ checkSetup <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsP
 	} # end else if !renvExists
 } # EOF
 
+checkSetup_new <- function(taPaList) {
+	# we should have done the performSetup functions before
+	# main focus is if value in variable in Renviron is pointing to a valid folder,
+	# and if we have to restart or not.
+	# two outcomes:
+		# ask to restart
+		# ask to run setup
+	# no writing into userspace here
+	
+	# if everything is good, continue
+	
+	
+	
+} # EOF
+
 checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL, sysHome_R=NULL, userLoc=NULL) {
 	#
 	setupOk <- checkSetup(taPaList, onTest, taPaSH_system, taPaSettingsPath, localSettingsPath, sysHome_R, userLoc)
@@ -1045,6 +1041,25 @@ checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettin
 	} else {
 		return(FALSE)
 	} # end else
+} # EOF
+####################################################################
+pleaaseCopyAsTemplate <- function(taPaSettingsPath, taPaSH_system, setFiName) {
+		tmpl <- "_TEMPLATE.R"
+		#
+		td <- tempdir()
+		ok <- file.copy(taPaSettingsPath, td, overwrite = TRUE)
+		nfn <- paste0(td, "/", setFiName)
+		nfn_T <- paste0(nfn, tmpl)
+		ok <- file.rename(nfn, nfn_T)
+		ok <- file.copy(nfn_T, taPaSH_system, overwrite = TRUE)
+		unlink(nfn_T)
+		if (!ok) {
+			message("Sorry, for unknown reasons the required template file could not be copied.\n")
+			return(invisible(FALSE))
+		} else {
+		message(paste0("The file '", paste0(setFiName, tmpl), "' has been copied into \n'", taPaSH_system, "'\n"))
+		return(invisible(TRUE))
+		} # end else
 } # EOF
 
 getUnisEnvirVariables <- function(unisetEnv) {
@@ -1063,13 +1078,6 @@ getUnisEnvirVariables <- function(unisetEnv) {
 	setFiName <- paste0(taPaName, "_", seFiName)
 	return(list(taPaName=taPaName, taPaEnv=taPaEnv, taPaSH=taPaSH, taPaObj=taPaObj, tmplName=tmplName, setFiName=setFiName))
 } # EOF
-
-# checkSearchPath <- function(nsp, taPaName) {
-# if (! nsp %in% search()) {
-# 	stop(paste0("Sorry, it seems that when loading the package '", taPaName, "' the required object on the search path could not be attached.\nPlease restart R and reload the package '", taPaName, "'.\n"), call.=FALSE)
-# } # end if
-# return(TRUE)
-# } # EOF
 
 sourceSettingsToEnv <- function(taPaList, nsp, silent, pathSettings_test=NULL) {
 	taPaName <- taPaList$taPaName
@@ -1300,7 +1308,7 @@ performSetup_checkCreateModRenv <- function(userLoc, taPaList, sysHome_R_test=NU
 			message(paste0(varExistMsg, varValueBad, addInfoRestartMsg))
 			return(TRUE)
 		} else { # so fileValue and intendedValue are the same, all is good, nothing to do 
-			# ?? have here a check if we should restart ?
+			# XXX We still have the possible restart-issue.  # ?? have here a check if we should restart ?
 			message(paste0(varExistMsg, varValueGood))
 			return(TRUE)	
 		} # end else if (fileValue != intendedValue)
@@ -1323,7 +1331,6 @@ performSetup_sys <- function(userLoc, taPaList, taPaSettingsPath_test=NULL, sysH
 	ok <- performSetup_checkCreateModRenv(userLoc, taPaList, sysHome_R_test)
 	if (!ok) {suStop()}
 	# if we came up to here, everything was ok. 
-	# XXX We still have the possible restart-issue.
 	return(TRUE)
 } # EOF
 
