@@ -847,119 +847,9 @@ checkFileVersionPossiblyModify <- function(pathToPack, folderLocal, nameLocal, p
 	return(invisible(TRUE))
 } # EOF
 ####################################################################
-checkCreateSHfolder <- function(userLoc, fn_taPaSH) {
-	# if incoming userLoc is a valid path, then we come from the setup. If it is NULL, then we come from an update function
-	if (!is.null(userLoc)) { # so userLoc is a valid path, so we come in from the setup function
-		if (!dir.exists(paste0(userLoc, "/", fn_taPaSH))) { # it should not exist, unless the user is calling the setup function twice.
-			dirCreaOk <- dir.create(paste0(userLoc, "/", fn_taPaSH), showWarnings=FALSE) # to the CRAN-reviewer: this is NOT a default writing into user space. We are only creating the directory here when the user called the setup function 'uniset_setup' and provided a path where to create the directory and copy the file to. 
-			if (!dirCreaOk) {
-				msg <- paste0("Sorry, the required settings-home directory `", fn_taPaSH, "` could not be created in `", userLoc, "`.")
-				message(msg)
-				return(FALSE)
-			} else { #  so we created the .Renviron file AND created the taPaSH folder
-				msg <- paste0("The folder `", fn_taPaSH, "` as settings-home directory has been created in `", userLoc, "`.")
-				message(msg)
-				return(TRUE)
-			} # end else	
-		} else { # so the userLoc dir plus folder DOES exist
-			return(TRUE) # then all is good, nothing to be done
-		} # end if !dir.exists
-	} else { # so userLoc came in as NULL, so we come from an update function
-		return(TRUE)
-	} # end if !is.null(userLoc)
-} # EOF
 
-ifNotRenvExists <- function(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo, userLoc) {
-	 # we have NO .Renviron file, so we simply make one
-	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
-	createOK <- file.create(fullRenvPath, showWarnings=FALSE)
-	if (!createOK) {  #  if .Renviron could not be created
-		msg <- paste0("Sorry, the creation of the .Renviron file in `", systemHome_R, "` failed.")
-		message(msg)
-		return(FALSE)
-	} else { # so we could create the .Renviron file
-		# if no .Renviron file, then also no settings home diretory --> create one
-		ok <- checkCreateSHfolder(userLoc, fn_taPaSH)
-			if (!ok) {
-				return(FALSE)
-			}
-		# now we have to fill the newly created .Renviron file and point taPaSH to the newly created folder
-		defaultFillForRenviron <- paste0("\n\n", taPaSH, " = ", userLoc, "/", fn_taPaSH) # here problem in windows !! # really? I do not (in windows)
-		fcon <- file(fullRenvPath, open="w")
-		writeLines(defaultFillForRenviron, fcon)
-		close(fcon)
-		creMsg <- paste0("The required '.Renviron' file in '", systemHome_R, "' has been created for you.\n", taPaSH_creationMsg, "\n", addInfo)
-		message(creMsg)
-		return(FALSE)
-	} # end else (where we could create and fill the .Renviron file and create the settings home folder
-} # EOF
-
-taPaSH_System_missing <- function(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo, userLoc) {
-	# so it is not existing in the system, and we have to check if it exists in the .Renviron file
-	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
-	fcon <- file(fullRenvPath, open="r")
-	content <- readLines(fcon)
-	close(fcon)
-	#
-	if (any(grepl(taPaSH, content))) { # returns TRUE if taPaSH is present in the .Renviron file
-		# so not in the system, but on the file --> that means we have to restart R
-		message(restartMsg)
-		return(FALSE)
-	} else { # so not in the system, and not on the file (but the .Renviron was present
-		# now we have to ADD the taPaSH to the existing .Renviron file
-		# first check for existence / create the settings home folder
-		ok <- checkCreateSHfolder(userLoc, fn_taPaSH)
-		if (!ok) {
-			return(FALSE)
-		}
-		fcon <- file(fullRenvPath, open="r+b")
-		content <- readLines(fcon)
-		newContent <- c(content, paste0("\n\n## ", taPaName, ":"), paste0(taPaSH, " = ", userLoc, "/", fn_taPaSH), "\n") # was c(content, "\n\n## aquap2", paste0("AQUAP2SH = ", systemHome, "/", fn_taPaSH), "\n")
-		writeLines(newContent, fcon)
-		close(fcon)
-		msg <- paste0(taPaSH_creationMsg, "\n", addInfo)
-		message(msg)
-		return(FALSE)
-	} # end else
-} # EOF
-
-taPaSH_System_OK_noDir <- function(systemHome_R, taPaSH, taPaSH_system, restartMsg) {
-	# first check if the content of taPaSH in the file and in the system are the same
-	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
-	fcon <- file(fullRenvPath, open="r")
-	content <- readLines(fcon)
-	close(fcon)
-	taPaSH_file <- content[which(grepl(taPaSH, content))] # get only the one string that is the taPaSH
-#	print(taPaSH_file)
-	fileValue <- trimws(strsplit(taPaSH_file, "=")[[1]][[2]]) # the [[1]] to get out of the list. naja.
-#	print(fileValue)
-	if (fileValue != taPaSH_system) { # so the content of taPaSH is different in the system and in the file, we have to restart R
-		message(restartMsg)
-		return(FALSE)
-	} # end if
-	msg <- paste0("Sorry, the path `", taPaSH_system, "` specified in the `", taPaSH,"` variable is not pointing to a valid directory.\nPlease change the value of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`), or create the appropriate file structure.")
-	message(msg)
-	return(FALSE)
-} # EOF
-
-pleaseCopyFreshSettings <- function(taPaSettingsPath, taPaSH_system, setFiName, onTest=FALSE) {
-	# please simply copy the settings
-	ok <- file.copy(taPaSettingsPath, taPaSH_system)
-	if (!ok) {
-		message(paste0("Sorry, for unknown reasons it was not possible to copy the `", setFiName, "` file from `", taPaSettingsPath, "` to `", taPaSH_system, "`."))
-		return(FALSE)
-	} else { # so we could copy the settings.r file
-		msg <- paste0("The '", setFiName, "' file has been copied into `", taPaSH_system, "`.")
-		if (onTest) {
-			msg <- "clean"
-		} # end if
-		message(msg)
-		return(TRUE)
-	} # end else
-} # EOF
-
-checkSetup <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL, sysHome_R=NULL, userLoc=NULL) {
-	# if incoming userLoc is a valid path, then we come from the setup. If it is NULL, then we come from an update function
+# this is the big one checking everything. Telling re-run setup or to restart.
+checkSetup <- function(taPaList, setupFuncName, sysHome_R_test=NULL, taPaSH_system_test=NULL) {
 	######
 	aaa <- taPaList
 		taPaName <- aaa$taPaName
@@ -968,98 +858,141 @@ checkSetup <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsP
 		taPaObj <- aaa$taPaObj
 		tmplName <- aaa$tmplName
 		setFiName <- aaa$setFiName
-	#########
+	######
 	systemHome <- Sys.getenv("HOME")
 	systemHome_R <- gsub("\\\\", "/", systemHome)
-	if (onTest) {
-			systemHome_R <- userLoc <- sysHome_R
+	pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
+	taPaSH_system <- eval(parse(text=pat))  #  the value for taPaSH from the environment variables
+	onTest <- FALSE
+	###
+	if (!is.null(sysHome_R_test)) { # so we are in a test
+		onTest <- TRUE
+		systemHome_R <- sysHome_R_test
+		taPaSH_system <- taPaSH_system_test
 	} # end if
 	fullRenvPath <- paste0(systemHome_R, "/.Renviron")
 	fn_taPaSH <- taPaSH # makes the name of the variable and the name of the final folder identical
 	#
-	taPaSH_creationMsg <- paste0("The initial path of `", taPaSH, "` in the .Renviron file (`", fullRenvPath, "`) has been set to `", systemHome_R, "/", fn_taPaSH, "`. \nIf you want, you can open the .Renviron file (e.g. using R-Studio) and modify the variable `", taPaSH, "` (holding the path to the  `settings-home` directory) so that it points to a folder of your liking.")
-	addInfo <- "Restart R for the changes to become effective."
-	restartMsg <- "Please restart R for the changes in the .Renviron file to become effective."
+	noRenvMsg <- paste0("The required .Renviron file at \n'", systemHome_R, "'\n does not exist. \n")
+	varMissMsg <- paste0("The required variable '", taPaSH, "' does not exist in the .Renviron file at \n'", fullRenvPath, "'\n")
+	SHdirNotValid <- paste0("The variable '", taPaSH, "' in the .Renviron file at \n'", fullRenvPath, "'\n is not pointing to an existing directory: \n")	
+	SHdirNotValid_add <- paste0("Please: \n    a) Modify the value of '", taPaSH, "', or \n    b) Create the appropriate folder, or \n    c) Re-Run the setup function '", setupFuncName, "'.\n")
+	noSetFiMsg <- paste0("The required file '", setFiName, "' does not seem to exist at \n")
+	pleaseRunMsg <- paste0("Please call the setup function '", setupFuncName, "'.\n")
+	shSystemEmpty <- paste0("Please restart R to update the systems environemnt variables.")
+	shSystemDiff <- paste0("Please restart R for the changes in the .Renviron file at the variable '", taPaSH, "' to become effective.\n")
 	#
-	# first check for existence of the .Renviron file
-	renvExists <- file.exists(fullRenvPath)
-	if (!renvExists) {
-		return(ifNotRenvExists(systemHome_R, fn_taPaSH, taPaSH, taPaSH_creationMsg, addInfo, userLoc)) #############
-	}  else { # so the .Renviron file is existing
-		# check if taPaSH is existing in the system: if yes, check if pointing to a valid directory; if no check if it is existing on the .Renviron file
-		if (!onTest) {
-			pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
-			taPaSH_system <- eval(parse(text=pat))  # returns `""` if not existing in Sys.getenv()
-		} # end if !onTest
-		if (taPaSH_system == "") {
-			return(taPaSH_System_missing(systemHome_R, taPaName, taPaSH, fn_taPaSH, taPaSH_creationMsg, restartMsg, addInfo, userLoc))	#############
-		} else { # (taPaSH_system != "") --> so taPaSH IS existing in the system
-			if (!dir.exists(taPaSH_system)) {  # check if pointing to a valid folder
-				return(taPaSH_System_OK_noDir(systemHome_R, taPaSH, taPaSH_system, restartMsg)) #############
-			} else { # end if !dir.exists
-				# so now everything should be good, file and system unisono etc.
-				# check if a settings file is here, If no, please copy it.
-				if (!onTest) {
-					taPaSettingsPath <- paste0(path.package(taPaName), "/",  setFiName)
-					localSettingsPath <- paste0(taPaSH_system, "/", setFiName)
-				} # end if
-				if (!file.exists(localSettingsPath)) {
-					return(pleaseCopyFreshSettings(taPaSettingsPath, taPaSH_system, setFiName))
-				} else { # so the settings.r file does exist  - we can, finally, go to checking the content of the settings.r file
-					return(TRUE) # we arrive here at TRUE, when all the setup is ok, so we can go and call 'checkFileVersionPossiblyModify' one upstairs
-				} # end else
-			} # end else !dir.exists
-		} # end else taPaSH_system == ""
-	} # end else if !renvExists
-} # EOF
-
-checkSetup_new <- function(taPaList) {
-	# we should have done the performSetup functions before
-	# main focus is if value in variable in Renviron is pointing to a valid folder,
-	# and if we have to restart or not.
-	# two outcomes:
-		# ask to restart
-		# ask to run setup
-	# no writing into userspace here
-	
-	# if everything is good, continue
-	
-	
-	
-} # EOF
-
-checkSettings <- function(taPaList, onTest=FALSE, taPaSH_system=NULL, taPaSettingsPath=NULL, localSettingsPath=NULL, sysHome_R=NULL, userLoc=NULL) {
-	#
-	setupOk <- checkSetup(taPaList, onTest, taPaSH_system, taPaSettingsPath, localSettingsPath, sysHome_R, userLoc)
-	#
-	if (setupOk) {
-		setFiName <- taPaList$setFiName
-		taPaObj <- taPaList$taPaObj
-		taPaName <- taPaList$taPaName
-		tmplName <- taPaList$tmplName
-		return(checkFileVersionPossiblyModify(pathToPack=taPaSettingsPath, folderLocal=taPaSH_system, nameLocal=setFiName, pm=taPaObj, taPaName, tmpl=tmplName))  # returns TRUE or FALSE
-	} else {
+	if (!file.exists(fullRenvPath)) {							 ### CASE 1 ### ok
+		message(paste0(noRenvMsg,pleaseRunMsg))
 		return(FALSE)
+	} # EOF
+	#
+	###### so .Renviron does exist: check if we have the variable
+	fcon <- file(fullRenvPath, open="rt")
+	content <- readLines(fcon)
+	close(fcon)
+	ind <- which(grepl(taPaSH, content))
+	
+	# we have more than one variable of taPaSH
+	if (length(ind) > 1) {      								### CASE 2 ### ok
+		multiVarMsg <- paste0("There are ", length(ind), " occurrences of the variable '", taPaSH, "' in the .Renviron file.\n")
+		message(paste0(multiVarMsg,pleaseRunMsg))
+		return(FALSE)
+	} # end if (length(ind) > 1)
+
+	# we do NOT have taPaSH
+	if (length(ind) == 0) {	  									### CASE 3 ### ok
+		message(paste0(varMissMsg, pleaseRunMsg))
+		return(FALSE)
+	} # end if
+
+	# by now the variable must be there exactly once, check its value
+	taPaSH_file <- content[ind] # get only the one string that is the taPaSH
+	fileValue <- trimws(strsplit(taPaSH_file, "=")[[1]][[2]]) # the [[1]] to get out of the list. naja.	
+	if (!dir.exists(fileValue)) {    							### CASE 4 ###  ok
+		message(paste0(SHdirNotValid, "'" ,fileValue, "'\n", SHdirNotValid_add))
+		return(FALSE)
+	} # end if
+	
+	# check if we have a settings.R file at this destination
+	if (! file.exists(paste0(fileValue, "/", setFiName))) {    ### CASE 5 ###  ok
+		message(paste0(noSetFiMsg, "'", fileValue, "'\n", pleaseRunMsg))
+		return(FALSE)
+	} # end if
+		
+		
+	# by now we must have one variable pointing to a valid directory containing a settings.r file. 
+	# Now check if also in the system, i.e. if we have to restart or not.
+	if (!onTest) {
+		pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
+		taPaSH_system <- eval(parse(text=pat))  # returns `""` if not existing in Sys.getenv()
+	} # end if !onTest
+	if (taPaSH_system == "") {    								### CASE 6 ### ok
+		message(shSystemEmpty)
+		return(FALSE)
+	} # end if
+	# check if the value is different on file and on system --> the user could have changed the value etc. we need to restart
+	if (taPaSH_system != fileValue) {   						 ### CASE 7 ###
+		message(shSystemDiff)
+		return(FALSE)
+	} # end if
+	#
+	# if we made it to here, everything should be nice and well. Ha.
+	return(TRUE)												### CASE 8 ###  ok
+} # EOF
+
+# this is called by uniset_updateSettings
+checkSettings <- function(taPaList, setupFuncName, sysHome_R_test=NULL, taPaSH_system_test=NULL, taPaSettingsPath_test=NULL) {
+	#
+	setupOk <- checkSetup(taPaList, setupFuncName, sysHome_R_test, taPaSH_system_test) # returns TRUE or FALSE ### CORE ###
+	#
+	if (!setupOk) {
+		return(FALSE)
+	} # end if
+	#
+	setFiName <- taPaList$setFiName
+	taPaObj <- taPaList$taPaObj
+	taPaName <- taPaList$taPaName
+	tmplName <- taPaList$tmplName
+	taPaSH <- taPaList$taPaSH
+	#
+	if (is.null(sysHome_R_test)) { # so we are in real life
+		taPaSettingsPath <- paste0(path.package(taPaName), "/",  setFiName) # the full path to the settings in the *installed* target package (there, it is in root !)
+		pat <- paste0("Sys.getenv(\"", taPaSH, "\")")
+		taPaSH_system <- eval(parse(text=pat))  #  the value for taPaSH from the environment variables
+	} else {
+		taPaSettingsPath <- taPaSettingsPath_test
+		taPaSH_system <- taPaSH_system_test
 	} # end else
+	return(checkFileVersionPossiblyModify(pathToPack=taPaSettingsPath, folderLocal=taPaSH_system, nameLocal=setFiName, pm=taPaObj, taPaName, tmpl=tmplName))  # returns TRUE or FALSE
 } # EOF
 ####################################################################
+checkSetupFuncName <- function(setupFunc, taPaName) {
+	if (is.null(setupFunc)) {
+		stop(paste0("Please provide the name of the function in the package '", taPaName, "' that is containing the function 'uniset::uniset_setup'.\n"), call.=FALSE)
+	} # end if
+	checkCh1(setupFunc, "setupFunc")
+	# no additional check if it really exists or not
+	return(TRUE) # for the test
+} # EOF
+
 pleaaseCopyAsTemplate <- function(taPaSettingsPath, taPaSH_system, setFiName) {
-		tmpl <- "_TEMPLATE.R"
-		#
-		td <- tempdir()
-		ok <- file.copy(taPaSettingsPath, td, overwrite = TRUE)
-		nfn <- paste0(td, "/", setFiName)
-		nfn_T <- paste0(nfn, tmpl)
-		ok <- file.rename(nfn, nfn_T)
-		ok <- file.copy(nfn_T, taPaSH_system, overwrite = TRUE)
-		unlink(nfn_T)
-		if (!ok) {
-			message("Sorry, for unknown reasons the required template file could not be copied.\n")
-			return(invisible(FALSE))
-		} else {
-		message(paste0("The file '", paste0(setFiName, tmpl), "' has been copied into \n'", taPaSH_system, "'\n"))
-		return(invisible(TRUE))
-		} # end else
+	tmpl <- "_TEMPLATE.R"
+	#
+	td <- tempdir()
+	ok <- file.copy(taPaSettingsPath, td, overwrite = TRUE)
+	nfn <- paste0(td, "/", setFiName)
+	nfn_T <- paste0(nfn, tmpl)
+	ok <- file.rename(nfn, nfn_T)
+	ok <- file.copy(nfn_T, taPaSH_system, overwrite = TRUE)
+	unlink(nfn_T)
+	if (!ok) {
+		message("Sorry, for unknown reasons the required template file could not be copied.\n")
+		return(invisible(FALSE))
+	} else {
+	message(paste0("The file '", paste0(setFiName, tmpl), "' has been copied into \n'", taPaSH_system, "'\n"))
+	return(invisible(TRUE))
+	} # end else
 } # EOF
 
 getUnisEnvirVariables <- function(unisetEnv) {
@@ -1094,7 +1027,7 @@ sourceSettingsToEnv <- function(taPaList, nsp, silent, pathSettings_test=NULL) {
 	#
 	pat <- paste0("assign(\"", taPaEnv, "\", new.env(), pos=\"", nsp, "\")") # create a new environment called taPaEnv, searchable at specified location called nsp in searchpath
 	eval(parse(text=pat))
-	sys.source(pathSettings, envir=get(taPaEnv, pos=nsp))	# source the settings file to the new environment
+	sys.source(pathSettings, envir=get(taPaEnv, pos=nsp))	##### source the settings file to the new environment # but from the package-specific loacation in the search path, so that many packages can have the same environment name ".doe".
 	#
 	if (!silent) {
 		cat(paste(taPaName, "settings updated\n"))
@@ -1308,11 +1241,12 @@ performSetup_checkCreateModRenv <- function(userLoc, taPaList, sysHome_R_test=NU
 			message(paste0(varExistMsg, varValueBad, addInfoRestartMsg))
 			return(TRUE)
 		} else { # so fileValue and intendedValue are the same, all is good, nothing to do 
-			# XXX We still have the possible restart-issue.  # ?? have here a check if we should restart ?
+			# We still have the possible restart-issue.  # but we check this at the update functions
 			message(paste0(varExistMsg, varValueGood))
 			return(TRUE)	
 		} # end else if (fileValue != intendedValue)
 	} # endif (length(ind) == 1)
+	stop("We should never get here.")
 } # EOF
 
 performSetup_sys <- function(userLoc, taPaList, taPaSettingsPath_test=NULL, sysHome_R_test=NULL) {
@@ -1376,7 +1310,7 @@ uniset_setup <- function(where=NULL, unisetEnv) {
 	taPaList <- getUnisEnvirVariables(unisetEnv)
 	ok <- performSetup_sys(where, taPaList)
 	if (ok) {
-		message("Setup successful")
+		message(paste("\n\nSetup successful\n\n"))
 	} # end if
 	return(invisible(where))
 } # EOF
@@ -1399,37 +1333,42 @@ uniset_setup <- function(where=NULL, unisetEnv) {
 #' in the target package holding the name of the uniset-environment for the
 #' specific target package ('uniset_env_name' or 'uev', see examples at
 #' \code{\link{uniset}}.)
+#' @param setupFunc Character length one. The name of the function in the target 
+#' package performing the setup, i.e. the name of the function that is 
+#' containing the \code{uniset} function \code{\link{uniset_setup}}. Defaults to 
+#' 'NULL'; has to be changed.
 #' @param silent Logical. If a confirmation should be printed. Defaults
 #' to 'FALSE'
 #' @section Important: This function is meant to be called from within the 
 #' target package.
 #' @return This function is called for its side effects, i.e to 
 #' manually update / (re-)source the settings file into an environment 
-#' defined by the target package. An (invisible) list with the settings resp. a 
-#' list called as defined in argument 'taPaObj' in the environment called as 
-#' defined in argument 'taPaEnv' in the functions \code{\link{uniset_getFiles}} 
-#' or \code{\link{uniset_copyFilesToPackage}} gets returned additionally.
-#' If the the update was unsuccessful, invisible(NULL) is returned. 
+#' defined by the target package. Returns (invisible) 'FALSE' if the the 
+#' update was unsuccessful, otherwise an (invisible) list with the settings 
+#' sourced from the settings.R file. 
+#' (This list is called as defined in argument 'taPaObj' in the environment 
+#' called as defined in argument 'taPaEnv' in the functions 
+#' \code{\link{uniset_getFiles}} or \code{\link{uniset_copyFilesToPackage}}.)
 #' @section Note: Please refer to \code{\link{uniset}} for a link to examples 
 #' and a real-world demo.
 #' @examples{
 #' \dontrun{
 #' # to be called from within the target package
-#' uniset_updateSettings(get("uev"))
+#' uniset_updateSettings(get("uev"), "dogPack_demo_setup")
 #' }
 #' }
 #' @export
-uniset_updateSettings <- function(unisetEnv, silent=FALSE) {
+uniset_updateSettings <- function(unisetEnv, setupFunc=NULL, silent=FALSE) {
 	taPaList <- getUnisEnvirVariables(unisetEnv)
-		taPaName <- taPaList$taPaName
+	taPaName <- taPaList$taPaName
 	nsp <- paste0("pkg_", taPaName, "_envs") # the name on the search path. Comes from / is defined in the .onLoad function in the target package.
+	checkSetupFuncName(setupFunc, taPaName) # is stopping when setupFunc is left at NULL
 	######
-#	checkSearchPath(nsp, taPaName) # the search path object should have been attached when loading the target package
-	ok <- checkSettings(taPaList) # makes sure that we have the latest version of the settings.r file in the settings-home directory defined in .Renviron
+	ok <- checkSettings(taPaList, setupFunc) # makes sure that we have the latest version of the settings.r file in the settings-home directory defined in .Renviron
 	if (ok) {
 		return(invisible(sourceSettingsToEnv(taPaList, nsp, silent))) # is sourcing the settings file to taPaEnv and returns the (invisible) settings list
 	} else { # so if the settings check was not ok
-		return(invisible(NULL))
+		return(invisible(FALSE))
 	}
 } # EOF
 
@@ -1442,22 +1381,26 @@ uniset_updateSettings <- function(unisetEnv, silent=FALSE) {
 #' @inheritParams uniset_updateSettings
 #' @section Important: This function is meant to be called from within the 
 #' target package.
-#' @return No return value, function is called for its side effects, i.e to 
-#' automatically update / (re-)source the settings file into an environment defined 
-#' by the target package. If the the update was unsuccessful, 'stop' is called.
+#' @return Is primarily called for its side effects, i.e to automatically 
+#' update / (re-)source the settings file into an environment defined 
+#' by the target package. Returns (invisible) 'FALSE' if the the update was 
+#' unsuccessful, otherwise an (invisible) list with the settings sourced from 
+#' the settings.R file. 
 #' @section Note: Please refer to \code{\link{uniset}} for a link to examples 
 #' and a real-world demo.
 #' @examples{
 #' \dontrun{
 #' # to be called from within the target package
-#' uniset_autoUpS(get("uev"))
+#' uniset_autoUpS(get("uev"), "dogPack_demo_setup")
 #' }
 #' }
 #' @export
-uniset_autoUpS <- function(unisetEnv) { # stops if somethings goes wrong
-	aaa <- getUnisEnvirVariables(unisetEnv)
-		taPaEnv <- aaa$taPaEnv
-		taPaObj <- aaa$taPaObj
+uniset_autoUpS <- function(unisetEnv, setupFunc=NULL) { # stops if somethings goes wrong
+	taPaList <- getUnisEnvirVariables(unisetEnv)
+		taPaEnv <- taPaList$taPaEnv
+		taPaObj <- taPaList$taPaObj
+		taPaName <- taPaList$taPaName
+	checkSetupFuncName(setupFunc, taPaName)
 	####
 	res <- 1
 	pat <- paste0("exists(\"", taPaEnv, "$", taPaObj, "\")")
@@ -1467,11 +1410,11 @@ uniset_autoUpS <- function(unisetEnv) { # stops if somethings goes wrong
 		autoUpS <- eval(parse(text=pat))
 	} else {
 		autoUpS <- TRUE
-	}
+	} # end else
+	#
 	if (autoUpS) {
-		res <- uniset_updateSettings(unisetEnv, silent=TRUE)
-	}
-	if (is.null(res)) {
-		stop(call.=FALSE)
-	}
+		return(invisible(uniset_updateSettings(unisetEnv, setupFunc, silent=TRUE))) # returns List or FALSE
+	} else {
+		return(invisible(FALSE))
+	} # end else
 } # EOF

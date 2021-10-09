@@ -21,7 +21,7 @@ dogPack_test_targetPackageParams <- function(){
 #' @return No return value, demo function called for its side effects, i.e. to
 #' perform the setup. 
 #' @export
-dogPack_demo_setupSystem <- function(where=NULL) {
+dogPack_demo_setup <- function(where=NULL) {
 
 	uniset::uniset_setup(where, get("uev"))
 	# provide a function like this, with the one line above in it, to the user of 
@@ -41,7 +41,7 @@ dogPack_demo_setupSystem <- function(where=NULL) {
 #' @export
 dogPack_demo_updateSettings <- function(silent=FALSE) {
 
-    stn <- uniset::uniset_updateSettings(get("uev"), silent)
+    stn <- uniset::uniset_updateSettings(get("uev"), setupFunc="dogPack_demo_setup", silent)
     # use this line in a function defined in the target package, in our example the package
     # 'dogPack', to manually read in and update the values from the settings file. 
     # A possible use could be to have a direct way to check if updating the values from the 
@@ -63,7 +63,7 @@ dogPack_demo_updateSettings <- function(silent=FALSE) {
 #' @export
 dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 	
-	uniset::uniset_autoUpS(get("uev"))
+	uniset::uniset_autoUpS(get("uev"), setupFunc="dogPack_demo_setup")
 	# As the developer of the target package, in our example the package 'dogPack', you would 
 	# include this line at the top of each and every single function that you want to trigger the
 	# auto-update mechanism, i.e. when the key=value pairs from the local 'dogPack_settings.R' 

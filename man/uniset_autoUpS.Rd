@@ -4,18 +4,25 @@
 \alias{uniset_autoUpS}
 \title{Automatically update Settings}
 \usage{
-uniset_autoUpS(unisetEnv)
+uniset_autoUpS(unisetEnv, setupFunc = NULL)
 }
 \arguments{
 \item{unisetEnv}{Character length one. Hand over the global variable defined
 in the target package holding the name of the uniset-environment for the
 specific target package ('uniset_env_name' or 'uev', see examples at
 \code{\link{uniset}}.)}
+
+\item{setupFunc}{Character length one. The name of the function in the target 
+package performing the setup, i.e. the name of the function that is 
+containing the \code{uniset} function \code{\link{uniset_setup}}. Defaults to 
+'NULL'; has to be changed.}
 }
 \value{
-No return value, function is called for its side effects, i.e to 
-automatically update / (re-)source the settings file into an environment defined 
-by the target package. If the the update was unsuccessful, 'stop' is called.
+Is primarily called for its side effects, i.e to automatically 
+update / (re-)source the settings file into an environment defined 
+by the target package. Returns (invisible) 'FALSE' if the the update was 
+unsuccessful, otherwise an (invisible) list with the settings sourced from 
+the settings.R file.
 }
 \description{
 Use this function within your code to automatically update the
@@ -40,7 +47,7 @@ and a real-world demo.
 {
 \dontrun{
 # to be called from within the target package
-uniset_autoUpS(get("uev"))
+uniset_autoUpS(get("uev"), "dogPack_demo_setup")
 }
 }
 }

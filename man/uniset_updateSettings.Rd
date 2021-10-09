@@ -4,7 +4,7 @@
 \alias{uniset_updateSettings}
 \title{Update Settings of Target Package}
 \usage{
-uniset_updateSettings(unisetEnv, silent = FALSE)
+uniset_updateSettings(unisetEnv, setupFunc = NULL, silent = FALSE)
 }
 \arguments{
 \item{unisetEnv}{Character length one. Hand over the global variable defined
@@ -12,17 +12,23 @@ in the target package holding the name of the uniset-environment for the
 specific target package ('uniset_env_name' or 'uev', see examples at
 \code{\link{uniset}}.)}
 
+\item{setupFunc}{Character length one. The name of the function in the target 
+package performing the setup, i.e. the name of the function that is 
+containing the \code{uniset} function \code{\link{uniset_setup}}. Defaults to 
+'NULL'; has to be changed.}
+
 \item{silent}{Logical. If a confirmation should be printed. Defaults
 to 'FALSE'}
 }
 \value{
 This function is called for its side effects, i.e to 
 manually update / (re-)source the settings file into an environment 
-defined by the target package. An (invisible) list with the settings resp. a 
-list called as defined in argument 'taPaObj' in the environment called as 
-defined in argument 'taPaEnv' in the functions \code{\link{uniset_getFiles}} 
-or \code{\link{uniset_copyFilesToPackage}} gets returned additionally.
-If the the update was unsuccessful, invisible(NULL) is returned.
+defined by the target package. Returns (invisible) 'FALSE' if the the 
+update was unsuccessful, otherwise an (invisible) list with the settings 
+sourced from the settings.R file. 
+(This list is called as defined in argument 'taPaObj' in the environment 
+called as defined in argument 'taPaEnv' in the functions 
+\code{\link{uniset_getFiles}} or \code{\link{uniset_copyFilesToPackage}}.)
 }
 \description{
 Manually read in the settings-file in the target package settings
@@ -54,7 +60,7 @@ target package.
 {
 \dontrun{
 # to be called from within the target package
-uniset_updateSettings(get("uev"))
+uniset_updateSettings(get("uev"), "dogPack_demo_setup")
 }
 }
 }

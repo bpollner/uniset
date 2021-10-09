@@ -2,6 +2,6 @@
 
 export(dogPack_demo_No_autoUpS)
 export(dogPack_demo_autoUpS)
-export(dogPack_demo_setupSystem)
+export(dogPack_demo_setup)
 export(dogPack_demo_updateSettings)
 export(dogPack_test_targetPackageParams)
