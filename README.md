@@ -14,7 +14,7 @@ Package `uniset` enables any package (the 'target package') to provide its users
 In order to enable the target package to make use of the functionality offered by package `uniset`, four files have to be exported by `uniset` and be placed into the target package.
 
 ### Advantage
-The most imminent advantage of the `uniset` settings-file system over using any static file for permanently storing settings for any package is the fact that the key=value pairs in the 'xxx_settings.R' file get updated (added / deleted) dynamically. So the developer of a package can delete keys or introduce new ones, and the new key=value pairs will be automatically added to or deleted from the local 'xxx_settings.R' file. Values changed by the user of the target package will be preserved. So the author of the target package can add or delete keys from the 'xxx_settings.R' file without worrying that this will cause any effort or troubles for the user of the target package.
+The most imminent advantage of the `uniset` settings-file system over using any static file for permanently storing settings for any package is the fact that the key=value pairs in the 'settings.R' file get updated (added / deleted) dynamically. So the developer of a package can delete keys or introduce new ones, and the new key=value pairs will be automatically added to or deleted from the local 'settings.R' file. Values changed by the user of the target package will be preserved. So the author of the target package can add or delete keys from the 'settings.R' file without worrying that this will cause any effort or troubles for the user of the target package.
 
 ### Two ways to generate the required files
 * **1) Export and Move Files**  Use **`uniset_getFiles`**, then move the 'xxx_settings.R' file ('xxx' for the name of the target package) into the 'inst' folder (create one if not already done) of the target package. Move the file 'zzz.R', 'uniset_globals.R' and 'uniset_functions.R' to the 'R' folder of the target package.  
@@ -26,8 +26,7 @@ In case that the '.onLoad' function already is defined, add the eight lines of c
 In both cases the name of a setup-function has to be provided, that is the name of the function defined in the target package that contains the `uniset` function `uniset_setup`.
 
 ### Accessing values from within target package
-Every variable defined in the 'xxx_settings.R' file is accessible in the code of the target package. The target package has to list `uniset` as an import, and then the functions `uniset_updateSettings` or `uniset_autoUpS` called from a function **defined in the target package** can be used to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'xxx_settings.R' file and have them accessible in an environment created by the target package. See below for a practical example.
-***
+Every variable defined in the 'settings.R' file is accessible in the code of the target package. The target package has to list `uniset` as an import, and then the functions `uniset_updateSettings` or `uniset_autoUpS` called from a function **defined in the target package** can be used to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'settings.R' file and have them accessible in an environment created by the target package. See below for a practical example.
 
 ## Installation
 Install release version from CRAN via
@@ -42,7 +41,7 @@ install_github(repo="bpollner/uniset", ref="master")
 ***
 ## Usage
 ### Set up example
-We assume that we want to enable a package called `dogPack` with the dynamic settings file provided by `uniset`. 
+We assume that we want to enable a package called `dogPack` to use the dynamic settings file provided by `uniset`. 
 In this example, `dogPack` is the target package, and we want it to live at `~/desktop`. First copy the example folder `dogPack` to your desktop:
 ```
 library(uniset)
@@ -60,11 +59,10 @@ setupFunc <- "dogPack_demo_setup" # the name of the setup-function in our exampl
 to <- "~/desktop"
 uniset_getFiles("dogPack", setupFunc, to)
 ```
-Move the 'dogPack_settings.R' file into the 'inst' folder (create one if not already done) of `dogPack`. Move the file 'zzz.R', 'uniset_globals' and 'uniset_functions.R' into the 'R' folder of `dogPack`. In case that the '.onLoad' function already is defined, add the eight lines of code from the file 'zzz.R' to your existing '.onLoad' function. In case that the '.onUnLoad' function already is defined, add the one line of code from the file 'zzz.R' to your existing '.onUnLoad' function.  
-
+Move the 'dogPack_settings.R' file into the 'inst' folder (create one if not already done) of `dogPack`. Move the file 'zzz.R', 'uniset_globals' and 'uniset_functions.R' into the 'R' folder of `dogPack`.
 
 * **2) Write files directly to target package**
-(recommended) This call to `uniset_copyFilesToPackage()` copies the four required files directly into the target package -- called `dogPack` in our example, living directly on the desktop. 
+(recommended) A call to `uniset_copyFilesToPackage` copies the four required files directly into the target package -- called `dogPack` in our example, living directly on the desktop. 
 ```
 path <- "~/desktop/dogPack"
 setupFunc <- "dogPack_demo_setup" # the name of the setup-function in our example
@@ -77,23 +75,23 @@ You can define functions **in the target package** (what is in this example the 
 * `uniset_updateSettings(get("uev"), "nameOfSetupFunction")`
 * `uniset_autoUpS(get("uev"), "nameOfSetupFunction")`  
 `uev` is a global constant defined in the target package, handing over the name of the environment where necessary variables are stored.
-`uniset_test` is merely a testing function to see if the handover of environments etc. is working properly.  
-  
+`uniset_test` is merely a testing function to see if the handover of environments etc. is working properly. 
+ `"nameOfSetupFunction"`is the name of the function defined in the target package that is containing the `uniset` setup-function `uniset_setup`.
 
 The function `uniset_setup` is:
 * Creating the required environment variable in the .Renviron file, and
-* copying the 'dogPack_settings.R' file to a destination specified by the user of the target package. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package `dogPack`.
+* copying the 'dogPack_settings.R' file to a destination specified by the user of 'dogPack'. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package `dogPack`.
   
 The functions `uniset_updateSettings` and `uniset_autoUpS` are updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the `dogPack` installation folder. Thus, whenever the developer of package `dogPack` is introducing new or deleting obsolete key=value pairs, they will be automatically added to or deleted from the user´s file. Any values that the user modified will be preserved. Thus, **a new update or installation of package `dogPack` will not force the user of package `dogPack` to completely re-customize the 'dogPack_settings.R' file**. 
 
-Please review the file 'dogPackFunc.R' in the folder 'dogPack/R' that was copied to the desktop previously for a look at the code of the practical examples that will be executed below. 
+Please review the file 'dogPackFunc.R' in the folder 'dogPack/R' that was copied to the desktop previously and look at the code of the practical examples that will be executed below. 
 
 Try accessing a value from the settings file as described in 'dogPackFunc.R/dogPack_demo_autoUpS()'. It will not work yet.
 
 ```
 color <- .dogPack_settingsEnv$settings$favouriteColor # does not work yet
 ```
-In this example we try to obtain the value from the key 'favouriteColor' from the list called 'settings' in the environment called '.dogPack_settingsEnv'.
+(In this example we try to obtain the value from the key 'favouriteColor' from the list called 'settings' in the environment called '.dogPack_settingsEnv'.)
 
 
 ### The real world test
@@ -116,40 +114,43 @@ By now everything should be ready and set up, and it is possible to obtain value
 color <- .dogPack_settingsEnv$settings$favouriteColor
 color
 ```
-However, it is probably preferable to use the customised function `getstn()` defined in package 'dogPack' to directly obtain the settings list – see the example code in 'dogPack_demo_autoUpS()' in the example folder copied previously.
+However, it is probably preferable to use the customised function `getstn()` defined in package 'dogPack' to directly obtain the settings list – see the example code in `dogPack_demo_autoUpS()` and `dogPack_demo_tellFavouriteColor()` in the example folder copied previously.
 ```
 dogPack_demo_autoUpS()
 ```
-Now open the file 'dogPack_settings.R' in the folder 'dogPack_SH' in your home directory (if you left all at the defaults above), and change the value of the key 'favouriteColor' to "orange". After that, call
+Now open the file 'dogPack_settings.R' in the folder 'dogPack_SH' that was created during setup, and change the value of the key 'favouriteColor' to "orange". After that, call
 
 ```
- .dogPack_settingsEnv$settings$favouriteColor # should be still "blue"
+dogPack_demo_tellFavouriteColor() # should be still "blue"
 dogPack_demo_autoUpS()
- .dogPack_settingsEnv$settings$favouriteColor # should be "orange" now
+dogPack_demo_tellFavouriteColor() # should be "orange" now
 ```
 #### Setting Values
 Of course it is also possible to locally set the value of a key in the 'settings' object via
 ```
 .dogPack_settingsEnv$settings$favouriteColor <- "lightyellow"
 .dogPack_settingsEnv$settings$favouriteColor
+# or 
+dogPack_demo_tellFavouriteColor()
 ```
 **Cave:** Be aware that a call to the auto-update function (defined in `uniset`) is re-instating the values from the 'dogPack_settings.R' file to the object 'settings' in the environment '.dogPack_settingsEnv', but not when used with the key 'gen_autoUpdateSettings' in the settings.R file previously set to 'FALSE'.
 
 ```
-.dogPack_settingsEnv$settings$favouriteColor # should be "lightyellow"
+dogPack_demo_tellFavouriteColor() # should be "lightyellow"
 dogPack_demo_autoUpS(F)
-.dogPack_settingsEnv$settings$favouriteColor # should be the value you assigned before ("orange")
+dogPack_demo_tellFavouriteColor() 
+# should be the value you assigned before ("orange")
 ```
 Including the auto-update function `uniset::uniset_autoUpS` as demonstrated in `dogPack_demo_autoUpS` is of course not required – the key=value pairs in the settings file can be accessed anyway. Practically, it makes sense to include the auto-update in every function that the user of the target package can call, and to not include it in all the other functions.
 ```
-.dogPack_settingsEnv$settings$favouriteColor # your value ("orange")
-.dogPack_settingsEnv$settings$favouriteColor<- "green"
-.dogPack_settingsEnv$settings$favouriteColor # should be green
+dogPack_demo_tellFavouriteColor() # your value ("orange")
+.dogPack_settingsEnv$settings$favouriteColor <- "green"
+dogPack_demo_tellFavouriteColor() # should be green
 dogPack_demo_No_autoUpS(F)
-.dogPack_settingsEnv$settings$favouriteColor # still green
+dogPack_demo_tellFavouriteColor() # still green
 #
 dogPack_demo_autoUpS(F) # now update the values
-.dogPack_settingsEnv$settings$favouriteColor # your value "orange" again
+dogPack_demo_tellFavouriteColor() # your value "orange" again
 ```
 #### Adding / deleting keys
 If you are the developer of package `dogPack`, at some time after you published `dogPack` you might want to add keys to or delete from the settings file. 
@@ -158,7 +159,7 @@ Do that now: Add e.g. a new 'key=value,' pair (do not forget the comma ',') anyw
 ```
 path.package("dogPack")
 ```
-and simply modify (add a key) there the file 'dogPack_settings.R'.
+and there simply modify (add a key) the file 'dogPack_settings.R'.
 
 Now the **user** of `dogPack` calls a function that includes the auto-update function `uniset::uniset_autoUpS`:
 

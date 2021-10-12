@@ -1,8 +1,24 @@
 
 
 
+##########################
+Version 0.2.1
+	Second submission to CRAN
+##########################
+
+NEW:
+	User-space is not written into any more by default. Now there is a dedicated setup-function to be called by the user. Only this setup-function does write into user space according to the path provided by the user.
+	.GlobalEnv is not written into any more. Instead, a separate object is created on the search path where all required environments reside. 
+
+
+IMPROVED:
+	Manuals (all return values now explained in detail); readme.md; description.
+	Examples: Only those examples that really can not be run stay wrapped in  \dontrun{}.
+
+
+
 
 ##########################
 Version 0.1.1
-	Initial release
+	Initial submission to CRAN
 ##########################

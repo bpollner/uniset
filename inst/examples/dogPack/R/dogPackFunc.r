@@ -13,6 +13,9 @@ dogPack_test_targetPackageParams <- function(){
 } # EOF
 
 
+
+
+
 #' @title Perform Setup
 #' @description Set up the local system for the use of the dynamic
 #' settings file. 
@@ -34,6 +37,8 @@ dogPack_demo_setup <- function(where=NULL) {
 
 
 
+
+
 #' @title Demo Update Settings
 #' @description Update Settings
 #' @param silent Logical. If a confirmation should be printed. Defaults to 'FALSE'.
@@ -49,6 +54,8 @@ dogPack_demo_updateSettings <- function(silent=FALSE) {
     # settings file works correctly. 
 	return(invisible(stn))
 } # EOF
+
+
 
 
 
@@ -88,16 +95,12 @@ dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 	# throws now a note when running CMD-CHECK ("no visible binding for global variable '.dogPack_settingsEnv'")
 	
 		
-			
-	
 	#  Here would be the main body of the function.
 	# ...
 	# ... 
 	# ...
 	
-	
-	
-		
+			
 	# Any key=value pairs of the settings file can be accessed in the body of a function defined 
 	# in the target package, in our example this package 'dogPack', as shown below:
 
@@ -114,6 +117,8 @@ dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 
 
 
+
+
 #' @title Demo No Autoupdate
 #' @description A function that is \strong{not} auto-updating the values from 
 #' the settings file. Is also reading the value of the key 'favouriteColor' 
@@ -124,7 +129,7 @@ dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 #' left at the default 'TRUE', the value of the key 'favouriteColor' in the settings 
 #' file is printed. Returns (invisible) NULL.
 #' @export
-dogPack_demo_No_autoUpS<- function(tellMe=TRUE, txt="My favourite color is ") {
+dogPack_demo_No_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 	
 	stn <- dogPack::getstn()
 	# Read in the 'settings' object from the environment '.dogPack_settingsEnv'. 
@@ -136,15 +141,10 @@ dogPack_demo_No_autoUpS<- function(tellMe=TRUE, txt="My favourite color is ") {
 	# throws now a note when running CMD-CHECK ("no visible binding for global variable '.dogPack_settingsEnv'")
 	
 		
-	
-	
 	#  Here would be the main body of the function.
 	# ...
 	# ... 
 	# ...
-	
-	
-	
 	
 	# Any key=value pairs of the settings file can be accessed in the body of a function defined 
 	# in the target package, in our example this package 'dogPack', as shown below:
@@ -158,4 +158,18 @@ dogPack_demo_No_autoUpS<- function(tellMe=TRUE, txt="My favourite color is ") {
 		cat(txtOut)	
 	} # end if	
 	return(invisible(NULL))
+} # EOF
+
+
+
+
+
+#' @title Tell favourite Color
+#' @description Tells the favourite color as defined in the settings.R file.
+#' @return Character length one, the favourite color as defined in the 
+#' settings.R file.
+#' @export
+dogPack_demo_tellFavouriteColor <- function() {
+	favColor <- getstn()$favouriteColor
+	return(favColor)
 } # EOF
