@@ -120,7 +120,7 @@ It is possible to obtain values from 'dogPack_settings.R' directly via:
 color <- .dogPack_settingsEnv$settings$favouriteColor
 color
 ```
-However, it is preferable to use the function `getstn()` defined in package 'dogPack' to directly obtain the settings list – see the example code in `dogPack_demo_autoUpS()` and `dogPack_demo_tellFavouriteColor()` in the example folder copied previously. (`getstn()` was customised by package `uniset` at the time of creating the four required files and is located in the file 'uniset_functions.R' in 'dogPack/R'.)
+However, it is preferable to use the function `getstn()` defined in package 'dogPack' to directly obtain the settings list – see the example code in `dogPack_demo_autoUpS()` and `dogPack_demo_tellFavouriteColor()` in the example folder copied previously. (`getstn()` was customized by package `uniset` at the time of creating the four required files and is located in the file 'uniset_functions.R' in 'dogPack/R'.)
 
 ```
 dogPack_demo_tellFavouriteColor()

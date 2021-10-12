@@ -153,8 +153,10 @@ test_that("checkPathToFolder", {
     expect_error(checkPathToFolder(where=paste0(td, "/blabla"), what="where"))
 }) # EOT
 
+pex <- path.expand("~")
 test_that("getCheckPathToFolder", {
     expect_identical(getCheckPathToFolder(where=td, what="where"), td)
+    expect_identical(getCheckPathToFolder(where="~", what="where"), pex)
 #    expect_error(getCheckPathToFolder(where=NULL, what="where"), td) # is interactive, does not work in test
 }) # EOT
 
@@ -367,6 +369,17 @@ cleanUp <- function(onTest=TRUE){
     message("clean")
 } # EOF
 cleanUp()
+
+
+
+potoloc <- paste0(folderLocal, "/", nameLocal) # path to local
+ptpDouble <- paste0(td, "/dopaem/R/settings_doubleKey.R")
+# getCheckForDoubleNames(pathToLocal=potoloc, pathToPack=ptpDouble, pmu="$settings")
+test_that("getCheckForDoubleNames", {
+    expect_type(getCheckForDoubleNames(pathToLocal=potoloc, pathToPack, pmu="$settings"), "list")
+    expect_error(getCheckForDoubleNames(pathToLocal=potoloc, pathToPack=ptpDouble, pmu="$settings"))
+    expect_error(getCheckForDoubleNames(pathToLocal=ptpDouble, pathToPack=potoloc, pmu="$settings"))
+}) # EOT
 
 
 

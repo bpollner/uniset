@@ -22,6 +22,11 @@ getCheckPathToFolder <- function(where, what) {
 		where <- substr(where, 1, nchar(where)-1) # cut away the "/" at the end
 	} # end if is.null(where)
 	checkCh1(where, what)
+	oldPath <- where
+	where <- try(path.expand(where), silent=TRUE)
+	if (class(where) == "try-error") {
+		where <- oldPath
+	} # end if
 	checkPathToFolder(where, what)	
 	return(where)
 } # EOF
@@ -37,44 +42,6 @@ checkGetTaPaSH <- function(taPaSH, taPaName) {
 	} else {
 		return(taPaSH)
 	}
-} # EOF
-
-readInCharInput <- function(what) {
-	maxTries <- 3
-	ask <- TRUE
-	aa <- 1
-	txt <- paste0("Please provide a character length one to the argument '", what, "'.")
-	if (what == "taPaName") {
-		askIntro <- paste0("Please provide the name of the target-package, i.e. the name of the package that you want to enable to use package 'uniset': ")
-	} # end if
-	if (what == "taPaEnv") {
-		askIntro <- paste0("Please provide a (short) name of the environment that will contain the object holding the settings, preferably starting with a '.' (dot): ")
-	} # end if
-	if (what == "taPaObj") {
-		askIntro <- paste0("Please provide a (short) name of the object holding the settings, e.g. 'stn': ")
-	} # end if
-	#
-	checkChoice <- function(charIn) {
-		if (length(charIn) == 0) {
-			message(txt)
-			return(TRUE)
-		} else {
-			checkCh1(charIn, what)
-		} # end else
-		return(FALSE) # returns FALSE if all is ok
-	} # EOiF
-	#
-	message(askIntro)
-	while (ask) {
-		charIn <- (scan(file = "", n = 1, quiet = TRUE, what="character"))
-		ask <- checkChoice(charIn)
-		aa <- aa+1
-		if (aa > maxTries & ask == TRUE) {
-			ask <- FALSE
-			stop(paste0("Please try again"), call.=FALSE)
-		} # end if
-	} # end while ask
-	return(charIn)
 } # EOF
 
 checkPath_Package_getName <- function(pathToPackage) {
