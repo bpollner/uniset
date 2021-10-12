@@ -23,37 +23,22 @@ to 'FALSE'}
 \value{
 This function is called for its side effects, i.e to 
 manually update / (re-)source the settings file into an environment 
-defined by the target package. Returns (invisible) 'FALSE' if the the 
+defined by the target package. Returns (invisible) 'FALSE' if the 
 update was unsuccessful, otherwise an (invisible) list with the settings 
-sourced from the settings.R file. 
-(This list is called as defined in argument 'taPaObj' in the environment 
-called as defined in argument 'taPaEnv' in the functions 
-\code{\link{uniset_getFiles}} or \code{\link{uniset_copyFilesToPackage}}.)
+sourced from the settings.R file.
 }
 \description{
 Manually read in the settings-file in the target package settings
 home directory as specified in the .Renviron file.
 }
-\section{Note}{
- If not present, the required `.Renviron` file will be
-automatically created. If the variable defined in argument 'taPaSH' in
-\code{\link{uniset_getFiles}} is not defined in the .Renviron file, it
-will be automatically added, and its default path is pointing to the
-(possibly also created) folder having the same name as `taPaSH` in
-the users home directory, where the `xxx_settings.R` file is automatically
-copied to if not already present.
-It is possible to manually provide a different path in the
-variable as defined in argument `taPaSH` in the .Renviron file, pointing
-to any folder where then the xxx_settings.R file will reside.
-XXX Improve this text please.
-
- Please refer to \code{\link{uniset}} for a link to examples 
-and a real-world demo.
-}
-
 \section{Important}{
  This function is meant to be called from within the 
 target package.
+}
+
+\section{Note}{
+ Please refer to \code{\link{uniset}} for a link to examples 
+and a real-world demo.
 }
 
 \examples{

@@ -9,13 +9,17 @@ glob_targetPackgae_settingsObjectName <- "XXX_obj"			# like the 'stn' for ap2
 glob_targetPackage_templateSuffix <- "XXX_template"			#
 glob_settingsHomeSuffix <- "_SH"
 glob_actualSettingsName <- "XXX_actualSettingsName"			# for the header in the settings file
+glob_setupFuncName <- "XXX_setupFuncName"
 ####
 glob_filenameZZZ <- "zzz.R"
 glob_filenameGlobals <- "uniset_globals.R"
 glob_filnameSettings <- "settings.R"
+glob_filenameFunctions <- "uniset_functions.R"
 glob_folderPrev <- "UnisetFiles_R-pkg_'"
 glob_unisetEnvSuffix <- "_unisetEnv"
 ####
 glob_templGlobals <- "uniset_globals.R"
 glob_templZZZ <- "zzz.R"
 glob_templSettinsg <- "settings.R"
+####
+glob_taPaEnvSuffix <- "_settingsEnv" # the suffix for the environment holding the settings. Will have the package name in front of it.

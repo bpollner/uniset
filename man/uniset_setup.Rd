@@ -34,16 +34,16 @@ to initiate the system, i.e. to
 \item Define the folder where the settings.R file will be located,
 \item Copy the settings.R file into this folder, and
 \item Create a corresponding entry in the .Renviron file (or create the 
-.Renviron file if does not exit).
+.Renviron file if does not exist).
 }
-As CRAN policies forbid to write into user homespace by default, this setup 
-has to be done manually (but only once!) by the user of the target package. 
-However, if called repeatedly, it enables the user of the target package to 
-conveniently change the settings-home directory and its corresponding variable 
-in the .Renviron file. In that case, a factory-fresh version of the settings.R 
-file will be copied into the new settings-home directory. For the user-defined 
-values in the 'old' settings.R file not to be lost, the user then has to 
-manually move / copy the settings from the old location to the new one.
+This setup has to be done manually (but only once!) by the user of the target 
+package. However, if called repeatedly, it enables the user of the target 
+package to conveniently change the settings-home directory and its 
+corresponding variable in the .Renviron file. In that case, a factory-fresh 
+version of the settings.R file will be copied into the new settings-home 
+directory. For the user-defined values in the 'old' settings.R file not 
+to be lost, the user then has to manually move / copy the settings from 
+the old location to the new one.
 }
 \section{Important}{
  This function is meant to be called from within the 

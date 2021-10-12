@@ -6,9 +6,9 @@
 \usage{
 uniset_copyFilesToPackage(
   pathToPackage,
-  taPaEnv = "def",
-  taPaObj = "stn",
+  setupFunc = NULL,
   taPaSH = "def",
+  taPaObj = "settings",
   tmpl = "_TEMPLATE"
 )
 }
@@ -16,48 +16,35 @@ uniset_copyFilesToPackage(
 \item{pathToPackage}{Character length one. The path to the root of the
 target package.}
 
-\item{taPaEnv}{Character length one. The name of the environment where the
-settings for the target package (in a key=value format) will be stored. It is
-recommended to use a rather short name starting with a '.' (dot). See details.
-If left at the default 'def', the first two characters of the package name,
-prepended with a '.' (dot), and appended with an 'e' (for environment) will
-be used.}
-
-\item{taPaObj}{Character length one. The name of the object (residing in the
-environment with the name provided in argument 'taPaEnv') holding the list
-with all the individual key-value pairs that can be defined to be used in the
-target package. It is recommended to use a rather short name. See details.
-Defaults to 'stn'.}
+\item{setupFunc}{Character length one. The name of the function 
+\strong{in the target package} that is containing the setup-function 
+\code{\link{uniset_setup}}.}
 
 \item{taPaSH}{Character length one. The name of the variable to be defined in
 the '.Renviron' file, leading to the place where the settings.R file for the
-target package will be stored. If left at the default 'def', \code{taPaName_SH}
+target package will be stored. If left at the default 'def', \code{'taPaName_SH'}
 will be used, with 'taPaName' being the value provided at the argument
 'taPaName'.}
 
+\item{taPaObj}{Character length one. The name of the object holding the list
+with the key-value pairs that can be defined to be used in the target package. 
+Can be left at the default 'settings'.}
+
 \item{tmpl}{Character length one. the Character string that will be appended
-to the fresh settings file that is possibly copied (by the target package)
-to the users settings home directory. Can be left at the default '_TEMPLATE'.}
+to the fresh settings file that is copied (by the target package) to the users 
+settings home directory if updating the key=value pairs was not successful. 
+Can be left at the default '_TEMPLATE'.}
 }
 \value{
-Writes the three required files directly into a valid R-package folder
+Writes the four required files directly into a valid R-package folder
 structure. Returns (invisible) NULL.
 }
 \description{
-Function to generate the three files required in the target
+Generate the four files required in the target
 package (i.e. the package that should be enabled to use the package 'uniset').
 The generated files will be copied directly into their required destination
 folders in the target package. The name of the target package will be extracted
 from the description file.
-}
-\details{
-The importance of providing rather short characters at the arguments
-'taPaEnv' and 'taPaObj' lies in the fact that those two names will be used to
-get any parameter stored in the settings file of the target package. For example,
-if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
-'taPaObj', then all the values stored in the settings file can be retrieved by
-calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
-settings file.
 }
 \section{Note}{
  Please refer to \code{\link{uniset}} for a link to examples 
@@ -71,9 +58,9 @@ library(uniset)
 to <- tempdir()
 from <- paste0(path.package("uniset"), "/examples/dogPack")
 file.copy(from, to, recursive = TRUE) 
-# now copy the three required files directly into the package 'dogPack'
+# now copy the four required files directly into the package 'dogPack'
 path <- paste0(to, "/dogPack")
-uniset_copyFilesToPackage(path)
+uniset_copyFilesToPackage(path, "nameOfSetupFunc")
 }
 }
 \seealso{

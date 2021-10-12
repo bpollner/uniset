@@ -11,7 +11,7 @@
 # use the code '.doe$stn$KEY' (with 'KEY' being any of the key=value pairs defined below) 
 # in the target package to access the values of the object 'stn'.
 
-stn <- list(
+settings <- list(
 	# tag = value, # with a comma !!
 		
 	## general behavior

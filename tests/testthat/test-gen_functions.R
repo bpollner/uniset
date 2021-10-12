@@ -29,31 +29,24 @@ test_that("checkGetTaPaSH", {
     expect_error(checkGetTaPaSH(a,b))
 }) # EOT
 
-test_that("checkGetTaPaEnv", {
-    a <- "a"; b <- "a"
-    expect_type(checkGetTaPaEnv(a,b), "character")
-    a <- 1; b <- "a"
-    expect_error(checkGetTaPaEnv(a,b))
-    a <- c("a", "b"); b <- "a"
-    expect_error(checkGetTaPaEnv(a,b))
-}) # EOT
-
 test_that("checkPath_Package_getName", {
     expect_type(checkPath_Package_getName(ptp), "character")
     expect_error(checkPath_Package_getName("a"))
 }) # EOT
 
 test_that("printFinalCodeMessage", {
-    expect_output(printFinalCodeMessage("a", "b", "c"))
+    expect_output(printFinalCodeMessage("a", "b", "c", "d"))
+    expect_message(printFinalCodeMessage("a", "b", "c", "d"), "getstn()")
 }) # EOT
 
 taPaName <- "dogPack"
-taPaEnv <- ".doe"
-taPaObj <- "stn"
+taPaEnv <- ".dogPack_settingsEnv"
+taPaObj <- "settings"
 taPaSH <- "dogPack_SH"
 tmpl <- "_TEMPLATE"
+setupFunc <- "hereNameOfSetupFunction"
 test_that("readInReplaceTxtUnisFiles", {
-    expect_type(readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl), "list")
+    expect_type(readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl, setupFunc), "list")
 }) # EOT
 
 td <- tempdir()
@@ -61,21 +54,18 @@ na <- "name"
 pa <- paste0(td, "/", na)
 tx <- "some text"
 test_that("createFilesWriteText", {
-    expect_null(createFilesWriteText(na, pa, tx, na, pa, tx, na, pa, tx))
+    expect_null(createFilesWriteText(na, pa, tx, na, pa, tx, na, pa, tx, na, pa, tx))
 }) # EOT
 
-taPaName <- "dogPack"
-taPaEnv <- ".doe"
-taPaObj <- "stn"
-taPaSH <- "dogPack_SH"
-tmpl <- "_TEMPLATE"
 where <- tempdir()
 test_that("uniset_getFiles", {
-    expect_type(uniset_getFiles(taPaName, taPaEnv, taPaObj, where, taPaSH, tmpl), "character")
-    expect_output(uniset_getFiles(taPaName, taPaEnv, taPaObj, where, taPaSH, tmpl))
-    expect_error(uniset_getFiles(taPaName, taPaEnv, taPaObj, where="~/blabla", taPaSH, tmpl))
-    expect_error(uniset_getFiles(taPaName=1, taPaEnv, taPaObj, where, taPaSH, tmpl))
-    expect_error(uniset_getFiles(taPaName, taPaEnv=c("a", "b"), taPaObj, where, taPaSH, tmpl))
+    expect_type(uniset_getFiles(taPaName, setupFunc, where, taPaSH, taPaObj, tmpl), "character")
+    expect_message(uniset_getFiles(taPaName, setupFunc, where, taPaSH, taPaObj, tmpl), "getstn()")
+    expect_error(uniset_getFiles(taPaName, setupFunc, where="~/blabla", taPaSH, taPaObj, tmpl))
+    expect_error(uniset_getFiles(taPaName=1, setupFunc, where, taPaSH, taPaObj, tmpl))
+    expect_error(uniset_getFiles(taPaName, setupFunc=NULL, where, taPaSH, taPaObj, tmpl))
+    expect_message(uniset_getFiles(taPaName, setupFunc, where, taPaSH="dogPack_settingsHomeDirectory"), "getstn()")
+    expect_message(uniset_getFiles(taPaName, setupFunc, where), "getstn()")
 }) # EOT
 
 
@@ -87,10 +77,14 @@ file.copy(pso, td, recursive=TRUE)
 ptp <- paste0(td, "/dopaem") # the path to package dopaem
 # file.exists(ptp)
 test_that("uniset_copyFilesToPackage", {
-    expect_null(uniset_copyFilesToPackage(ptp, taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE"))
-    expect_output(uniset_copyFilesToPackage(ptp, taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE"))
-    expect_error(uniset_copyFilesToPackage(ptp="~/blabla", taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE"))
+    expect_message(uniset_copyFilesToPackage(ptp, setupFunc, taPaSH, taPaObj, tmpl), "getstn()")
+    expect_null(uniset_copyFilesToPackage(ptp, setupFunc, taPaSH, taPaObj, tmpl))
+    expect_error(uniset_copyFilesToPackage(ptp, setupFunc=NULL, taPaSH, taPaObj, tmpl))
+    expect_error(uniset_copyFilesToPackage("~/blabla", setupFunc, taPaSH, taPaObj, tmpl))
+    expect_null(uniset_copyFilesToPackage(ptp, setupFunc))
 }) # EOT
+
+
 
 
 # here have an other template settings file (in td/dopaem/inst finally)  for better testing
@@ -116,14 +110,15 @@ test_that("getUnisEnvirVariables", {
     expect_error(getUnisEnvirVariables(uev)) # it has not been loaded / attached in real life
 }) # EOT
 
+
 # siumlate the "dogPack"
 nsp <- "pkg_dogPack_envs"
 if (!any(grepl(nsp, search()))) {attach(what=NULL, name=nsp)}
 assign(".dogPack_unisetEnv", new.env(), pos=nsp)
 assign("pkgUniset_UserPackageName","dogPack", envir=.dogPack_unisetEnv)
 assign("pkgUniset_RenvironSettingsHomeName","dogPack_SH", envir=.dogPack_unisetEnv)
-assign("pkgUniset_EnvironmentName",".doe", envir=.dogPack_unisetEnv)
-assign("pkgUniset_SettingsObjectName","stn", envir=.dogPack_unisetEnv)
+assign("pkgUniset_EnvironmentName",".dogPack_settingsEnv", envir=.dogPack_unisetEnv)
+assign("pkgUniset_SettingsObjectName","settings", envir=.dogPack_unisetEnv)
 assign("pkgUniset_SuffixForTemplate","_TEMPLATE", envir=.dogPack_unisetEnv)
 
 test_that("uniset_test", {
@@ -142,8 +137,9 @@ test_that("sourceSettingsToEnv", {
     expect_type(sourceSettingsToEnv(taPaList, nsp, silent=TRUE, pathSettings_fn_test), "list")
 }) # EOT
 
-test_that("get a value from stn in .doe", {
-    expect_identical(.doe$stn$favouriteColor, "blue")
+
+test_that("get a value from setings in .dogPack_settingsEnv", {
+    expect_identical(.dogPack_settingsEnv$settings$favouriteColor, "blue")
 }) # EOT
 
 

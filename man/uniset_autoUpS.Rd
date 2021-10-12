@@ -29,9 +29,9 @@ Use this function within your code to automatically update the
 settings from the users settings file
 }
 \details{
-If 'autoUpdateSettings' in xxx_settings.R is left at 'TRUE', the
-settings will be checked resp. updated automatically every time a function in
-the target package is calling \code{\link{uniset_autoUpS}}.
+If 'autoUpdateSettings' in the local settings.R file is left at 'TRUE', 
+the settings will be checked resp. updated automatically every time a function 
+in the target package is calling \code{\link{uniset_autoUpS}}.
 }
 \section{Important}{
  This function is meant to be called from within the 

@@ -15,6 +15,6 @@ No return value, demo function called for its side effects, i.e. to
 perform the setup.
 }
 \description{
-Is setting up the local system for the use of the dynamic
+Set up the local system for the use of the dynamic
 settings file.
 }

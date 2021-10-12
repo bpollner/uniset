@@ -15,12 +15,11 @@ Is printing the parameters defined by the target package, and is
 returning those parameters in an (invisible) list.
 }
 \description{
-Test if your input regarding environment name, package name
-etc. was correct / successful. This function is meant to be called from the
-target package.
+Test if the input package name etc. was correct / successful. 
+This function is meant to be called from inside the  target package.
 }
 \section{Important}{
- This function is meant to be called from within the 
+ This function is intended to be called from within the 
 target package.
 }
 

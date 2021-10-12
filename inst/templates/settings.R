@@ -9,7 +9,10 @@
 # do NOT change the name of the object holding the list - in this case, 'XXX_obj'
 
 # use the code 'XXX_targetEnv$XXX_obj$KEY' (with 'KEY' being any of the key=value pairs defined below) 
-# in the target package to access the values of the object 'XXX_obj'.
+# in the target package to access the values of the object 'XXX_obj'. 
+
+#' Or (recommended) use the function 'getstn()' as defined in the package 'XXX_packageName' to directly 
+# get the list 'XXX_obj' (below).
 
 XXX_obj <- list(
 	# tag = value, # with a comma !!

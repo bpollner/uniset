@@ -39,15 +39,6 @@ checkGetTaPaSH <- function(taPaSH, taPaName) {
 	}
 } # EOF
 
-checkGetTaPaEnv <- function(taPaEnv, taPaName) {
-	checkCh1(taPaEnv, "taPaEnv")
-	if (taPaEnv == "def") {
-		return(paste0(".", substr(taPaName, 1,2), "e"))
-	} else {
-		return(taPaEnv)
-	} # end else
-} # EOF
-
 readInCharInput <- function(what) {
 	maxTries <- 3
 	ask <- TRUE
@@ -113,18 +104,27 @@ checkPath_Package_getName <- function(pathToPackage) {
 	return(taPaName)
 } # EOF
 
-printFinalCodeMessage <- function(taPaEnv, taPaObj, expSettingsName) {
+printFinalCodeMessage <- function(taPaEnv, taPaObj, expSettingsName, taPaName) {
   	msgChar <- paste0("\n\nYou will be able to access values of the file '", expSettingsName, "' via the code: \n")
   	codechar <- paste0("'", taPaEnv, "$", taPaObj, "$KEY'")
-  	txt2 <- paste0("(With 'KEY' being any of the 'key=value' pairs defined in the file '", expSettingsName, "'.)")
+  	txt2 <- paste0("(With 'KEY' being any of the 'key=value' pairs defined in the file '", expSettingsName, "'.)\n\n")
+	altMsg1 <- paste0("Or (recommended), use the function \n") 
+	getStnMsg <- "'getstn()'"
+	altMsg2 <-  paste0("inside a function defined in the package '", taPaName, "' to directly get the list holding the key=value pairs.\n\n")
+	#
 	cat(msgChar)
 	message(codechar)
 	cat(txt2)
+	#
+	cat(altMsg1)
+	message(getStnMsg)
+	cat(altMsg2)
+	#
 	return(invisible(NULL))
 } # EOF
 
 ###############
-readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) {
+readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl, setupFunc) {
 	#
 	unisEnvName <- glob_unisetEnvName  							# XXX_unisetEnv
 	taPackName <- glob_targetPackageName 						# XXX_packageName
@@ -133,12 +133,15 @@ readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) 
 	taPackStnName <- glob_targetPackgae_settingsObjectName 		# XXX_obj
 	taPackTmplSuff <- glob_targetPackage_templateSuffix 		# XXX_template
 	taPackActualSett <- glob_actualSettingsName 				# XXX_actualSettingsName
+	setupFuncName <- glob_setupFuncName 						# XXX_setupFuncName
+
 	#
 	unisetEnvSuffix <- glob_unisetEnvSuffix
 	filnameSettings <- glob_filnameSettings
 	templGlobals <- glob_templGlobals 		# "uniset_globals.R"
 	templZZZ <- glob_templZZZ				# "zzz.R"
 	templSettinsg <- glob_templSettinsg		# "settings.R"
+	tmplFuncs <- glob_filenameFunctions 		# "uniset_functions.R"
 	fileAdd <- "/templates/"				# the above three files will reside in the folder 'templates' in the installation of the uniset-package
 
 	####### define paths ######
@@ -149,16 +152,20 @@ readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) 
 	path_unis_globals <- paste0(aa, fileAdd, templGlobals)
 	path_unis_zzz <- paste0(aa, fileAdd, templZZZ)
 	path_unis_settingsTemplate <- paste0(aa, fileAdd, templSettinsg)
+	path_unis_functions <- paste0(aa, fileAdd, tmplFuncs)
 	#
-	###### read in the three template files #######
+	###### read in the four template files #######
 	fcon <- file(path_unis_globals, open="r")
-	globalsTxt <- readLines(fcon) # the full settings.r text from the package
+	globalsTxt <- readLines(fcon) 
 	close(fcon)
 	fcon <- file(path_unis_zzz, open="r")
-	zzzTxt <- readLines(fcon) # the full settings.r text from the package
+	zzzTxt <- readLines(fcon)
 	close(fcon)
 	fcon <- file(path_unis_settingsTemplate, open="r")
-	settingsTxt <- readLines(fcon) # the full settings.r text from the package
+	settingsTxt <- readLines(fcon) 
+	close(fcon)
+	fcon <- file(path_unis_functions, open="r")
+	functionsTxt <- readLines(fcon) 
 	close(fcon)
 	#
 
@@ -181,10 +188,15 @@ readInReplaceTxtUnisFiles <- function(taPaName, taPaSH, taPaEnv, taPaObj, tmpl) 
 	settingsTxt <- gsub(taPackEnvName, taPaEnv, settingsTxt) # the name of environment holding the object holding the settings-list
 	settingsTxt <- gsub(taPackActualSett, expSettingsName, settingsTxt) # the name of settings file expanded with the name of the package
 	#
-	return(list(zzzTxt=zzzTxt, globalsTxt=globalsTxt, settingsTxt=settingsTxt))
+	functionsTxt <- gsub(taPackStnName, taPaObj, functionsTxt)
+	functionsTxt <- gsub(taPackEnvName, taPaEnv, functionsTxt)
+	functionsTxt <- gsub(setupFuncName, setupFunc, functionsTxt)
+	functionsTxt <- gsub(taPackName, taPaName, functionsTxt)
+	#
+	return(list(zzzTxt=zzzTxt, globalsTxt=globalsTxt, settingsTxt=settingsTxt, functionsTxt=functionsTxt))
 } # EOF
 
-createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsPath, globalsTxt, settingsName, settingsPath, settingsTxt) {
+createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsPath, globalsTxt, settingsName, settingsPath, settingsTxt, filenameFunctions, functionsPath, functionsTxt) {
 	#
 	ok <- file.create(zzzPath)
 	if (!ok) {
@@ -199,6 +211,11 @@ createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsP
 		stop(paste0("Sorry, the file '", settingsName, "' could not be created."), call.=FALSE)
 	} # end if
 	#
+	ok <- file.create(functionsPath)
+	if (!ok) {
+		stop(paste0("Sorry, the file '", filenameFunctions, "' could not be created."), call.=FALSE)
+	} # end if
+
 	# write into the files
 	fcon <- file(zzzPath, open="w")
 	writeLines(zzzTxt, fcon) # write the zzz.r file
@@ -212,48 +229,41 @@ createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsP
 	writeLines(settingsTxt, fcon) # write the settings file
 	close(fcon)
 	#
+	fcon <- file(functionsPath, open="w")
+	writeLines(functionsTxt, fcon) # write the settings file
+	close(fcon)
+	#
 	return(invisible(NULL))
 } # EOF
 
 #' @title Get Uniset Files
-#' @description Function to generate the three files required in the target
+#' @description Function to generate the four files required in the target
 #' package (i.e. the package that should be enabled to use the package 'uniset').
-#' If those arguments that default to 'NULL' are left at their default 'NULL',
-#' their values are read in interactively.
-#' @details The importance of providing rather short characters at the arguments
-#' 'taPaEnv' and 'taPaObj' lies in the fact that those two names will be used to
-#' get any parameter stored in the settings file of the target package. For example,
-#' if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
-#' 'taPaObj', then all the values stored in the settings file can be retrieved by
-#' calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
-#' settings file.
-#' @param taPaName Character length one. The name of the target package.
-#' @param taPaEnv Character length one. The name of the environment where the
-#' settings for the target package (in a key=value format) will be stored. It is
-#' recommended to use a rather short name starting with a '.' (dot). See details.
-#' If left at the default 'def', the first two characters of the package name,
-#' prepended with a '.' (dot), and appended with an 'e' (for environment) will
-#' be used.
-#' @param taPaObj Character length one. The name of the object (residing in the
-#' environment with the name provided in argument 'taPaEnv') holding the list
-#' with all the individual key-value pairs that can be defined to be used in the
-#' target package. It is recommended to use a rather short name. See details.
-#' Defaults to 'stn'.
+#' @details Look at the content of the four generated files for information on 
+#' where they should be moved.
+#' @param taPaName Character length one. The name of the target package. 
+#' @param setupFunc Character length one. The name of the function 
+#' \strong{in the target package} that is containing the setup-function 
+#' \code{\link{uniset_setup}}. 
 #' @param where Character length one. The location where the folder with the
-#' resulting three files should be copied to. Defaults to 'NULL'. If left at the 
+#' resulting four files should be copied to. Defaults to 'NULL'. If left at the 
 #' default 'NULL', the location should be selectable interactively. Provide a 
 #' character length one holding a valid path to an existing folder to copy the 
-#' folder containing the three required files there. 
+#' folder containing the four required files there. 
 #' @param taPaSH Character length one. The name of the variable to be defined in
 #' the '.Renviron' file, leading to the place where the settings.R file for the
-#' target package will be stored. If left at the default 'def', \code{taPaName_SH}
+#' target package will be stored. If left at the default 'def', \code{'taPaName_SH'}
 #' will be used, with 'taPaName' being the value provided at the argument
 #' 'taPaName'.
+#' @param taPaObj Character length one. The name of the object holding the list
+#' with the key-value pairs that can be defined to be used in the target package. 
+#' Can be left at the default 'settings'.
 #' @param tmpl Character length one. the Character string that will be appended
-#' to the fresh settings file that is possibly copied (by the target package)
-#' to the users settings home directory. Can be left at the default '_TEMPLATE'.
+#' to the fresh settings file that is copied (by the target package) to the users 
+#' settings home directory if updating the key=value pairs was not successful. 
+#' Can be left at the default '_TEMPLATE'.
 #' @return Creates a folder at the location specified at argument 'where' with the
-#' three files to be moved into the target package in it. Returns an (invisible)
+#' four files to be moved into the target package in it. Returns an (invisible)
 #' character holding the path of the folder where the three files were written
 #' into.
 #' @seealso \code{\link{uniset_copyFilesToPackage}}
@@ -265,45 +275,38 @@ createFilesWriteText <- function(zzzName, zzzPath, zzzTxt, globalsName, globalsP
 #' to <- tempdir()
 #' from <- paste0(path.package("uniset"), "/examples/dogPack")
 #' file.copy(from, to, recursive = TRUE) 
-#' # now copy the three required files
-#' uniset_getFiles("dogPack", where=to)
-#' # Manually move the three files according to the instructions contained 
+#' # now copy the four required files
+#' uniset_getFiles("dogPack", setupFunc="nameOfSetupFunc", where=to)
+#' # Now manually move the four files according to the instructions contained 
 #' # in them.
 #' }
 #' @export
-uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where=NULL, taPaSH="def", tmpl= "_TEMPLATE") {
+uniset_getFiles <- function(taPaName=NULL, setupFunc=NULL, where=NULL, taPaSH="def", taPaObj="settings", tmpl= "_TEMPLATE") {
 	#
 	folderPrev <- glob_folderPrev
 	filenameZZZ <- glob_filenameZZZ
 	filenameGlobals <- glob_filenameGlobals
 	filnameSettings <- glob_filnameSettings # the '.r' gets appended below
+	filenameFunctions <- glob_filenameFunctions  				# "uniset_functions.R"
+	taPaEnvSuffix <- glob_taPaEnvSuffix   						#  "_settingsEnv"
 	#
 
-	where <- getCheckPathToFolder(where, what="where")
-	########### possibly read in values ###########
-	if (is.null(taPaName)) {
-		taPaName <- readInCharInput("taPaName")
-	} # end if
-		if (is.null(taPaEnv)) {
-		taPaEnv <- readInCharInput("taPaEnv")
-	} # end if
-	if (is.null(taPaObj)) {
-		taPaObj <- readInCharInput("taPaObj")
-	} # end if
-	#
+	where <- getCheckPathToFolder(where, what="where") ## ***
 	checkCh1(taPaName, "taPaName")
-	taPaEnv <- checkGetTaPaEnv(taPaEnv, taPaName)
+	checkCh1(setupFunc, "setupFunc")
+	taPaEnv <- paste0(".", taPaName, taPaEnvSuffix) ## ***
 	checkCh1(taPaObj, "taPaObj")
 	checkCh1(tmpl, "tmpl")
-	taPaSH <- checkGetTaPaSH(taPaSH, taPaName)
+	taPaSH <- checkGetTaPaSH(taPaSH, taPaName) ## ***
 	checkCh1(tmpl, "tmpl")
 	#
 
 	##### read in and replace text #######
-	aaa <- readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl)
+	aaa <- readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl, setupFunc)
 		zzzTxt <- aaa$zzzTxt
 		globalsTxt <- aaa$globalsTxt
 		settingsTxt <- aaa$settingsTxt
+		functionsTxt <- aaa$functionsTxt
 	#
 	expSettingsName <- paste0(taPaName, "_", filnameSettings) # put the package name and 'settings.r' together
 	#
@@ -333,35 +336,29 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where=N
 	zzzPath <- paste0(folderPath, "/", filenameZZZ)
 	globalsPath <- paste0(folderPath, "/", filenameGlobals)
 	settingsPath <- paste0(folderPath, "/", expSettingsName)
+	functionsPath <- paste0(folderPath, "/", filenameFunctions)
 	#
-	createFilesWriteText(filenameZZZ, zzzPath, zzzTxt, filenameGlobals, globalsPath, globalsTxt, expSettingsName, settingsPath, settingsTxt)
+	createFilesWriteText(filenameZZZ, zzzPath, zzzTxt, filenameGlobals, globalsPath, globalsTxt, expSettingsName, settingsPath, settingsTxt, filenameFunctions, functionsPath, functionsTxt)
 	##
 
-	allfns <- c(filenameZZZ, filenameGlobals, expSettingsName)
-	cat(paste0("Three files called \n'", paste0(allfns, collapse="'\n'"), "\nhave been written to the folder \n'", folderPath, "'"))
+	allfns <- c(filenameZZZ, filenameGlobals, expSettingsName, filenameFunctions)
+	cat(paste0("Four files called \n'", paste0(allfns, collapse="'\n'"), "\nhave been written to the folder \n'", folderPath, "'"))
  	cat("\n")
- 	cat("Please move these three files into their resp. target folders (see ?uniset, or have a look at the content of the three generated files")
-  	printFinalCodeMessage(taPaEnv, taPaObj, expSettingsName)
+ 	cat("Please move these four files into their resp. target folders (see ?uniset, or have a look at the content of the four generated files")
+  	printFinalCodeMessage(taPaEnv, taPaObj, expSettingsName, taPaName)
 	return(invisible(folderPath))
 } # EOF
 
 #' @title Copy Uniset Files into Target Package
-#' @description Function to generate the three files required in the target
+#' @description Generate the four files required in the target
 #' package (i.e. the package that should be enabled to use the package 'uniset').
 #' The generated files will be copied directly into their required destination
 #' folders in the target package. The name of the target package will be extracted
 #' from the description file.
-#' @details The importance of providing rather short characters at the arguments
-#' 'taPaEnv' and 'taPaObj' lies in the fact that those two names will be used to
-#' get any parameter stored in the settings file of the target package. For example,
-#' if you provide '.doe' at the argument 'taPaEnv' and 'stn' at the argument
-#' 'taPaObj', then all the values stored in the settings file can be retrieved by
-#' calling \code{.doe$stn$XXX}, with 'XXX' being any of the keys defined in the
-#' settings file.
 #' @param pathToPackage Character length one. The path to the root of the
 #' target package.
 #' @inheritParams uniset_getFiles
-#' @return Writes the three required files directly into a valid R-package folder
+#' @return Writes the four required files directly into a valid R-package folder
 #' structure. Returns (invisible) NULL.
 #' @seealso \code{\link{uniset_getFiles}}
 #' @section Note: Please refer to \code{\link{uniset}} for a link to examples 
@@ -372,32 +369,36 @@ uniset_getFiles <- function(taPaName=NULL, taPaEnv="def", taPaObj="stn", where=N
 #' to <- tempdir()
 #' from <- paste0(path.package("uniset"), "/examples/dogPack")
 #' file.copy(from, to, recursive = TRUE) 
-#' # now copy the three required files directly into the package 'dogPack'
+#' # now copy the four required files directly into the package 'dogPack'
 #' path <- paste0(to, "/dogPack")
-#' uniset_copyFilesToPackage(path)
+#' uniset_copyFilesToPackage(path, "nameOfSetupFunc")
 #' }
 #' @export
-uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn", taPaSH="def", tmpl= "_TEMPLATE") {
+uniset_copyFilesToPackage <- function(pathToPackage, setupFunc=NULL, taPaSH="def", taPaObj="settings", tmpl= "_TEMPLATE") {
 	#
 	filenameZZZ <- glob_filenameZZZ
 	filenameGlobals <- glob_filenameGlobals
 	filnameSettings <- glob_filnameSettings # the '.r' gets appended below
 	zzzAdd <- "_2.R"
+	filenameFunctions <- glob_filenameFunctions
+	taPaEnvSuffix <- glob_taPaEnvSuffix  
 	#
 
 	#### check and get names ######
 	taPaName <- checkPath_Package_getName(pathToPackage) # stops if path is not good
-	taPaEnv <- checkGetTaPaEnv(taPaEnv, taPaName)
+	checkCh1(setupFunc, "setupFunc")
 	checkCh1(taPaObj, "taPaObj")
 	taPaSH <- checkGetTaPaSH(taPaSH, taPaName)
 	checkCh1(tmpl, "tmpl")
+	taPaEnv <- paste0(".", taPaName, taPaEnvSuffix) ## ***
 	#
 
 	##### read in and replace text #######
-	aaa <- readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl)
+	aaa <- readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl, setupFunc)
 		zzzTxt <- aaa$zzzTxt
 		globalsTxt <- aaa$globalsTxt
 		settingsTxt <- aaa$settingsTxt
+		functionsTxt <- aaa$functionsTxt
 	#
 	expSettingsName <- paste0(taPaName, "_", filnameSettings) # put the package name and 'settings.R' together
 	#
@@ -427,7 +428,7 @@ uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn
 		if (filenameZZZ %in% fls) { # se we already got a file called zzz.R, we must not overwrite or remove it
 			oldZZZname <- filenameZZZ
 			filenameZZZ <- paste0(substr(filenameZZZ, 1, nchar(filenameZZZ)-2), zzzAdd)
-			msg <- paste0("It seems that there already is a file called '", oldZZZname, "' in the 'R' folder of your package. \nIn case there is already an '.onLoad' function defined, please add the eight lines of code from the file '", filenameZZZ, "' to your existing '.onLoad' function.")
+			msg <- paste0("It seems that there already is a file called '", oldZZZname, "' in the 'R' folder of your package. \nIn case there is already an '.onLoad' function defined, please add the eight lines of code from the file '", filenameZZZ, "' to your existing '.onLoad' function. \nIn case there is already an '.onUnLoad' function defined, please add the one line of code from the file '", filenameZZZ, "' to your existing '.onUnLoad' function.")
 			message(msg)
 		} # end if zzz already here
 		if (filenameZZZ %in% fls) { # now this would be zzz_2.R an other #2 already here -- this one must go
@@ -441,33 +442,39 @@ uniset_copyFilesToPackage <- function(pathToPackage, taPaEnv="def", taPaObj="stn
 			if (!ok) {
 				stop(paste0("Sorry, there was a problem when trying to remove the previously generated file '", filenameGlobals, "' in the folder 'R'."), call.=FALSE)
 			} # end if
-		} # end if
+		} # end if filename globals already there
+		if (filenameFunctions %in% fls) { # remove it
+			ok <- file.remove(paste0(pathToR, "/", filenameFunctions))
+			if (!ok) {
+				stop(paste0("Sorry, there was a problem when trying to remove the previously generated file '", filenameFunctions, "' in the folder 'R'."), call.=FALSE)
+			} # end if
+		} # end if filename functions already there
 	} # end if length(fls) != 0
-	# now we are sure to have a) the inst folder present, and b) none of our three files present
+	# now we are sure to have a) the inst folder present, and b) none of our four files present
 	#
 
 	#### create files and write text into them #######
 	zzzPath <- paste0(pathToR, "/", filenameZZZ)
 	globalsPath <- paste0(pathToR, "/", filenameGlobals)
 	settingsPath <- paste0(paToInst, "/", expSettingsName)
+	functionsPath <- paste0(pathToR, "/", filenameFunctions)
 	#
-	createFilesWriteText(filenameZZZ, zzzPath, zzzTxt, filenameGlobals, globalsPath, globalsTxt, expSettingsName, settingsPath, settingsTxt)
+	createFilesWriteText(filenameZZZ, zzzPath, zzzTxt, filenameGlobals, globalsPath, globalsTxt, expSettingsName, settingsPath, settingsTxt, filenameFunctions, functionsPath, functionsTxt)
 	##
 
-	cat(paste0("A file called '", expSettingsName, "' has been written into the 'inst' folder, \ntwo files called '", filenameZZZ, "' and '", filenameGlobals, "' have been written into the 'R' folder of the package '", folderName, "' at \n'", folderPath, "'."))
-  	printFinalCodeMessage(taPaEnv, taPaObj, expSettingsName)
+	cat(paste0("A file called '", expSettingsName, "' has been written into the 'inst' folder, \nthree files called '", filenameZZZ, "', '", filenameGlobals, "' and '", filenameFunctions, "' have been written into the 'R' folder of the package '", taPaName, "' at \n'", folderPath, "'."))
+  	printFinalCodeMessage(taPaEnv, taPaObj, expSettingsName, taPaName)
 	return(invisible(NULL))
 } # EOF
 
 #' @title Simple Test
-#' @description Test if your input regarding environment name, package name
-#' etc. was correct / successful. This function is meant to be called from the
-#' target package.
+#' @description Test if the input package name etc. was correct / successful. 
+#' This function is meant to be called from inside the  target package.
 #' @param unisetEnv Character length one. The name of the environment holding 
 #' the uniset definitions for a single package.
 #' @return Is printing the parameters defined by the target package, and is 
 #' returning those parameters in an (invisible) list.
-#' @section Important: This function is meant to be called from within the 
+#' @section Important: This function is intended to be called from within the 
 #' target package.
 #' @section Note: Please refer to \code{\link{uniset}} for a link to examples 
 #' and a real-world demo.
@@ -1277,16 +1284,16 @@ performSetup_sys <- function(userLoc, taPaList, taPaSettingsPath_test=NULL, sysH
 #' \item Define the folder where the settings.R file will be located,
 #' \item Copy the settings.R file into this folder, and
 #' \item Create a corresponding entry in the .Renviron file (or create the 
-#' .Renviron file if does not exit).
+#' .Renviron file if does not exist).
 #' }
-#' As CRAN policies forbid to write into user homespace by default, this setup 
-#' has to be done manually (but only once!) by the user of the target package. 
-#' However, if called repeatedly, it enables the user of the target package to 
-#' conveniently change the settings-home directory and its corresponding variable 
-#' in the .Renviron file. In that case, a factory-fresh version of the settings.R 
-#' file will be copied into the new settings-home directory. For the user-defined 
-#' values in the 'old' settings.R file not to be lost, the user then has to 
-#' manually move / copy the settings from the old location to the new one.
+#' This setup has to be done manually (but only once!) by the user of the target 
+#' package. However, if called repeatedly, it enables the user of the target 
+#' package to conveniently change the settings-home directory and its 
+#' corresponding variable in the .Renviron file. In that case, a factory-fresh 
+#' version of the settings.R file will be copied into the new settings-home 
+#' directory. For the user-defined values in the 'old' settings.R file not 
+#' to be lost, the user then has to manually move / copy the settings from 
+#' the old location to the new one.
 #' @param where Character length one, holding the path to the location where the 
 #' folder containing the settings.R file should be located. Defaults to 'NULL'. 
 #' If left at the default 'NULL', the location should be selectable interactively.
@@ -1308,7 +1315,7 @@ uniset_setup <- function(where=NULL, unisetEnv) {
 	taPaList <- getUnisEnvirVariables(unisetEnv)
 	ok <- performSetup_sys(where, taPaList)
 	if (ok) {
-		message(paste("\n\nSetup successful\n\n"))
+		message(paste("\nSetup successful\n"))
 	} # end if
 	return(invisible(where))
 } # EOF
@@ -1316,17 +1323,6 @@ uniset_setup <- function(where=NULL, unisetEnv) {
 #' @title Update Settings of Target Package
 #' @description Manually read in the settings-file in the target package settings
 #' home directory as specified in the .Renviron file.
-#' @section Note: If not present, the required `.Renviron` file will be
-#' automatically created. If the variable defined in argument 'taPaSH' in
-#' \code{\link{uniset_getFiles}} is not defined in the .Renviron file, it
-#' will be automatically added, and its default path is pointing to the
-#' (possibly also created) folder having the same name as `taPaSH` in
-#' the users home directory, where the `xxx_settings.R` file is automatically
-#' copied to if not already present.
-#' It is possible to manually provide a different path in the
-#' variable as defined in argument `taPaSH` in the .Renviron file, pointing
-#' to any folder where then the xxx_settings.R file will reside.
-#' XXX Improve this text please.
 #' @param unisetEnv Character length one. Hand over the global variable defined
 #' in the target package holding the name of the uniset-environment for the
 #' specific target package ('uniset_env_name' or 'uev', see examples at
@@ -1341,12 +1337,9 @@ uniset_setup <- function(where=NULL, unisetEnv) {
 #' target package.
 #' @return This function is called for its side effects, i.e to 
 #' manually update / (re-)source the settings file into an environment 
-#' defined by the target package. Returns (invisible) 'FALSE' if the the 
+#' defined by the target package. Returns (invisible) 'FALSE' if the 
 #' update was unsuccessful, otherwise an (invisible) list with the settings 
 #' sourced from the settings.R file. 
-#' (This list is called as defined in argument 'taPaObj' in the environment 
-#' called as defined in argument 'taPaEnv' in the functions 
-#' \code{\link{uniset_getFiles}} or \code{\link{uniset_copyFilesToPackage}}.)
 #' @section Note: Please refer to \code{\link{uniset}} for a link to examples 
 #' and a real-world demo.
 #' @examples{
@@ -1373,9 +1366,9 @@ uniset_updateSettings <- function(unisetEnv, setupFunc=NULL, silent=FALSE) {
 #' @title Automatically update Settings
 #' @description Use this function within your code to automatically update the
 #' settings from the users settings file
-#' @details If 'autoUpdateSettings' in xxx_settings.R is left at 'TRUE', the
-#' settings will be checked resp. updated automatically every time a function in
-#' the target package is calling \code{\link{uniset_autoUpS}}. 
+#' @details If 'autoUpdateSettings' in the local settings.R file is left at 'TRUE', 
+#' the settings will be checked resp. updated automatically every time a function 
+#' in the target package is calling \code{\link{uniset_autoUpS}}. 
 #' @inheritParams uniset_updateSettings
 #' @section Important: This function is meant to be called from within the 
 #' target package.
