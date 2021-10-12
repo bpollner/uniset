@@ -117,7 +117,7 @@ color
 ```
 However, it is preferable to use the customised function `getstn()` defined in package 'dogPack' to directly obtain the settings list – see the example code in `dogPack_demo_autoUpS()` and `dogPack_demo_tellFavouriteColor()` in the example folder copied previously.
 ```
-dogPack_demo_autoUpS()
+dogPack_demo_tellFavouriteColor()
 ```
 Now open the file 'dogPack_settings.R' in the folder 'dogPack_SH' that was created during setup, and change the value of the key 'favouriteColor' to "orange". After that, call
 
@@ -129,6 +129,7 @@ dogPack_demo_tellFavouriteColor() # should be "orange" now
 **Cave:** Be aware that a call to the auto-update function (defined in `uniset`) is re-instating the values from the 'dogPack_settings.R' file to the object 'settings' in the environment '.dogPack_settingsEnv', but not when used with the key 'gen_autoUpdateSettings' in the settings.R file previously set to 'FALSE'.
 
 Including the auto-update function `uniset::uniset_autoUpS` as demonstrated in `dogPack_demo_autoUpS` is of course not required – the key=value pairs in the settings file can be accessed anyway. Practically, it makes sense to include the auto-update in every function that the user of the target package can call, and to not include it in all the other functions.
+
 Go to the local settings.R file (in the settings-home folder at `~/desktop`)and change the key 'favouriteColor' back to "blue".
 ```
 dogPack_demo_tellFavouriteColor() # the old value ("orange")
