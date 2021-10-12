@@ -105,6 +105,7 @@ dogPack_demo_setup(where=dt) # will place the settings-home folder on the deskto
 You probably have to restart R now for the changes in the environment variable in your .Renviron file to become effective.  
 Now call:
 ```
+library(dogPack) # if you had to restart R
 dogPack_demo_updateSettings()
 ```
 #### Getting Values
@@ -114,7 +115,7 @@ By now everything should be ready and set up, and it is possible to obtain value
 color <- .dogPack_settingsEnv$settings$favouriteColor
 color
 ```
-However, it is probably preferable to use the customised function `getstn()` defined in package 'dogPack' to directly obtain the settings list – see the example code in `dogPack_demo_autoUpS()` and `dogPack_demo_tellFavouriteColor()` in the example folder copied previously.
+However, it is preferable to use the customised function `getstn()` defined in package 'dogPack' to directly obtain the settings list – see the example code in `dogPack_demo_autoUpS()` and `dogPack_demo_tellFavouriteColor()` in the example folder copied previously.
 ```
 dogPack_demo_autoUpS()
 ```
@@ -125,32 +126,17 @@ dogPack_demo_tellFavouriteColor() # should be still "blue"
 dogPack_demo_autoUpS()
 dogPack_demo_tellFavouriteColor() # should be "orange" now
 ```
-#### Setting Values
-Of course it is also possible to locally set the value of a key in the 'settings' object via
-```
-.dogPack_settingsEnv$settings$favouriteColor <- "lightyellow"
-.dogPack_settingsEnv$settings$favouriteColor
-# or 
-dogPack_demo_tellFavouriteColor()
-```
 **Cave:** Be aware that a call to the auto-update function (defined in `uniset`) is re-instating the values from the 'dogPack_settings.R' file to the object 'settings' in the environment '.dogPack_settingsEnv', but not when used with the key 'gen_autoUpdateSettings' in the settings.R file previously set to 'FALSE'.
 
-```
-dogPack_demo_tellFavouriteColor() # should be "lightyellow"
-dogPack_demo_autoUpS(F)
-dogPack_demo_tellFavouriteColor() 
-# should be the value you assigned before ("orange")
-```
 Including the auto-update function `uniset::uniset_autoUpS` as demonstrated in `dogPack_demo_autoUpS` is of course not required – the key=value pairs in the settings file can be accessed anyway. Practically, it makes sense to include the auto-update in every function that the user of the target package can call, and to not include it in all the other functions.
+Go to the local settings.R file (in the settings-home folder at `~/desktop`)and change the key 'favouriteColor' back to "blue".
 ```
-dogPack_demo_tellFavouriteColor() # your value ("orange")
-.dogPack_settingsEnv$settings$favouriteColor <- "green"
-dogPack_demo_tellFavouriteColor() # should be green
+dogPack_demo_tellFavouriteColor() # the old value ("orange")
 dogPack_demo_No_autoUpS(F)
-dogPack_demo_tellFavouriteColor() # still green
+dogPack_demo_tellFavouriteColor() # still orange
 #
 dogPack_demo_autoUpS(F) # now update the values
-dogPack_demo_tellFavouriteColor() # your value "orange" again
+dogPack_demo_tellFavouriteColor() # should be "blue" again
 ```
 #### Adding / deleting keys
 If you are the developer of package `dogPack`, at some time after you published `dogPack` you might want to add keys to or delete from the settings file. 

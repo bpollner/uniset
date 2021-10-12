@@ -47,7 +47,7 @@ dogPack_demo_setup <- function(where=NULL) {
 dogPack_demo_updateSettings <- function(silent=FALSE) {
 
 
-	stn <- dogPack::updateSettings(silent)
+	stn <- updateSettings(silent) # customised function defined in !dogPack!
     # use this line in a function defined in the target package, in our example the package
     # 'dogPack', to manually read in and update the values from the settings file. 
     # A possible use could be to have a direct way to check if updating the values from the 
@@ -71,7 +71,7 @@ dogPack_demo_updateSettings <- function(silent=FALSE) {
 #' @export
 dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 	
-	dogPack::autoUpS()
+	autoUpS() # customised function defined in !dogPack!
 	# As the developer of the target package, in our example the package 'dogPack', you would 
 	# include this line (the package name is of course not necessary) at the top of each and every single 
 	# function that you want to trigger the auto-update mechanism, i.e. when the key=value pairs from 
@@ -85,7 +85,7 @@ dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 	# updated/sourced in the environment called, in our example, '.dogPack_settingsEnv'.
 
 	
-	stn <- dogPack::getstn()
+	stn <- getstn()  # customised function defined in !dogPack!
 	# Read in the 'settings' object from the environment '.dogPack_settingsEnv'. 
 	# 'getstn()' is a function defined in the package dogPack, but has been customised by package 'uniset' 
 	# at the time of generating the four required files.
@@ -131,7 +131,7 @@ dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 #' @export
 dogPack_demo_No_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 	
-	stn <- dogPack::getstn()
+	stn <- getstn() # customised function defined in !dogPack!
 	# Read in the 'settings' object from the environment '.dogPack_settingsEnv'. 
 	# 'getstn()' is a function defined in the package dogPack, but has been customised by package 'uniset' 
 	# at the time of generating the four required files.
