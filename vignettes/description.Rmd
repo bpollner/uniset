@@ -89,4 +89,4 @@ Any values that the user modified will be preserved.
 
 Thus, **a new update or installation of package `dogPack` will not force the user of package `dogPack` to completely re-customize the 'dogPack_settings.R' file**.
 
-Go on and see what `uniset` can do in a [practical example](https://bpollner.github.io/uniset/example.html).
+Go on and see what `uniset` can do in a [practical example](https://bpollner.github.io/uniset/articles/example.html).
