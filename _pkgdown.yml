@@ -1,0 +1,31 @@
+url: https://bpollner.github.io/uniset/
+template:
+  bootstrap: 5
+
+
+
+reference:
+- title: "Package uniset"
+  desc: ""
+  contents:
+  - uniset
+
+- title: "Developer Functions"
+  desc: "Functions intended to be used by the DEVELOPER of the target package"
+  contents:
+  - uniset_getFiles
+  - uniset_copyFilesToPackage
+
+- title: "Setup Functions"
+  desc: "Functions required to set up the settings file system in the target package"
+  contents:
+  - uniset_setup
+
+
+- title: "Functions Inside Target Package"
+  desc: "Functions intended to be used INSIDE the code of the target package"
+  contents:
+  - uniset_test
+  - uniset_updateSettings
+  - uniset_autoUpS
+  

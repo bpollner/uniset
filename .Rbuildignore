@@ -10,3 +10,9 @@ _config.yml
 ^\.github$
 ^cran-comments\.md$
 ^CRAN-RELEASE$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^_pkgdown\.yml$
+index.md
+

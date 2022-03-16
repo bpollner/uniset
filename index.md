@@ -28,5 +28,3 @@ Or download from github:
 library(devtools)
 install_github(repo="bpollner/uniset", ref="master")
 ```
-
-Please go to <https://bpollner.github.io/uniset/> to learn how to use `uniset`.

@@ -1,0 +1,131 @@
+---
+title: "Practical Example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Practical Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Try accessing a value from the settings file as described in 'dogPackFunc.R/dogPack_demo_autoUpS()'. It will not work yet.
+
+``` r
+color <- .dogPack_settingsEnv$settings$favouriteColor # does not work yet
+```
+
+In this example we try to obtain the value from the key 'favouriteColor' from the list called 'settings' in the environment called '.dogPack_settingsEnv'.
+
+## Initialise Settings File System
+
+Assuming you copied or moved the required files as [described before](https://bpollner.github.io/uniset/uniset.html), open the RStudio project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
+
+``` r
+library(dogPack)
+dogPack_test_targetPackageParams() # gives a printout of the target package parameters
+dt <- "~/desktop"
+dogPack_demo_setup(where=dt) # will place the settings-home folder on the desktop
+```
+
+This has to be done **only once** by the user of the target package. You probably have to restart R now for the changes in the environment variable in your .Renviron file to become effective.\
+Now call:
+
+``` r
+library(dogPack) # if you had to restart R
+dogPack_demo_updateSettings()
+```
+
+------------------------------------------------------------------------
+
+## Getting Values
+
+By now everything should be ready and set up. You can look at the settings via
+
+``` r
+stn <- dogPack_demo_updateSettings()
+str(stn)
+```
+
+It is possible to obtain values from 'dogPack_settings.R' directly via:
+
+``` r
+color <- .dogPack_settingsEnv$settings$favouriteColor
+color
+```
+
+However, it is preferable to use the function `getstn()` defined in package 'dogPack' to directly obtain the settings list -- see the example code in `dogPack_demo_autoUpS()` and `dogPack_demo_tellFavouriteColor()` in the example folder copied previously.
+
+`getstn()` was customized by package `uniset` at the time of creating the four required files and is located in the file 'uniset_functions.R' in 'dogPack/R'.
+
+``` r
+dogPack_demo_tellFavouriteColor()
+```
+
+Now open the file 'dogPack_settings.R' in the folder 'dogPack_SH' that was created during setup, and change the value of the key 'favouriteColor' to "orange". After that, call
+
+``` r
+dogPack_demo_tellFavouriteColor() # should be still "blue"
+dogPack_demo_autoUpS()
+dogPack_demo_tellFavouriteColor() # should be "orange" now
+```
+
+**Cave:** Be aware that a call to the auto-update function (defined in `uniset`) is re-instating the values from the 'dogPack_settings.R' file to the object 'settings' in the environment '.dogPack_settingsEnv', but not when used with the key 'gen_autoUpdateSettings' in the settings.R file previously set to 'FALSE'.
+
+Including the auto-update function `uniset::uniset_autoUpS()` as demonstrated in `dogPack_demo_autoUpS` is of course not required -- the key=value pairs in the settings file can be accessed anyway.
+
+Practically, it makes sense to include the auto-update in every function that the user of the target package can call, and to not include it in all the other functions.
+
+Go to the local settings.R file (in the settings-home folder at `~/desktop`)and change the key 'favouriteColor' back to "blue".
+
+``` r
+dogPack_demo_tellFavouriteColor() # the old value ("orange")
+dogPack_demo_No_autoUpS(F)
+dogPack_demo_tellFavouriteColor() # still orange
+#
+dogPack_demo_autoUpS(F) # now update the values
+dogPack_demo_tellFavouriteColor() # should be "blue" again
+```
+
+------------------------------------------------------------------------
+
+## Adding / deleting keys
+
+If you are the developer of package `dogPack`, at some time after you published `dogPack` you might want to add keys to or delete from the settings file.
+
+### Adding Keys
+
+Do that now: Add e.g. a new 'key=value,' pair (do not forget the comma ',') anywhere in the settings-file **in the folder 'inst' of `dogPack`**, and re-install `dogPack`. Or, as an alternative shortcut for this demonstration, go to root of the *installed* `dogPack` package at
+
+``` r
+path.package("dogPack")
+```
+
+and there simply modify the file 'dogPack_settings.R' (add a key).
+
+Now the **user** of `dogPack` calls a function that includes the auto-update function `uniset::uniset_autoUpS()`:
+
+``` r
+dogPack_demo_autoUpS(F)
+```
+
+The **user** of `dogPack` will then have the new key added to the local file 'dogPack_settings.R' in the folder 'dogPack_SH' in the settings-home directory.
+
+### Deleting Keys
+
+The same is true for deleting keys: again, open the file 'dogPack_settings.R' in the root of `path.package("dogPack")` and delete any key.
+
+Now the **user** of `dogPack` calls again a function that includes the auto-update function `uniset::uniset_autoUpS()`:
+
+``` r
+dogPack_demo_autoUpS(F)
+```
+
+and surplus keys will be deleted from the local file 'dogPack_settings.R'.
+
+Enjoy !

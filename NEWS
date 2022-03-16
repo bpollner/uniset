@@ -1,28 +1,32 @@
 
+# uniset 0.2.2
+## New
+
+## Improved
+* Website now made with pkgdown
 
 
-##########################
-Version 0.2.1
-	Second submission to CRAN
-##########################
+
+
+
+# uniset 0.2.1
+Second submission to CRAN
 submitted on 2021-10-12
 
-NEW:
-	User-space is not written into any more by default. Now there is a dedicated setup-function to be called by the user. Only this setup-function does write into user space according to the path provided by the user. System-setup and system-check is now completely separated.
-	.GlobalEnv is not written into any more. Instead, a separate object is created on the search path where all required environments reside. 
-	Have an additional file 'uniset_functions.R' generated in the process of preparing the target package, containing custom-tailored functions to be used in functions defined in the target package. 
+## New
+* User-space is not written into any more by default. Now there is a dedicated setup-function to be called by the user. Only this setup-function does write into user space according to the path provided by the user. System-setup and system-check is now completely separated.
+* .GlobalEnv is not written into any more. Instead, a separate object is created on the search path where all required environments reside. 
+* Have an additional file 'uniset_functions.R' generated in the process of preparing the target package, containing custom-tailored functions to be used in functions defined in the target package. 
 
 
-IMPROVED:
-	Manuals (all return values now explained in detail); readme.md; description.
-	Examples: Only those examples that really can not be run stay wrapped in  \dontrun{}.
-	Various other details.
+## IMPROVED:
+* Manuals (all return values now explained in detail); readme.md; description.
+* Examples: Only those examples that really can not be run stay wrapped in  \dontrun{}.
+* Various other details.
 
 
 
-##########################
-Version 0.1.1
-	Initial submission to CRAN
-##########################
+# uniset 0.1.1
+Initial submission to CRAN
 
 Initial submission on 2021-10-01.

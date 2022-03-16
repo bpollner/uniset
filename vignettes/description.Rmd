@@ -1,0 +1,92 @@
+---
+title: "Description & Explanation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Description & Explanation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Package `uniset` provides an easily accessible, user-friendly text file as settings-file for your R-package.
+
+## Description
+
+Package `uniset` enables any package (the 'target package') to provide its users an easily accessible, user-friendly and human readable text file where key=value pairs (used by functions defined in the target package) can be saved.
+
+This settings file lives in a location defined by the user of the target package, and its user-defined values remain unchanged even when the author of the target package is introducing or deleting keys, or when the target package is updated or re-installed.
+
+In order to enable the target package to make use of the functionality offered by package `uniset`, four files have to be exported by `uniset` and be placed into the target package.
+
+## Advantage
+
+The most imminent advantage of the `uniset` settings-file system over using any static file for permanently storing settings for any package is the fact that the key=value pairs in the 'settings.R' file get updated (added / deleted) dynamically.\
+So the developer of a package can delete keys or introduce new ones, and the new key=value pairs will be automatically added to or deleted from the local 'settings.R' file.
+
+Values changed by the user of the target package will be preserved.\
+So the author of the target package can add or delete keys from the 'settings.R' file without worrying that this will cause any effort or troubles for the user of the target package.
+
+## Two ways to generate the required files
+
+-   **1) Export and Move Files**
+
+    -   Use **`uniset_getFiles()`**, then move the 'xxx_settings.R' file ('xxx' for the name of the target package) into the 'inst' folder (create one if not already done) of the target package.
+
+    -   Move the file 'zzz.R', 'uniset_globals.R' and 'uniset_functions.R' to the 'R' folder of the target package.
+
+    -   In case that the '.onLoad' function already is defined, add the eight lines of code from the file 'zzz.R' to your existing '.onLoad' function.
+
+    -   In case that the '.onUnLoad' function already is defined, add the one line of code from the file 'zzz.R' to your existing '.onUnLoad' function.
+
+-   **2) Write files directly to target package (recommended)**\
+    Alternatively, use **`uniset_copyFilesToPackage()`** to copy the required files directly into the target package.
+
+In both cases the name of a setup-function has to be provided, that is the name of the function defined in the target package that contains the `uniset` function `uniset_setup()`.
+
+## Accessing values from within target package
+
+Every variable defined in the 'settings.R' file is accessible in the code of the target package.
+
+The target package has to list `uniset` as an import, and then the functions `uniset_updateSettings()` or `uniset_autoUpS()` called from a function **defined in the target package** can be used to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'settings.R' file and have them accessible in an environment created by the target package.
+
+See [next page](https://bpollner.github.io/uniset/example.html) for a practical example.
+
+## Some more explanations
+
+You can define functions **in the target package** (what in this example will be the package 'dogPack') that can call the following four functions from `uniset`:
+
+-   `uniset_setup(where="somePath", get("uev"))`
+
+-   `uniset_test(get("uev"))`
+
+-   `uniset_updateSettings(get("uev"), "nameOfSetupFunction")`
+
+-   `uniset_autoUpS(get("uev"), "nameOfSetupFunction")`
+
+\
+`uev` is a global constant defined in the target package, handing over the name of the environment where necessary variables are stored.
+
+`uniset_test()` is merely a testing function to see if the handover of environments etc. is working properly.
+
+`"nameOfSetupFunction"`is the name of the function defined in the target package that is containing the `uniset` setup-function `uniset_setup()`.
+
+The function `uniset_setup()` is:
+
+-   Creating the required environment variable in the .Renviron file, and
+
+-   copying the 'dogPack_settings.R' file to a destination specified by the user of 'dogPack'. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package `dogPack`.
+
+The functions `uniset_updateSettings()` and `uniset_autoUpS()` are updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the `dogPack` installation folder.
+
+Thus, whenever the developer of package `dogPack` is introducing new or deleting obsolete key=value pairs, they will be automatically added to or deleted from the user´s file.\
+Any values that the user modified will be preserved.
+
+Thus, **a new update or installation of package `dogPack` will not force the user of package `dogPack` to completely re-customize the 'dogPack_settings.R' file**.
+
+Go on and see what `uniset` can do in a [practical example](https://bpollner.github.io/uniset/example.html).
