@@ -24,7 +24,7 @@ In this example we try to obtain the value from the key 'favouriteColor' from th
 
 ## Initialise Settings File System
 
-Assuming you copied or moved the required files as [described before](https://bpollner.github.io/uniset/uniset.html), open the RStudio project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
+Assuming you copied or moved the required files as [described before](https://bpollner.github.io/uniset/articles/uniset.html), open the RStudio project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
 
 ``` r
 library(dogPack)

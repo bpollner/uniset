@@ -15,4 +15,6 @@ _config.yml
 ^pkgdown$
 ^_pkgdown\.yml$
 index.md
-
+description.Rmd
+example.Rmd
+uniset.Rmd

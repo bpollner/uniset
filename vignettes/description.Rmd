@@ -55,7 +55,7 @@ Every variable defined in the 'settings.R' file is accessible in the code of the
 
 The target package has to list `uniset` as an import, and then the functions `uniset_updateSettings()` or `uniset_autoUpS()` called from a function **defined in the target package** can be used to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'settings.R' file and have them accessible in an environment created by the target package.
 
-See [next page](https://bpollner.github.io/uniset/example.html) for a practical example.
+See [next page](https://bpollner.github.io/uniset/articles/example.html) for a practical example.
 
 ## Some more explanations
 
