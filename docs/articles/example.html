@@ -96,39 +96,15 @@
 </h2>
 <p>Assuming you copied or moved the required files as <a href="https://bpollner.github.io/uniset/articles/uniset.html">described
 before</a>, open the RStudio project file in the folder
-‘temdir()/dogPack’, build and install the package.</p>
+’“~/desktop/dogPack”, <strong>build and install</strong> the
+package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># done here for the sake of creating the vignette-output</span>
 <span class="va">to</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/path.expand.html" class="external-link">path.expand</a></span><span class="op">(</span><span class="st">"~/desktop"</span><span class="op">)</span>
 <span class="va">ptp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">to</span>, <span class="st">"/dogPack"</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">document</a></span><span class="op">(</span><span class="va">ptp</span>, roclets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'rd'</span>, <span class="st">'collate'</span>, <span class="st">'namespace'</span><span class="op">)</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Loading <span style="color: #0000BB;">dogPack</span></span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="va">ptp</span><span class="op">)</span>
-<span class="co">#&gt; Skipping 1 packages ahead of CRAN: uniset</span>
-<span class="co">#&gt; * checking for file ‘/Users/bernhard/Desktop/dogPack/DESCRIPTION’ ... OK</span>
-<span class="co">#&gt; * preparing ‘dogPack’:</span>
-<span class="co">#&gt; * checking DESCRIPTION meta-information ... OK</span>
-<span class="co">#&gt; * checking for LF line-endings in source and make files and shell scripts</span>
-<span class="co">#&gt; * checking for empty or unneeded directories</span>
-<span class="co">#&gt; * building ‘dogPack_0.1.0.tar.gz’</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Running /Library/Frameworks/R.framework/Resources/bin/R CMD INSTALL \</span>
-<span class="co">#&gt;   /var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T//RtmphJ5QyH/dogPack_0.1.0.tar.gz \</span>
-<span class="co">#&gt;   --install-tests </span>
-<span class="co">#&gt; * installing to library ‘/private/var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T/RtmpMa4URe/temp_libpath10d7a7384759b’</span>
-<span class="co">#&gt; * installing *source* package ‘dogPack’ ...</span>
-<span class="co">#&gt; ** using staged installation</span>
-<span class="co">#&gt; ** R</span>
-<span class="co">#&gt; ** inst</span>
-<span class="co">#&gt; ** tests</span>
-<span class="co">#&gt; ** byte-compile and prepare package for lazy loading</span>
-<span class="co">#&gt; ** help</span>
-<span class="co">#&gt; *** installing help indices</span>
-<span class="co">#&gt; ** building package indices</span>
-<span class="co">#&gt; ** testing if installed package can be loaded from temporary location</span>
-<span class="co">#&gt; ** testing if installed package can be loaded from final location</span>
-<span class="co">#&gt; ** testing if installed package keeps a record of temporary installation path</span>
-<span class="co">#&gt; * DONE (dogPack)</span></code></pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="va">ptp</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <div class="section level3">
 <h3 id="define-location">Define Location of settings.R File<a class="anchor" aria-label="anchor" href="#define-location"></a>
 </h3>
@@ -204,7 +180,7 @@ directly obtain the settings list – see the example code in
 <code>dogPack_demo_tellFavouriteColor</code> in the example folder
 copied previously.</p>
 <p><code>getstn</code> was customized by package <code>uniset</code> at
-the time of creating the four required files and is located in the file
+the time of creating the three required files and is located in the file
 ‘uniset_functions.R’ in ‘dogPack/R’.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/dogPack/man/dogPack_demo_tellFavouriteColor.html" class="external-link">dogPack_demo_tellFavouriteColor</a></span><span class="op">(</span><span class="op">)</span>
@@ -219,9 +195,12 @@ that was created during setup, and change the value of the key
 <p>Every time one of the functions <code><a href="../reference/uniset_updateSettings.html">uniset_updateSettings()</a></code>,
 <code><a href="../reference/uniset_autoUpS.html">uniset_autoUpS()</a></code> or <code><a href="../reference/uniset_getstn.html">uniset_getstn()</a></code> is called
 from <strong>within the target package</strong>, the key = value pairs
-from the user-defined settings.R file are sourced and returned.<br>
+from the user-defined settings.R file are sourced and returned. However,
+these functions differ in <a href="https://bpollner.github.io/uniset/articles/description.html#source-comp-keys">if
+they <strong>update the keys</strong></a> in the user defined settings.R
+file or not.<br>
 The location of the user-defined settings.R file can be defined via
-<code><a href="../reference/uniset_autoUpS.html">uniset_autoUpS()</a></code> as <a href="#define-location">shown
+<code><a href="../reference/uniset_setup.html">uniset_setup()</a></code> as <a href="#define-location">shown
 above</a>.</p>
 <hr>
 </div>

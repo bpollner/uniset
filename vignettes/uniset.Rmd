@@ -55,7 +55,7 @@ file.copy(dsource, to, recursive = TRUE)
 
 There are two ways to set up a target package (in our example the package called `dogPack`) to make use of `uniset`:
 
-### **A) Export and Move Files**
+### A) Export and Move Files
 
 The package name, the name of the setup-function and a location have to be specified, then a call to `uniset_getFiles()` creates a folder containing the three required files:
 
@@ -70,7 +70,7 @@ Move files:
 
 -   'uniset_globals' and 'uniset_functions.R' into the 'R' folder of `dogPack`.
 
-### **B) Write files directly to target package**
+### B) Write files directly to target package
 
 A call to `uniset_copyFilesToPackage()` copies the three required files directly into the target package -- called `dogPack` in our example.
 

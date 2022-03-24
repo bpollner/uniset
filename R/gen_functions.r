@@ -16,7 +16,7 @@ checkPathToFolder <- function(where, what) {
 getCheckPathToFolder <- function(where, what) {
     if (is.null(where)) {
         where <- try(easycsv::choose_dir(), silent=TRUE)
-        if (class(where) == "try-error") {
+        if (is(where, "try-error")) {
             stop(paste0("Sorry, choosing the path to '", what, "' does not seem to work interactively.\nPlease provide a valid path to an existing folder in the argument '", what, "' manually.\n"), call.=FALSE)
         } # end if class(where) == "try-error"
         where <- substr(where, 1, nchar(where)-1) # cut away the "/" at the end
@@ -24,7 +24,7 @@ getCheckPathToFolder <- function(where, what) {
     checkCh1(where, what)
     oldPath <- where
     where <- try(path.expand(where), silent=TRUE)
-    if (class(where) == "try-error") {
+    if (is(where, "try-error")) {
         where <- oldPath
     } # end if
     checkPathToFolder(where, what)  
@@ -1089,7 +1089,7 @@ performSetup_checkCreateModRenv <- function(userLoc, taPaList, sysHome_R_test=NU
             writeLines(defaultFillForRenviron, fcon)
             close(fcon)
         }, silent=TRUE)
-        if (class(aa) == "try-error") { # how to test for that ?
+        if (is(aa, "try-error")) { # how to test for that ?
     #       unlink(fullRenvPath)
             message(paste0("Sorry, it was not possible to write the new variable '", taPaSH, "' to the created .Renviron file."))
             return(FALSE)
@@ -1129,7 +1129,7 @@ performSetup_checkCreateModRenv <- function(userLoc, taPaList, sysHome_R_test=NU
             writeLines(c(content, newContent), fcon) # append the existing content with the new variable and path to local settings home
             close(fcon)
         }, silent=TRUE)
-        if (class(aa) == "try-error") { # how to test for that?
+        if (is(aa, "try-error")) { # how to test for that?
             checkRenvContent_maybeCopyBackup(systemHome_R, bupDir)
             message(paste0("Sorry, it was not possible to append the existing .Renviron file with the new variable '", taPaSH, "'.\n\n"))
             return(FALSE)
@@ -1151,7 +1151,7 @@ performSetup_checkCreateModRenv <- function(userLoc, taPaList, sysHome_R_test=NU
                 writeLines(content, fcon) # write back the old content, but with the one line containing the taPaSH variable changed to the new value
                 close(fcon)
             }, silent=TRUE)
-            if (class(aa) == "try-error") { # how to test for that?
+            if (is(aa, "try-error")) { # how to test for that?
                 checkRenvContent_maybeCopyBackup(systemHome_R, bupDir)
                 message(paste0("Sorry, it was not possible to change the value of the variable '", taPaSH, "' in the existing .Renviron file \n'", fullRenvPath, "' from \n'", fileValue, "' to \n'", intendedValue, "'.\n\n"))
                 return(FALSE)

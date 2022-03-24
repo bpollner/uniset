@@ -84,7 +84,7 @@ Any values that the user modified will be preserved.
 
 Thus, **a new update or installation of package `dogPack` will not force the user of package `dogPack` to completely re-customize the 'dogPack_settings.R' file**.
 
-### Only Sourcing vs. Compare Keys
+### Only Sourcing vs. Compare Keys {#source-comp-keys}
 
 The difference between `uniset_getstn()` on the one hand and `uniset_autoUpS()` and `uniset_updateSettings()` on the other hand is that the first one is **merely sourcing** the values from the 'settings.R' file, while the other ones are **first** **comparing** the **keys** in the user defined settings.R file with those in the root of the target packge. If the keys differ, the user-defined settings.R file is modified accordingly. Only **then**, after the comparison of the keys, is the user defined settings.R file **sourced**.
 
