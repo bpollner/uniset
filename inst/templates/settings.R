@@ -8,7 +8,7 @@
 # the "inst" folder of your package 'XXX_packageName'. (create an "inst"
 # folder if it does not exist)
 # Consider deleting this paragraph, as the USER of the target package should
-# to leave this file where it is.
+# leave this file where it is.
 
 # do NOT change the name of the object holding the list - in this
 # case, 'XXX_obj'
