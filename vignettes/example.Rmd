@@ -37,7 +37,7 @@ devtools::install(ptp)
 
 ### Define Location of settings.R File {#define-location}
 
-and then call:
+To define the location of the user-defined settings.R file, use the `uniset` setup function `uniset_setup()`:
 
 ```{r}
 library(dogPack)
@@ -45,7 +45,7 @@ dogPack_test_targetPackageParams() # gives a printout of the target package para
 dogPack_demo_setup(where=to) # will place the settings-home folder on the desktop
 ```
 
-`dogPack_demo_setup` contains the `uniset` function
+`dogPack_demo_setup` contains the `uniset` function `uniset_setup()`.
 
 This has to be done **only once** by the user of the target package. You probably have to **restart R** now for the changes in the environment variable in your .Renviron file to become effective.
 
@@ -87,7 +87,7 @@ If you are the developer of package `dogPack`, at some time after you published 
 
 Do that now: Add e.g. a new 'key=value,' pair (do not forget the comma ',') anywhere in the settings-file **in the folder 'inst' of `dogPack`**, and re-install `dogPack`. Or, as an alternative shortcut for this demonstration, go to root of the *installed* `dogPack` package at
 
-```{r}
+```r
 path.package("dogPack")
 ```
 

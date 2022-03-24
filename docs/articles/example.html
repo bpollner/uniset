@@ -113,9 +113,9 @@ before</a>, open the RStudio project file in the folder
 <span class="co">#&gt; * building ‘dogPack_0.1.0.tar.gz’</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Running /Library/Frameworks/R.framework/Resources/bin/R CMD INSTALL \</span>
-<span class="co">#&gt;   /var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T//RtmpftyBVu/dogPack_0.1.0.tar.gz \</span>
+<span class="co">#&gt;   /var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T//RtmphJ5QyH/dogPack_0.1.0.tar.gz \</span>
 <span class="co">#&gt;   --install-tests </span>
-<span class="co">#&gt; * installing to library ‘/private/var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T/RtmprfJscY/temp_libpath102314c5fed57’</span>
+<span class="co">#&gt; * installing to library ‘/private/var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T/RtmpMa4URe/temp_libpath10d7a7384759b’</span>
 <span class="co">#&gt; * installing *source* package ‘dogPack’ ...</span>
 <span class="co">#&gt; ** using staged installation</span>
 <span class="co">#&gt; ** R</span>
@@ -132,7 +132,8 @@ before</a>, open the RStudio project file in the folder
 <div class="section level3">
 <h3 id="define-location">Define Location of settings.R File<a class="anchor" aria-label="anchor" href="#define-location"></a>
 </h3>
-<p>and then call:</p>
+<p>To define the location of the user-defined settings.R file, use the
+<code>uniset</code> setup function <code><a href="../reference/uniset_setup.html">uniset_setup()</a></code>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">dogPack</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/dogPack/man/dogPack_test_targetPackageParams.html" class="external-link">dogPack_test_targetPackageParams</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># gives a printout of the target package parameters</span>
@@ -143,10 +144,9 @@ before</a>, open the RStudio project file in the folder
 <span class="co">#&gt;  $ pkgUniset_SuffixForTemplate       : chr "_TEMPLATE"</span>
 <span class="co">#&gt; NULL</span>
 <span class="fu"><a href="https://rdrr.io/pkg/dogPack/man/dogPack_demo_setup.html" class="external-link">dogPack_demo_setup</a></span><span class="op">(</span>where<span class="op">=</span><span class="va">to</span><span class="op">)</span> <span class="co"># will place the settings-home folder on the desktop</span>
-<span class="co">#&gt; The folder </span>
-<span class="co">#&gt; '/Users/bernhard/desktop/dogPack_SH' </span>
-<span class="co">#&gt; already existed.</span>
-<span class="co">#&gt; The file 'dogPack_settings.R' already existed in </span>
+<span class="co">#&gt; The folder `dogPack_SH` as settings-home directory has been created in </span>
+<span class="co">#&gt; `/Users/bernhard/desktop`</span>
+<span class="co">#&gt; The file 'dogPack_settings.R' has been copied into </span>
 <span class="co">#&gt; '/Users/bernhard/desktop/dogPack_SH'</span>
 <span class="co">#&gt; The variable 'dogPack_SH' already existed in the .Renviron file </span>
 <span class="co">#&gt; '/Users/bernhard/.Renviron'</span>
@@ -156,7 +156,7 @@ before</a>, open the RStudio project file in the folder
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Setup successful</span></code></pre></div>
 <p><code>dogPack_demo_setup</code> contains the <code>uniset</code>
-function</p>
+function <code><a href="../reference/uniset_setup.html">uniset_setup()</a></code>.</p>
 <p>This has to be done <strong>only once</strong> by the user of the
 target package. You probably have to <strong>restart R</strong> now for
 the changes in the environment variable in your .Renviron file to become
@@ -170,10 +170,6 @@ effective.</p>
 settings via</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">stn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dogPack/man/dogPack_demo_updateSettings.html" class="external-link">dogPack_demo_updateSettings</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; The following 1 key was deleted from the settings-file 'dogPack_settings.R' in </span>
-<span class="co">#&gt; '/Users/bernhard/desktop/dogPack_SH':</span>
-<span class="co">#&gt;  </span>
-<span class="co">#&gt; anana</span>
 <span class="co">#&gt; dogPack settings updated</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">stn</span><span class="op">)</span>
 <span class="co">#&gt; List of 25</span>
@@ -188,7 +184,7 @@ settings via</p>
 <span class="co">#&gt;  $ key3                  : chr "theo"</span>
 <span class="co">#&gt;  $ xxx                   : logi FALSE</span>
 <span class="co">#&gt;  $ abc5                  : logi TRUE</span>
-<span class="co">#&gt;  $ favouriteColor        : chr "orange"</span>
+<span class="co">#&gt;  $ favouriteColor        : chr "blue"</span>
 <span class="co">#&gt;  $ leastFavColor         : chr "darkred"</span>
 <span class="co">#&gt;  $ abc7                  : logi TRUE</span>
 <span class="co">#&gt;  $ abc8                  : logi FALSE</span>
@@ -212,7 +208,7 @@ the time of creating the four required files and is located in the file
 ‘uniset_functions.R’ in ‘dogPack/R’.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/dogPack/man/dogPack_demo_tellFavouriteColor.html" class="external-link">dogPack_demo_tellFavouriteColor</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "orange"</span>
+<span class="co">#&gt; [1] "blue"</span>
 <span class="co"># contains the function 'getstn'</span></code></pre></div>
 <p>Now open the file ‘dogPack_settings.R’ in the folder ‘dogPack_SH’
 that was created during setup, and change the value of the key
@@ -244,8 +240,7 @@ comma ‘,’) anywhere in the settings-file <strong>in the folder ‘inst’ of
 as an alternative shortcut for this demonstration, go to root of the
 <em>installed</em> <code>dogPack</code> package at</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/find.package.html" class="external-link">path.package</a></span><span class="op">(</span><span class="st">"dogPack"</span><span class="op">)</span>
-<span class="co">#&gt; [1] "/private/var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T/RtmprfJscY/temp_libpath102314c5fed57/dogPack"</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/find.package.html" class="external-link">path.package</a></span><span class="op">(</span><span class="st">"dogPack"</span><span class="op">)</span></code></pre></div>
 <p>and there simply modify the file ‘dogPack_settings.R’ (add a key
 called “someNewKey”).</p>
 <p>Now the <strong>user</strong> of <code>dogPack</code> calls a

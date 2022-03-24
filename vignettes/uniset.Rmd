@@ -80,6 +80,6 @@ setupFunc <- "dogPack_demo_setup" # the name of the setup-function in our exampl
 uniset_copyFilesToPackage(path, setupFunc)
 ```
 
-Please review the file 'dogPackFunc.R' in the folder 'dogPack/R' that was copied to `tempdir()` and look at the code of the practical examples that will be executed below.
+Please review the file 'dogPackFunc.R' in the folder 'dogPack/R' that was copied to `path.expand("~/desktop")` and look at the code of the practical examples that will be executed below.
 
 Go on and read the [extended description](https://bpollner.github.io/uniset/articles/description.html) to deepen your understanding of how `uniset` works.
