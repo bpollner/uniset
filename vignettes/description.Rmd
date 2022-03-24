@@ -22,65 +22,60 @@ Package `uniset` enables any package (the 'target package') to provide its users
 
 This settings file lives in a location defined by the user of the target package, and its user-defined values remain unchanged even when the author of the target package is introducing or deleting keys, or when the target package is updated or re-installed.
 
-In order to enable the target package to make use of the functionality offered by package `uniset`, four files have to be exported by `uniset` and be placed into the target package.
+In order to enable the target package to make use of the functionality offered by package `uniset`, three files have to be exported by `uniset` and be placed into the target package.
 
 ## Advantage
 
 The most imminent advantage of the `uniset` settings-file system over using any static file for permanently storing settings for any package is the fact that the key=value pairs in the 'settings.R' file get updated (added / deleted) dynamically.\
 So the developer of a package can delete keys or introduce new ones, and the new key=value pairs will be automatically added to or deleted from the local 'settings.R' file.
 
-Values changed by the user of the target package will be preserved.\
+**Values** changed by the **user** of the target package will be **preserved**.\
 So the author of the target package can add or delete keys from the 'settings.R' file without worrying that this will cause any effort or troubles for the user of the target package.
 
 ## Two ways to generate the required files
 
--   **1) Export and Move Files**
+### **A) Export and Move Files**
 
-    -   Use **`uniset_getFiles()`**, then move the 'xxx_settings.R' file ('xxx' for the name of the target package) into the 'inst' folder (create one if not already done) of the target package.
+-   Use `uniset_getFiles()`, then move the 'xxx_settings.R' file ('xxx' for the name of the target package) into the 'inst' folder (create one if not already done) of the target package.
 
-    -   Move the file 'zzz.R', 'uniset_globals.R' and 'uniset_functions.R' to the 'R' folder of the target package.
+-   Move the files 'uniset_globals.R' and 'uniset_functions.R' to the 'R' folder of the target package.
 
-    -   In case that the '.onLoad' function already is defined, add the eight lines of code from the file 'zzz.R' to your existing '.onLoad' function.
+### **B) Write files directly to target package**
 
-    -   In case that the '.onUnLoad' function already is defined, add the one line of code from the file 'zzz.R' to your existing '.onUnLoad' function.
+Alternatively, use `uniset_copyFilesToPackage()` to copy the required files directly into the target package.
 
--   **2) Write files directly to target package (recommended)**\
-    Alternatively, use **`uniset_copyFilesToPackage()`** to copy the required files directly into the target package.
-
-In both cases the name of a setup-function has to be provided, that is the name of the function defined in the target package that contains the `uniset` function `uniset_setup()`.
+In both cases the name of a setup-function has to be provided, that is the name of a function **defined in the target package** that contains the `uniset` function `uniset_setup()`.
 
 ## Accessing values from within target package
 
 Every variable defined in the 'settings.R' file is accessible in the code of the target package.
 
-The target package has to list `uniset` as an import, and then the functions `uniset_updateSettings()` or `uniset_autoUpS()` called from a function **defined in the target package** can be used to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'settings.R' file and have them accessible in an environment created by the target package.
+The target package has to list `uniset` as an import, and then the functions `uniset_updateSettings()`, `uniset_autoUpS()` or `uniset_getstn()` called from a function **defined in the target package** can be used to manually or automatically update the settings, i.e. to read in the key=value pairs stored in the 'settings.R' file.
 
 See [next page](https://bpollner.github.io/uniset/articles/example.html) for a practical example.
 
 ## Some more explanations
 
-You can define functions **in the target package** (what in this example will be the package 'dogPack') that can call the following four functions from `uniset`:
+You can define functions **in the target package** (what in this example will be the package 'dogPack') that can call the following functions from `uniset`:
 
--   `uniset_setup(where="somePath", get("uev"))`
+-   `uniset_setup(where="somePath", get("uniset_handover"))`
+-   `uniset_test(get("uniset_handover"))`
+-   `uniset_updateSettings(get("uniset_handover"), "nameOfSetupFunction")`
+-   `uniset_autoUpS(get("uniset_handover"), "nameOfSetupFunction")`
+-   `uniset_getstn(get("uniset_handover"))`
 
--   `uniset_test(get("uev"))`
+`uniset_handover` is a global variable **defined in the target package** (the package 'dogPack' in our example). It contains the name of a function exported by the target package that hands over required values to package `uniset`.
 
--   `uniset_updateSettings(get("uev"), "nameOfSetupFunction")`
+`uniset_test()` is a testing function to see if the handover of environments etc. is working properly.
 
--   `uniset_autoUpS(get("uev"), "nameOfSetupFunction")`
-
-\
-`uev` is a global constant defined in the target package, handing over the name of the environment where necessary variables are stored.
-
-`uniset_test()` is merely a testing function to see if the handover of environments etc. is working properly.
-
-`"nameOfSetupFunction"`is the name of the function defined in the target package that is containing the `uniset` setup-function `uniset_setup()`.
+`nameOfSetupFunction`is the name of the function **defined in the target package** that is *containing* the `uniset` setup-function `uniset_setup()`.
 
 The function `uniset_setup()` is:
 
 -   Creating the required environment variable in the .Renviron file, and
 
--   copying the 'dogPack_settings.R' file to a destination specified by the user of 'dogPack'. It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package `dogPack`.
+-   copying the 'dogPack_settings.R' file to a destination specified by the user of 'dogPack'.\
+    It is this file ('dogPack_settings.R) that is meant to be seen, read and modified by the **user** of package `dogPack`.
 
 The functions `uniset_updateSettings()` and `uniset_autoUpS()` are updating (adding / deleting) the key=value pairs in the local, user-level 'dogPack_settings.R' file according to a possibly new template in the `dogPack` installation folder.
 
@@ -88,5 +83,9 @@ Thus, whenever the developer of package `dogPack` is introducing new or deleting
 Any values that the user modified will be preserved.
 
 Thus, **a new update or installation of package `dogPack` will not force the user of package `dogPack` to completely re-customize the 'dogPack_settings.R' file**.
+
+### Only Sourcing vs. Compare Keys
+
+The difference between `uniset_getstn()` on the one hand and `uniset_autoUpS()` and `uniset_updateSettings()` on the other hand is that the first one is **merely sourcing** the values from the 'settings.R' file, while the other ones are **first** **comparing** the **keys** in the user defined settings.R file with those in the root of the target packge. If the keys differ, the user-defined settings.R file is modified accordingly. Only **then**, after the comparison of the keys, is the user defined settings.R file **sourced**.
 
 Go on and see what `uniset` can do in a [practical example](https://bpollner.github.io/uniset/articles/example.html).

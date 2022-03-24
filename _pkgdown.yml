@@ -28,4 +28,5 @@ reference:
   - uniset_test
   - uniset_updateSettings
   - uniset_autoUpS
+  - uniset_getstn
   

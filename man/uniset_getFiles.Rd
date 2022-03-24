@@ -16,14 +16,14 @@ uniset_getFiles(
 \arguments{
 \item{taPaName}{Character length one. The name of the target package.}
 
-\item{setupFunc}{Character length one. The name of the function 
-\strong{in the target package} that is containing the setup-function 
+\item{setupFunc}{Character length one. The name of the function
+\strong{in the target package} that is containing the setup-function
 \code{\link{uniset_setup}}.}
 
 \item{where}{Character length one. The location where the folder with the
-resulting four files should be copied to. Defaults to 'NULL'. If left at the 
-default 'NULL', the location should be selectable interactively. Provide a 
-character length one holding a valid path to an existing folder to copy the 
+resulting four files should be copied to. Defaults to 'NULL'. If left at the
+default 'NULL', the location should be selectable interactively. Provide a
+character length one holding a valid path to an existing folder to copy the
 folder containing the four required files there.}
 
 \item{taPaSH}{Character length one. The name of the variable to be defined in
@@ -33,12 +33,12 @@ will be used, with 'taPaName' being the value provided at the argument
 'taPaName'.}
 
 \item{taPaObj}{Character length one. The name of the object holding the list
-with the key-value pairs that can be defined to be used in the target package. 
+with the key-value pairs that can be defined to be used in the target package.
 Can be left at the default 'settings'.}
 
 \item{tmpl}{Character length one. the Character string that will be appended
-to the fresh settings file that is copied (by the target package) to the users 
-settings home directory if updating the key=value pairs was not successful. 
+to the fresh settings file that is copied (by the target package) to the users
+settings home directory if updating the key=value pairs was not successful.
 Can be left at the default '_TEMPLATE'.}
 }
 \value{
@@ -52,11 +52,11 @@ Function to generate the four files required in the target
 package (i.e. the package that should be enabled to use the package 'uniset').
 }
 \details{
-Look at the content of the four generated files for information on 
+Look at the content of the four generated files for information on
 where they should be moved.
 }
 \section{Note}{
- Please refer to \code{\link{uniset}} for a link to examples 
+ Please refer to \code{\link{uniset}} for a link to examples
 and a real-world demo.
 }
 

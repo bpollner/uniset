@@ -4,42 +4,43 @@
 \alias{uniset_autoUpS}
 \title{Automatically update Settings}
 \usage{
-uniset_autoUpS(unisetEnv, setupFunc = NULL)
+uniset_autoUpS(uniset_handover, setupFunc = NULL)
 }
 \arguments{
-\item{unisetEnv}{Character length one. Hand over the global variable defined
-in the target package holding the name of the uniset-environment for the
-specific target package ('uniset_env_name' or 'uev', see examples at
-\code{\link{uniset}}.)}
+\item{uniset_handover}{List length two, containing two elements:
+\enumerate{
+\item \code{pkgname}: The name of the target package.
+\item \code{funcname}: The name of the function in the target package handing over
+the required values. See examples at \code{\link{uniset}}.
+}}
 
-\item{setupFunc}{Character length one. The name of the function in the target 
-package performing the setup, i.e. the name of the function that is 
-containing the \code{uniset} function \code{\link{uniset_setup}}. Defaults to 
+\item{setupFunc}{Character length one. The name of the function in the target
+package performing the setup, i.e. the name of the function that is
+containing the \code{uniset} function \code{\link{uniset_setup}}. Defaults to
 'NULL'; has to be changed.}
 }
 \value{
-Is primarily called for its side effects, i.e to automatically 
-update / (re-)source the settings file into an environment defined 
-by the target package. Returns (invisible) 'FALSE' if the the update was 
-unsuccessful, otherwise an (invisible) list with the settings sourced from 
-the settings.R file.
+Is primarily called for its side effects, i.e to automatically
+update / (re-)source the settings file. Returns (invisible) 'FALSE' if the
+the update was unsuccessful, otherwise an (invisible) list with the settings
+sourced from the settings.R file.
 }
 \description{
 Use this function within your code to automatically update the
 settings from the users settings file
 }
 \details{
-If 'autoUpdateSettings' in the local settings.R file is left at 'TRUE', 
-the settings will be checked resp. updated automatically every time a function 
+If 'autoUpdateSettings' in the local settings.R file is left at 'TRUE',
+the settings will be checked resp. updated automatically every time a function
 in the target package is calling \code{\link{uniset_autoUpS}}.
 }
 \section{Important}{
- This function is meant to be called from within the 
+ This function is meant to be called from within the
 target package.
 }
 
 \section{Note}{
- Please refer to \code{\link{uniset}} for a link to examples 
+ Please refer to \code{\link{uniset}} for a link to examples
 and a real-world demo.
 }
 
@@ -47,7 +48,7 @@ and a real-world demo.
 {
 \dontrun{
 # to be called from within the target package
-uniset_autoUpS(get("uev"), "dogPack_demo_setup")
+uniset_autoUpS(uniset_handover, "dogPack_demo_setup")
 }
 }
 }

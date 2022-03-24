@@ -13,6 +13,9 @@
     <loc>https://bpollner.github.io/uniset/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://bpollner.github.io/uniset/articles/testing.html</loc>
+  </url>
+  <url>
     <loc>https://bpollner.github.io/uniset/articles/uniset.html</loc>
   </url>
   <url>
@@ -35,6 +38,9 @@
   </url>
   <url>
     <loc>https://bpollner.github.io/uniset/reference/uniset_getFiles.html</loc>
+  </url>
+  <url>
+    <loc>https://bpollner.github.io/uniset/reference/uniset_getstn.html</loc>
   </url>
   <url>
     <loc>https://bpollner.github.io/uniset/reference/uniset_setup.html</loc>

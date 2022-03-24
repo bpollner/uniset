@@ -4,14 +4,14 @@
 #' name of folder where the local 'dogPack_settings.R' resides etc, 
 #' and gives it back as (invisible) list.
 #' @export
-dogPack_test_targetPackageParams <- function(){
-
-    out <- uniset::uniset_test(get("uev"))
-    # this line, called from a function in the target package, in our example the package 'dogPack',
-    # is only intended to test if the .onLoad function was successful.
+dogPack_test_targetPackageParams <- function() {
+	#
+    out <- uniset::uniset_test(get("uniset_handover"))
+    # this line, called from a function in the target package, in our example
+    # the package 'dogPack',is only intended to test if the handover of values
+    # via the customised handover function is working correctly.
     return(invisible(out))
 } # EOF
-
 
 
 
@@ -25,96 +25,90 @@ dogPack_test_targetPackageParams <- function(){
 #' perform the setup.
 #' @export
 dogPack_demo_setup <- function(where=NULL) {
-
-	uniset::uniset_setup(where, get("uev"))
-	# provide a function like this, with the one line above in it, to the user of
-	# the target package. This function 'uniset_setup' only has to be called once.
-	# In the target package, instruct / inform the user to call a function of the target
-	# package (like this one) in order to setup the local system to make use the
-	# dynamic settings file.
-	return(invisible(NULL))
+	#
+    uniset::uniset_setup(where, get("uniset_handover"))
+    # provide a function like this, with the one line above in it, to the user of
+    # the target package. This function 'uniset_setup' only has to be called once.
+    # In the target package, instruct / inform the user to call a function of
+    # the target package (like this one) in order to setup the local system to
+    # make use the dynamic settings file.
+    return(invisible(NULL))
 } # EOF
-
 
 
 
 
 #' @title Demo Update Settings
-#' @description Update Settings
-#' @param silent Logical. If a confirmation should be printed. Defaults to 'FALSE'.
-#' @return A (invisible) list containing the key=value pairs from the settings file.
+#' @description Manually update the settings.
+#' @param silent Logical. If a confirmation should be printed. Defaults to
+#' 'FALSE'.
+#' @return A (invisible) list containing the key=value pairs from the settings
+#' file.
 #' @export
 dogPack_demo_updateSettings <- function(silent=FALSE) {
-
-
-	stn <- updateSettings(silent) # customized function defined in !dogPack!
-    # use this line in a function defined in the target package, in our example the package
-    # 'dogPack', to manually read in and update the values from the settings file.
-    # A possible use could be to have a direct way to check if updating the values from the
-    # settings file works correctly.
-	return(invisible(stn))
+	#
+    stn <- updateSettings(silent)
+    # customized function defined in !dogPack!
+    #
+    # use this line in a function defined in the target package, in our example
+    # the package 'dogPack', to manually read in and update the values from the
+    # settings file.
+    # A possible use could be to have a direct way to check if updating the
+    # values from the settings file works correctly.
+    return(invisible(stn))
 } # EOF
-
 
 
 
 
 #' @title Demo Autoupdate
-#' @description AutoUpdate Settings. Is also reading the value of the
-#' key 'favouriteColor' from the 'dogPack_settings.R' file.
-#' @param tellMe Logical. If the favourite color should be printed.
+#' @description Automatically update the settings. Is also reading the value of
+#' the key 'favouriteColor' from the 'dogPack_settings.R' file.
 #' @param txt Character
+#' @param tellMe Logical. If the favourite color should be printed.
 #' @return Is called for its side effects, i.e. to automatically update
 #' resp. (re-)source the settings file. If 'tellMe' is left at the default
 #' 'TRUE', the value of the key 'favouriteColor' in the settings file is
 #' printed. Returns (invisible) NULL.
 #' @export
-dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
-
-	autoUpS() # customized function defined in !dogPack!
-	# As the developer of the target package, in our example the package 'dogPack', you would
-	# include this line (the package name is of course not necessary) at the top of each and every single
-	# function that you want to trigger the auto-update mechanism, i.e. when the key=value pairs from
-	# the local 'dogPack_settings.R' file should be updated and read in.
+dogPack_demo_autoUpS <- function(txt="My favourite color is ", tellMe=TRUE) {
 	#
-	# Function 'dogPack::autoUpS' is containing the function 'uniset::uniset_autoUpS()', what is the one
-	# function that confers the main functionality of package 'uniset'.
+    stn <- autoUpS()
+    # customized function defined in !dogPack!
+    #
+    # As the developer of the target package, in our example the package
+    # 'dogPack', you would include this line (the package name is of course not
+    # necessary) at the top of each and every single function that you want to
+    # trigger the auto-update mechanism, i.e. when the key=value pairs from
+    # the local 'dogPack_settings.R' file should be updated and read in.
+    
+    # Function 'dogPack::autoUpS' is containing the function
+    # 'uniset::uniset_autoUpS()', what is the one function that confers the
+    # main functionality of package 'uniset'.
 
-	# By calling 'autoUpS()', the local key=value pairs from the settings file get updated according
-	# to the template from the target package, and the object ('settings' in our example) containing the list with the key=value pairs is
-	# updated/sourced in the environment called, in our example, '.dogPack_settingsEnv'.
+    # By calling 'dogPack::autoUpS()', the local key=value pairs from the
+    # settings file get updated according to the template from the
+    # target package, and the object ('settings' in our example) containing the
+    # list with the key=value pairs is updated/sourced.
+
+    #  Here would be the main body of the function.
+    # ...
+    # ...
+    # ...
 
 
-	stn <- getstn()  # customized function defined in !dogPack!
-	# Read in the 'settings' object from the environment '.dogPack_settingsEnv'.
-	# 'getstn()' is a function defined in the package dogPack, but has been customized by package 'uniset'
-	# at the time of generating the four required files.
+    # Any key=value pairs of the settings file can be accessed in the body of a function defined
+    # in the target package, in our example this package 'dogPack', as shown below:
 
-	# Alternatively, the settings list can be accessed via, in this example,
-	# .dogPack_settingsEnv$settings$xxx  # with 'xxx' being any key defined in the settings file, but this
-	# throws now a note when running CMD-CHECK ("no visible binding for global variable '.dogPack_settingsEnv'")
+    # favColor <- .dogPack_settingsEnv$settings$favouriteColor # it works, but would throw a note when running CMD-CHECK
+    favColor <- stn$favouriteColor # we defined 'stn' above
 
-
-	#  Here would be the main body of the function.
-	# ...
-	# ...
-	# ...
-
-
-	# Any key=value pairs of the settings file can be accessed in the body of a function defined
-	# in the target package, in our example this package 'dogPack', as shown below:
-
-	# favColor <- .dogPack_settingsEnv$settings$favouriteColor # it works, but would throw a note when running CMD-CHECK
-	favColor <- getstn()$favouriteColor # , or take from above
-	favColor <- stn$favouriteColor # we defined 'stn' above
-
-	txtOut <- paste0(trimws(txt), ": ", favColor, "\n")
-	if (tellMe) {
-		cat(txtOut)
-	} # end if
-	return(invisible(NULL))
+    txtOut <- paste0(trimws(txt), ": ", favColor, "\n")
+    if (tellMe) {
+        cat(txtOut)
+    } # end if
+    return(invisible(NULL))
 } # EOF
-
 
 
 
@@ -129,37 +123,30 @@ dogPack_demo_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 #' left at the default 'TRUE', the value of the key 'favouriteColor' in the settings
 #' file is printed. Returns (invisible) NULL.
 #' @export
-dogPack_demo_No_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
+dogPack_demo_No_autoUpS <- function(txt="My favourite color is ", tellMe=TRUE) {
 
-	stn <- getstn() # customized function defined in !dogPack!
-	# Read in the 'settings' object from the environment '.dogPack_settingsEnv'.
-	# 'getstn()' is a function defined in the package dogPack, but has been customized by package 'uniset'
-	# at the time of generating the four required files.
+	stn <- getstn()
+	# customized function defined in !dogPack!
+	#
+    # 'getstn()' is a function defined in the package dogPack, but has been
+    # customized by package 'uniset' at the time of generating the three
+    # required files.
 
-	# Alternatively, the settings list can be accessed via, in this example,
-	# .dogPack_settingsEnv$settings$xxx  # with 'xxx' being any key defined in the settings file, but this
-	# throws now a note when running CMD-CHECK ("no visible binding for global variable '.dogPack_settingsEnv'")
+    #  Here would be the main body of the function.
+    # ...
+    # ...
+    # ...
 
+    # Any key=value pairs of the settings file can be accessed in the body of a function defined
+    # in the target package, in our example this package 'dogPack', as shown below:
+    favColor <- stn$favouriteColor # we defined 'stn' above
 
-	#  Here would be the main body of the function.
-	# ...
-	# ...
-	# ...
-
-	# Any key=value pairs of the settings file can be accessed in the body of a function defined
-	# in the target package, in our example this package 'dogPack', as shown below:
-
-	# favColor <- .dogPack_settingsEnv$settings$favouriteColor # it works, but would throw a note when running CMD-CHECK
-	favColor <- getstn()$favouriteColor # , or take from above
-	favColor <- stn$favouriteColor # we defined 'stn' above
-
-	txtOut <- paste0(trimws(txt), ": \n", favColor, "\n")
-	if (tellMe) {
-		cat(txtOut)
-	} # end if
-	return(invisible(NULL))
+    txtOut <- paste0(trimws(txt), ": ", favColor, "\n")
+    if (tellMe) {
+        cat(txtOut)
+    } # end if
+    return(invisible(NULL))
 } # EOF
-
 
 
 
@@ -170,6 +157,7 @@ dogPack_demo_No_autoUpS <- function(tellMe=TRUE, txt="My favourite color is ") {
 #' settings.R file.
 #' @export
 dogPack_demo_tellFavouriteColor <- function() {
-	favColor <- getstn()$favouriteColor
-	return(favColor)
+    stn <- getstn()
+    favColor <- stn$favouriteColor
+    return(favColor)
 } # EOF

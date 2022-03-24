@@ -4,40 +4,41 @@
 \alias{uniset_updateSettings}
 \title{Update Settings of Target Package}
 \usage{
-uniset_updateSettings(unisetEnv, setupFunc = NULL, silent = FALSE)
+uniset_updateSettings(uniset_handover, setupFunc = NULL, silent = FALSE)
 }
 \arguments{
-\item{unisetEnv}{Character length one. Hand over the global variable defined
-in the target package holding the name of the uniset-environment for the
-specific target package ('uniset_env_name' or 'uev', see examples at
-\code{\link{uniset}}.)}
+\item{uniset_handover}{List length two, containing two elements:
+\enumerate{
+\item \code{pkgname}: The name of the target package.
+\item \code{funcname}: The name of the function in the target package handing over
+the required values. See examples at \code{\link{uniset}}.
+}}
 
-\item{setupFunc}{Character length one. The name of the function in the target 
-package performing the setup, i.e. the name of the function that is 
-containing the \code{uniset} function \code{\link{uniset_setup}}. Defaults to 
+\item{setupFunc}{Character length one. The name of the function in the target
+package performing the setup, i.e. the name of the function that is
+containing the \code{uniset} function \code{\link{uniset_setup}}. Defaults to
 'NULL'; has to be changed.}
 
 \item{silent}{Logical. If a confirmation should be printed. Defaults
 to 'FALSE'}
 }
 \value{
-This function is called for its side effects, i.e to 
-manually update / (re-)source the settings file into an environment 
-defined by the target package. Returns (invisible) 'FALSE' if the 
-update was unsuccessful, otherwise an (invisible) list with the settings 
-sourced from the settings.R file.
+This function is called for its side effects, i.e to
+manually update / (re-)source the settings file. Returns (invisible)
+'FALSE' if the update was unsuccessful, otherwise an (invisible) list with
+the settings sourced from the settings.R file.
 }
 \description{
 Manually read in the settings-file in the target package settings
 home directory as specified in the .Renviron file.
 }
 \section{Important}{
- This function is meant to be called from within the 
+ This function is meant to be called from within the
 target package.
 }
 
 \section{Note}{
- Please refer to \code{\link{uniset}} for a link to examples 
+ Please refer to \code{\link{uniset}} for a link to examples
 and a real-world demo.
 }
 
@@ -45,7 +46,7 @@ and a real-world demo.
 {
 \dontrun{
 # to be called from within the target package
-uniset_updateSettings(get("uev"), "dogPack_demo_setup")
+uniset_updateSettings(uniset_handover, "dogPack_demo_setup")
 }
 }
 }

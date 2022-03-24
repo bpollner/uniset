@@ -61,6 +61,7 @@
 #' in the code of the target package. 
 #' @importFrom utils str
 #' @importFrom easycsv choose_dir
+#' @importFrom methods is
 #' @docType package
 #' @name uniset
 NULL

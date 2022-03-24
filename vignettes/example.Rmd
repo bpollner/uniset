@@ -7,90 +7,75 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, setup, warning = FALSE, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(uniset)
+to <- path.expand("~/desktop")
+dsource <- paste0(path.package("uniset"), "/examples/dogPack")
+file.copy(dsource, to, recursive = TRUE) 
+setupFunc <- "dogPack_demo_setup" # the name of the setup-function in our example
+path <- paste0(to, "/dogPack")
+uniset_copyFilesToPackage(path, setupFunc)
 ```
 
-Try accessing a value from the settings file as described in 'dogPackFunc.R/dogPack_demo_autoUpS()'. It will not work yet.
-
-``` r
-color <- .dogPack_settingsEnv$settings$favouriteColor # does not work yet
-```
-
-In this example we try to obtain the value from the key 'favouriteColor' from the list called 'settings' in the environment called '.dogPack_settingsEnv'.
+In the following examples we will obtain the value from the key 'favouriteColor' from the file 'dogPack.settings.R'.
 
 ## Initialise Settings File System
 
-Assuming you copied or moved the required files as [described before](https://bpollner.github.io/uniset/articles/uniset.html), open the RStudio project file in the folder 'dogPack' on your desktop, build and install the package, and then call:
+Assuming you copied or moved the required files as [described before](https://bpollner.github.io/uniset/articles/uniset.html), open the RStudio project file in the folder 'temdir()/dogPack', build and install the package.
 
-``` r
+```{r}
+# done here for the sake of creating the vignette-output
+to <- path.expand("~/desktop")
+ptp <- paste0(to, "/dogPack")
+devtools::document(ptp, roclets = c('rd', 'collate', 'namespace'), quiet = TRUE)
+devtools::install(ptp)
+```
+
+### Define Location of settings.R File {#define-location}
+
+and then call:
+
+```{r}
 library(dogPack)
 dogPack_test_targetPackageParams() # gives a printout of the target package parameters
-dt <- "~/desktop"
-dogPack_demo_setup(where=dt) # will place the settings-home folder on the desktop
+dogPack_demo_setup(where=to) # will place the settings-home folder on the desktop
 ```
 
-This has to be done **only once** by the user of the target package. You probably have to restart R now for the changes in the environment variable in your .Renviron file to become effective.\
-Now call:
+`dogPack_demo_setup` contains the `uniset` function
 
-``` r
-library(dogPack) # if you had to restart R
-dogPack_demo_updateSettings()
-```
-
-------------------------------------------------------------------------
+This has to be done **only once** by the user of the target package. You probably have to **restart R** now for the changes in the environment variable in your .Renviron file to become effective.
 
 ## Getting Values
 
 By now everything should be ready and set up. You can look at the settings via
 
-``` r
+```{r}
 stn <- dogPack_demo_updateSettings()
 str(stn)
 ```
 
-It is possible to obtain values from 'dogPack_settings.R' directly via:
+Use the function `getstn` defined in package 'dogPack' to directly obtain the settings list -- see the example code in `dogPack_demo_autoUpS` and `dogPack_demo_tellFavouriteColor` in the example folder copied previously.
 
-``` r
-color <- .dogPack_settingsEnv$settings$favouriteColor
-color
-```
+`getstn` was customized by package `uniset` at the time of creating the four required files and is located in the file 'uniset_functions.R' in 'dogPack/R'.
 
-However, it is preferable to use the function `getstn()` defined in package 'dogPack' to directly obtain the settings list -- see the example code in `dogPack_demo_autoUpS()` and `dogPack_demo_tellFavouriteColor()` in the example folder copied previously.
-
-`getstn()` was customized by package `uniset` at the time of creating the four required files and is located in the file 'uniset_functions.R' in 'dogPack/R'.
-
-``` r
+```{r}
 dogPack_demo_tellFavouriteColor()
+# contains the function 'getstn'
 ```
 
 Now open the file 'dogPack_settings.R' in the folder 'dogPack_SH' that was created during setup, and change the value of the key 'favouriteColor' to "orange". After that, call
 
 ``` r
-dogPack_demo_tellFavouriteColor() # should be still "blue"
-dogPack_demo_autoUpS()
 dogPack_demo_tellFavouriteColor() # should be "orange" now
+#> "orange"
 ```
 
-**Cave:** Be aware that a call to the auto-update function (defined in `uniset`) is re-instating the values from the 'dogPack_settings.R' file to the object 'settings' in the environment '.dogPack_settingsEnv', but not when used with the key 'gen_autoUpdateSettings' in the settings.R file previously set to 'FALSE'.
-
-Including the auto-update function `uniset::uniset_autoUpS()` as demonstrated in `dogPack_demo_autoUpS` is of course not required -- the key=value pairs in the settings file can be accessed anyway.
-
-Practically, it makes sense to include the auto-update in every function that the user of the target package can call, and to not include it in all the other functions.
-
-Go to the local settings.R file (in the settings-home folder at `~/desktop`)and change the key 'favouriteColor' back to "blue".
-
-``` r
-dogPack_demo_tellFavouriteColor() # the old value ("orange")
-dogPack_demo_No_autoUpS(F)
-dogPack_demo_tellFavouriteColor() # still orange
-#
-dogPack_demo_autoUpS(F) # now update the values
-dogPack_demo_tellFavouriteColor() # should be "blue" again
-```
+Every time one of the functions `uniset_updateSettings()`, `uniset_autoUpS()` or `uniset_getstn()` is called from **within the target package**, the key = value pairs from the user-defined settings.R file are sourced and returned.\
+The location of the user-defined settings.R file can be defined via `uniset_autoUpS()` as [shown above](#define-location).
 
 ------------------------------------------------------------------------
 
@@ -102,30 +87,50 @@ If you are the developer of package `dogPack`, at some time after you published 
 
 Do that now: Add e.g. a new 'key=value,' pair (do not forget the comma ',') anywhere in the settings-file **in the folder 'inst' of `dogPack`**, and re-install `dogPack`. Or, as an alternative shortcut for this demonstration, go to root of the *installed* `dogPack` package at
 
-``` r
+```{r}
 path.package("dogPack")
 ```
 
-and there simply modify the file 'dogPack_settings.R' (add a key).
+and there simply modify the file 'dogPack_settings.R' (add a key called "someNewKey").
 
 Now the **user** of `dogPack` calls a function that includes the auto-update function `uniset::uniset_autoUpS()`:
 
 ``` r
-dogPack_demo_autoUpS(F)
+dogPack_demo_No_autoUpS()
+#> My favourite color is: orange
+#> # user defined settings.R file is NOT modified
+dogPack_demo_autoUpS()
+#>
+#> The following 1 key was added to the settings-file 'dogPack_settings.R' in 
+#> '/Users/bernhard/desktop/dogPack_SH':
+#>  someNewKey
+#> 
+#> My favourite color is: orange
 ```
 
 The **user** of `dogPack` will then have the new key added to the local file 'dogPack_settings.R' in the folder 'dogPack_SH' in the settings-home directory.
 
 ### Deleting Keys
 
-The same is true for deleting keys: again, open the file 'dogPack_settings.R' in the root of `path.package("dogPack")` and delete any key.
-
-Now the **user** of `dogPack` calls again a function that includes the auto-update function `uniset::uniset_autoUpS()`:
+The same is true for deleting keys: again, open the file 'dogPack_settings.R' in the root of `path.package("dogPack")` and delete the previously added key. Now the **user** of `dogPack` calls again a function that includes the auto-update function `uniset::uniset_autoUpS()`:
 
 ``` r
-dogPack_demo_autoUpS(F)
+dogPack_demo_No_autoUpS()
+#> My favourite color is: orange
+#> # user defined settings.R file is NOT modified
+dogPack_demo_autoUpS()
+#> 
+#> The following 1 key was deleted from the settings-file 'dogPack_settings.R' in 
+#> '/Users/bernhard/desktop/dogPack_SH':
+#>  someNewKey
+#>  
+#> My favourite color is: orange
 ```
 
-and surplus keys will be deleted from the local file 'dogPack_settings.R'.
+The surplus key was deleted from the local file 'dogPack_settings.R'.
+
+Practically, it makes sense to include the auto-update in every function that the user of the target package can call, and to not include it in all the other functions.
+
+You might want to read the code in the practical examples in the [previously copied file](https://bpollner.github.io/uniset/articles/uniset.html#set-up-example) `dogPack/R/dogPackFunc.R`, as they fully illustrate the usage of the functions exposed by `uniset` in the target package.
 
 Enjoy !

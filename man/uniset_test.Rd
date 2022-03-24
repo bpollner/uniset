@@ -4,27 +4,30 @@
 \alias{uniset_test}
 \title{Simple Test}
 \usage{
-uniset_test(unisetEnv)
+uniset_test(uniset_handover)
 }
 \arguments{
-\item{unisetEnv}{Character length one. The name of the environment holding 
-the uniset definitions for a single package.}
+\item{uniset_handover}{List length two, containing two elements:
+\enumerate{
+\item \code{pkgname}: The name of the target package.
+\item \code{funcname}: The name of the function handing over the required values.
+}}
 }
 \value{
-Is printing the parameters defined by the target package, and is 
+Is printing the parameters defined by the target package, and is
 returning those parameters in an (invisible) list.
 }
 \description{
-Test if the input package name etc. was correct / successful. 
+Test if the input package name etc. was correct / successful.
 This function is meant to be called from inside the  target package.
 }
 \section{Important}{
- This function is intended to be called from within the 
+ This function is intended to be called from within the
 target package.
 }
 
 \section{Note}{
- Please refer to \code{\link{uniset}} for a link to examples 
+ Please refer to \code{\link{uniset}} for a link to examples
 and a real-world demo.
 }
 
@@ -32,7 +35,7 @@ and a real-world demo.
 {
 \dontrun{
 # to be called from within the target package
-uniset_test(get("uev"))
+uniset_test(uniset_handover_pkgname, uniset_handover_funcname)
 }
 }
 }

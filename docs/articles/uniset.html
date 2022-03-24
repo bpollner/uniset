@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">uniset</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/description.html">Description &amp; Explanation</a>
     <a class="dropdown-item" href="../articles/example.html">Practical Example</a>
+    <a class="dropdown-item" href="../articles/testing.html">Testing the Target Package</a>
   </div>
 </li>
       </ul>
@@ -102,8 +103,8 @@ target package, and its user-defined values remain unchanged even when
 the author of the target package is introducing or deleting keys, or
 when the target package is updated or re-installed.</p>
 <p>In order to enable the target package to make use of the
-functionality offered by package <code>uniset</code>, four files have to
-be exported by <code>uniset</code> and be placed into the target
+functionality offered by package <code>uniset</code>, three files have
+to be exported by <code>uniset</code> and be placed into the target
 package.</p>
 </div>
 <div class="section level2">
@@ -127,9 +128,10 @@ package, and we want it to live at <code>~/desktop</code>. First copy
 the example folder <code>dogPack</code> to your desktop:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bpollner.github.io/uniset/">uniset</a></span><span class="op">)</span>
-<span class="va">to</span> <span class="op">&lt;-</span> <span class="st">"~/desktop"</span>
-<span class="va">from</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/find.package.html" class="external-link">path.package</a></span><span class="op">(</span><span class="st">"uniset"</span><span class="op">)</span>, <span class="st">"/examples/dogPack"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.copy</a></span><span class="op">(</span><span class="va">from</span>, <span class="va">to</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </code></pre></div>
+<span class="va">to</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/path.expand.html" class="external-link">path.expand</a></span><span class="op">(</span><span class="st">"~/desktop"</span><span class="op">)</span>
+<span class="va">dsource</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/find.package.html" class="external-link">path.package</a></span><span class="op">(</span><span class="st">"uniset"</span><span class="op">)</span>, <span class="st">"/examples/dogPack"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.copy</a></span><span class="op">(</span><span class="va">dsource</span>, <span class="va">to</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> 
+<span class="co">#&gt; [1] TRUE</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="generate-files">Generate Files<a class="anchor" aria-label="anchor" href="#generate-files"></a>
@@ -137,40 +139,62 @@ the example folder <code>dogPack</code> to your desktop:</p>
 <p>There are two ways to set up a target package (in our example the
 package called <code>dogPack</code>) to make use of
 <code>uniset</code>:</p>
-<ul>
-<li>
-<strong>1) Export and Move Files</strong> The package name, the name
-of the setup-function and a location have to be specified, and then a
-call to <code><a href="../reference/uniset_getFiles.html">uniset_getFiles()</a></code> creates a folder containing the
-four required files:<br>
-</li>
-</ul>
+<div class="section level3">
+<h3 id="a-export-and-move-files">
+<strong>A) Export and Move Files</strong><a class="anchor" aria-label="anchor" href="#a-export-and-move-files"></a>
+</h3>
+<p>The package name, the name of the setup-function and a location have
+to be specified, then a call to <code><a href="../reference/uniset_getFiles.html">uniset_getFiles()</a></code> creates a
+folder containing the three required files:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">setupFunc</span> <span class="op">&lt;-</span> <span class="st">"dogPack_demo_setup"</span> <span class="co"># the name of the setup-function in our example</span>
-<span class="va">to</span> <span class="op">&lt;-</span> <span class="st">"~/desktop"</span>
-<span class="fu"><a href="../reference/uniset_getFiles.html">uniset_getFiles</a></span><span class="op">(</span><span class="st">"dogPack"</span>, <span class="va">setupFunc</span>, <span class="va">to</span><span class="op">)</span></code></pre></div>
-<p>Move the ‘dogPack_settings.R’ file into the ‘inst’ folder (create one
-if not already done) of <code>dogPack</code>.</p>
-<p>Move the file ‘zzz.R’, ‘uniset_globals’ and ‘uniset_functions.R’ into
-the ‘R’ folder of <code>dogPack</code>.</p>
+<span class="fu"><a href="../reference/uniset_getFiles.html">uniset_getFiles</a></span><span class="op">(</span><span class="st">"dogPack"</span>, <span class="va">setupFunc</span>, <span class="va">to</span><span class="op">)</span>
+<span class="co">#&gt; Three files called </span>
+<span class="co">#&gt; 'uniset_globals.R'</span>
+<span class="co">#&gt; 'dogPack_settings.R'</span>
+<span class="co">#&gt; 'uniset_functions.R'</span>
+<span class="co">#&gt; have been written to the folder </span>
+<span class="co">#&gt; '/Users/bernhard/desktop/UnisetFiles_R-pkg_'dogPack''</span>
+<span class="co">#&gt; Please move these three files into their resp. target folders </span>
+<span class="co">#&gt; (see ?uniset, or have a look at the content of the three generated files)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Use the function</span>
+<span class="co">#&gt; 'autoUpS()' or 'getstn()'</span>
+<span class="co">#&gt; inside a function defined in the package 'dogPack' to get the list holding the key=value pairs.</span></code></pre></div>
+<p>Move files:</p>
 <ul>
-<li>
-<strong>2) Write files directly to target package</strong>
-(recommended) A call to <code><a href="../reference/uniset_copyFilesToPackage.html">uniset_copyFilesToPackage()</a></code> copies
-the four required files directly into the target package – called
-<code>dogPack</code> in our example, living directly on the
-desktop.</li>
+<li><p>‘dogPack_settings.R’ into the ‘inst’ folder (create one if not
+already done) of <code>dogPack</code>.</p></li>
+<li><p>‘uniset_globals’ and ‘uniset_functions.R’ into the ‘R’ folder of
+<code>dogPack</code>.</p></li>
 </ul>
+</div>
+<div class="section level3">
+<h3 id="b-write-files-directly-to-target-package">
+<strong>B) Write files directly to target package</strong><a class="anchor" aria-label="anchor" href="#b-write-files-directly-to-target-package"></a>
+</h3>
+<p>A call to <code><a href="../reference/uniset_copyFilesToPackage.html">uniset_copyFilesToPackage()</a></code> copies the three
+required files directly into the target package – called
+<code>dogPack</code> in our example.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">path</span> <span class="op">&lt;-</span> <span class="st">"~/desktop/dogPack"</span>
+<code class="sourceCode R"><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">to</span>, <span class="st">"/dogPack"</span><span class="op">)</span>
 <span class="va">setupFunc</span> <span class="op">&lt;-</span> <span class="st">"dogPack_demo_setup"</span> <span class="co"># the name of the setup-function in our example</span>
-<span class="fu"><a href="../reference/uniset_copyFilesToPackage.html">uniset_copyFilesToPackage</a></span><span class="op">(</span><span class="va">path</span>, <span class="va">setupFunc</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/uniset_copyFilesToPackage.html">uniset_copyFilesToPackage</a></span><span class="op">(</span><span class="va">path</span>, <span class="va">setupFunc</span><span class="op">)</span>
+<span class="co">#&gt; A file called 'dogPack_settings.R' has been written into the 'inst' folder, </span>
+<span class="co">#&gt; two files called 'uniset_globals.R' and 'uniset_functions.R'</span>
+<span class="co">#&gt; have been written into the 'R' folder of the package 'dogPack' at</span>
+<span class="co">#&gt; '/Users/bernhard/desktop/dogPack'.</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Use the function</span>
+<span class="co">#&gt; 'autoUpS()' or 'getstn()'</span>
+<span class="co">#&gt; inside a function defined in the package 'dogPack' to get the list holding the key=value pairs.</span></code></pre></div>
 <p>Please review the file ‘dogPackFunc.R’ in the folder ‘dogPack/R’ that
-was copied to the desktop and look at the code of the practical examples
-that will be executed below.</p>
+was copied to <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> and look at the code of the
+practical examples that will be executed below.</p>
 <p>Go on and read the <a href="https://bpollner.github.io/uniset/articles/description.html">extended
 description</a> to deepen your understanding of how <code>uniset</code>
 works.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

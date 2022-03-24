@@ -6,10 +6,20 @@
 # detach(name="pkg_dogPack_envs")
 # devtools::load_all(".")
 
+#### prepare ####
+ ptp <- path.package("uniset")
+ if (dir.exists(paste0(ptp, "/inst"))) {
+     ptpInst <- paste0(ptp, "/inst")
+ } else {
+     ptpInst <- ptp
+ } # end else
+ #
+
+
+
 #
 ######## the easy part #######-----
 # ptp <- "~/Documents/RPS/uniset_R/uniset"
-ptp <- path.package("uniset")
 ###
 test_that("checkCh1", {
     a <- "a"; b <- "a"
@@ -35,18 +45,17 @@ test_that("checkPath_Package_getName", {
 }) # EOT
 
 test_that("printFinalCodeMessage", {
-    expect_output(printFinalCodeMessage("a", "b", "c", "d"))
-    expect_message(printFinalCodeMessage("a", "b", "c", "d"), "getstn()")
+    expect_output(printFinalCodeMessage("a", "b", "c"))
+    expect_message(printFinalCodeMessage("a", "b", "c"), "getstn()")
 }) # EOT
 
 taPaName <- "dogPack"
-taPaEnv <- ".dogPack_settingsEnv"
 taPaObj <- "settings"
 taPaSH <- "dogPack_SH"
 tmpl <- "_TEMPLATE"
 setupFunc <- "hereNameOfSetupFunction"
 test_that("readInReplaceTxtUnisFiles", {
-    expect_type(readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaEnv, taPaObj, tmpl, setupFunc), "list")
+    expect_type(readInReplaceTxtUnisFiles(taPaName, taPaSH, taPaObj, tmpl, setupFunc), "list")
 }) # EOT
 
 td <- tempdir()
@@ -54,7 +63,7 @@ na <- "name"
 pa <- paste0(td, "/", na)
 tx <- "some text"
 test_that("createFilesWriteText", {
-    expect_null(createFilesWriteText(na, pa, tx, na, pa, tx, na, pa, tx, na, pa, tx))
+    expect_null(createFilesWriteText(na, pa, tx, na, pa, tx, na, pa, tx))
 }) # EOT
 
 where <- tempdir()
@@ -104,42 +113,40 @@ test_that("checkSetupFuncName", {
 
 
 ########### the tricky part ######## -----
-uev <- uniset_env_name <-  ".dogPack_unisetEnv"
+uniset_handover <- list(pkgname = "dogPack", funcname = "dogPack_handover_to_uniset")
 
-test_that("getUnisEnvirVariables", {
-    expect_error(getUnisEnvirVariables(uev)) # it has not been loaded / attached in real life
+# test_that("getUnisHandoverVariables", {
+#     expect_error(getUnisHandoverVariables(uniset_handover)) # does not exist yet
+# }) # EOT
+
+# try and build the real dogPack
+ptdopa_source <- paste0(ptpInst, "/examples/dogPack")
+file.copy(ptdopa_source, td, recursive = TRUE)
+ptdopa <- paste0(td, "/dogPack")
+uniset_copyFilesToPackage(ptdopa, setupFunc = "dogPack_demo_setup")
+devtools::document(ptdopa, roclets = c('rd', 'collate', 'namespace'), quiet = TRUE)
+devtools::install(ptdopa)
+
+test_that("getUnisHandoverVariables", {
+    expect_type(getUnisHandoverVariables(uniset_handover), "list")
 }) # EOT
+# getUnisHandoverVariables(uniset_handover)
 
-
-# siumlate the "dogPack"
-nsp <- "pkg_dogPack_envs"
-if (!any(grepl(nsp, search()))) {attach(what=NULL, name=nsp)}
-assign(".dogPack_unisetEnv", new.env(), pos=nsp)
-assign("pkgUniset_UserPackageName","dogPack", envir=.dogPack_unisetEnv)
-assign("pkgUniset_RenvironSettingsHomeName","dogPack_SH", envir=.dogPack_unisetEnv)
-assign("pkgUniset_EnvironmentName",".dogPack_settingsEnv", envir=.dogPack_unisetEnv)
-assign("pkgUniset_SettingsObjectName","settings", envir=.dogPack_unisetEnv)
-assign("pkgUniset_SuffixForTemplate","_TEMPLATE", envir=.dogPack_unisetEnv)
 
 test_that("uniset_test", {
-    expect_type(uniset_test(uev), "list")
-    expect_output(uniset_test(uev))
-    expect_error(uniset_test(uev="blabla"))
+    expect_type(uniset_test(uniset_handover), "list")
+    expect_output(uniset_test(uniset_handover))
+    expect_error(uniset_test(uniset_handover = "blabla"))
 }) # EOT
-test_that("getUnisEnvirVariables", {
-    expect_type(getUnisEnvirVariables(uev), "list")
-    expect_error(getUnisEnvirVariables(uev="blabla"))
-}) # EOT
-
-taPaList <- getUnisEnvirVariables(uev)
-
-test_that("sourceSettingsToEnv", {
-    expect_type(sourceSettingsToEnv(taPaList, nsp, silent=TRUE, pathSettings_fn_test), "list")
+test_that("getUnisHandoverVariables", {
+    expect_type(getUnisHandoverVariables(uniset_handover), "list")
+    expect_error(getUnisHandoverVariables(uniset_handover = "blabla"))
 }) # EOT
 
+taPaList <- getUnisHandoverVariables(uniset_handover)
 
-test_that("get a value from setings in .dogPack_settingsEnv", {
-    expect_identical(.dogPack_settingsEnv$settings$favouriteColor, "blue")
+test_that("sourceSettingsToObject", {
+    expect_type(sourceSettingsToObject(taPaList, pathSettings_fn_test), "list")
 }) # EOT
 
 
@@ -465,6 +472,9 @@ test_that("checkSetup", {
     expect_message(checkSetup(taPaList, setupFuncName, systemHome_R, ""), "not pointing to an existing directory")
 }) # EOT
 
+test_that("100", {
+    expect_equal(1,1)
+}) # EOT
 
 # now clean up
 unlink(paste0(td, "/dopaem"), TRUE)
@@ -474,9 +484,11 @@ unlink(paste0(td, "/userLoc2"), TRUE)
 unlink(paste0(td, "/", tempSysHome), TRUE)
 unlink(paste0(td, "/", "UnisetFiles_R-pkg_'dogPack'"), TRUE)
 unlink(paste0(td, "/name"), TRUE)
+unlink(paste0(td, "/dogPack"), TRUE)
+unlink(paste0(td, "/dogPack.Rcheck"), TRUE)
+remove.packages("dogPack")
 #
 rm(list=ls(all.names = TRUE))
-detach(name="pkg_dogPack_envs")
 
 
 

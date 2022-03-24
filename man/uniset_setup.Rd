@@ -4,49 +4,51 @@
 \alias{uniset_setup}
 \title{Perform Setup}
 \usage{
-uniset_setup(where = NULL, unisetEnv)
+uniset_setup(where = NULL, uniset_handover)
 }
 \arguments{
-\item{where}{Character length one, holding the path to the location where the 
-folder containing the settings.R file should be located. Defaults to 'NULL'. 
+\item{where}{Character length one, holding the path to the location where the
+folder containing the settings.R file should be located. Defaults to 'NULL'.
 If left at the default 'NULL', the location should be selectable interactively.}
 
-\item{unisetEnv}{Character length one. Hand over the global variable defined
-in the target package holding the name of the uniset-environment for the
-specific target package ('uniset_env_name' or 'uev', see examples at
-\code{\link{uniset}}.)}
+\item{uniset_handover}{List length two, containing two elements:
+\enumerate{
+\item \code{pkgname}: The name of the target package.
+\item \code{funcname}: The name of the function in the target package handing over
+the required values. See examples at \code{\link{uniset}}.
+}}
 }
 \value{
-Called for its side effects, i.e. to initiate the dynamic settings file 
-system (see Details.) Returns an (invisible) character length one holding the 
+Called for its side effects, i.e. to initiate the dynamic settings file
+system (see Details.) Returns an (invisible) character length one holding the
 path to the settings-home directory.
 }
 \description{
-Perform the required setup to enable the target package to make 
-use of the functionality of package 'uniset'. Only has to be called once 
+Perform the required setup to enable the target package to make
+use of the functionality of package 'uniset'. Only has to be called once
 by the user of the target package.
 }
 \details{
-This function is intended to be called from \strong{within} the 
-target package by the user of the target package. Only has to be called once 
+This function is intended to be called from \strong{within} the
+target package by the user of the target package. Only has to be called once
 to initiate the system, i.e. to
 \itemize{
 \item Define the folder where the settings.R file will be located,
 \item Copy the settings.R file into this folder, and
-\item Create a corresponding entry in the .Renviron file (or create the 
+\item Create a corresponding entry in the .Renviron file (or create the
 .Renviron file if does not exist).
 }
-This setup has to be done manually (but only once!) by the user of the target 
-package. However, if called repeatedly, it enables the user of the target 
-package to conveniently change the settings-home directory and its 
-corresponding variable in the .Renviron file. In that case, a factory-fresh 
-version of the settings.R file will be copied into the new settings-home 
-directory. For the user-defined values in the 'old' settings.R file not 
-to be lost, the user then has to manually move / copy the settings from 
+This setup has to be done manually (but only once!) by the user of the target
+package. However, if called repeatedly, it enables the user of the target
+package to conveniently change the settings-home directory and its
+corresponding variable in the .Renviron file. In that case, a factory-fresh
+version of the settings.R file will be copied into the new settings-home
+directory. For the user-defined values in the 'old' settings.R file not
+to be lost, the user then has to manually move / copy the settings from
 the old location to the new one.
 }
 \section{Important}{
- This function is meant to be called from within the 
+ This function is meant to be called from within the
 target package.
 }
 
@@ -54,7 +56,7 @@ target package.
 {
 \dontrun{
 # to be called from within the target package
-uniset_setup(where, get("uev"))
+uniset_setup(where, uniset_handover)
 }
 }
 }

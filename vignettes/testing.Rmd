@@ -1,0 +1,29 @@
+---
+title: "Testing the Target Package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Testing the Target Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+As of `uniset` version 0.3.0 there are some functions included in the file 'uniset_functions.R' that enable the testing of the target package also on remote runners.
+
+The problem with those remote runners is that, to the authors humble knowledge, it is not possible to source the settings.R file from a user-defined location, as the necessary system variable (`Sys.getenv()`) pointing to this user-defined location can not be set.
+
+Therefore a set of functions is introduced to source the settings.R file from the **root** of the **installed** **package** instead of from the user-defined location in a **test scenario.**
+
+For those functions to know that a test-script is being run, a specially named object has to be assigned to `.GlobalEnv` in the **test-script**. In our [example](https://bpollner.github.io/uniset/articles/example.html) the target package is named `dogPack`, and so the object would be assigned as follows:
+
+``` r
+assign("get_settings_from_dogPack_package_root", TRUE, pos=.GlobalEnv)
+```
+
+Please also observe the example in the file `/dogPack/tests/testthat/test-dogPackFunc.R` that was (possibly) [copied before](https://bpollner.github.io/uniset/articles/uniset.html#set-up-example).

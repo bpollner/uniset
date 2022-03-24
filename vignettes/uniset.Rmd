@@ -22,7 +22,7 @@ Package `uniset` enables any package (the 'target package') to provide its users
 
 This settings file lives in a location defined by the user of the target package, and its user-defined values remain unchanged even when the author of the target package is introducing or deleting keys, or when the target package is updated or re-installed.
 
-In order to enable the target package to make use of the functionality offered by package `uniset`, four files have to be exported by `uniset` and be placed into the target package.
+In order to enable the target package to make use of the functionality offered by package `uniset`, three files have to be exported by `uniset` and be placed into the target package.
 
 ## Installation
 
@@ -40,41 +40,46 @@ install_github(repo="bpollner/uniset", ref="master")
 
 ------------------------------------------------------------------------
 
-## Set up example
+## Set up example {#set-up-example}
 
 We assume that we want to enable a package called `dogPack` to use the dynamic settings file provided by `uniset`. In this example, `dogPack` is the target package, and we want it to live at `~/desktop`. First copy the example folder `dogPack` to your desktop:
 
-``` r
+```{r}
 library(uniset)
-to <- "~/desktop"
-from <- paste0(path.package("uniset"), "/examples/dogPack")
-file.copy(from, to, recursive = TRUE) 
+to <- path.expand("~/desktop")
+dsource <- paste0(path.package("uniset"), "/examples/dogPack")
+file.copy(dsource, to, recursive = TRUE) 
 ```
 
 ## Generate Files
 
 There are two ways to set up a target package (in our example the package called `dogPack`) to make use of `uniset`:
 
--   **1) Export and Move Files** The package name, the name of the setup-function and a location have to be specified, and then a call to `uniset_getFiles()` creates a folder containing the four required files:\
+### **A) Export and Move Files**
 
-``` r
+The package name, the name of the setup-function and a location have to be specified, then a call to `uniset_getFiles()` creates a folder containing the three required files:
+
+```{r}
 setupFunc <- "dogPack_demo_setup" # the name of the setup-function in our example
-to <- "~/desktop"
 uniset_getFiles("dogPack", setupFunc, to)
 ```
 
-Move the 'dogPack_settings.R' file into the 'inst' folder (create one if not already done) of `dogPack`.
+Move files:
 
-Move the file 'zzz.R', 'uniset_globals' and 'uniset_functions.R' into the 'R' folder of `dogPack`.
+-   'dogPack_settings.R' into the 'inst' folder (create one if not already done) of `dogPack`.
 
--   **2) Write files directly to target package** (recommended) A call to `uniset_copyFilesToPackage()` copies the four required files directly into the target package -- called `dogPack` in our example, living directly on the desktop.
+-   'uniset_globals' and 'uniset_functions.R' into the 'R' folder of `dogPack`.
 
-``` r
-path <- "~/desktop/dogPack"
+### **B) Write files directly to target package**
+
+A call to `uniset_copyFilesToPackage()` copies the three required files directly into the target package -- called `dogPack` in our example.
+
+```{r}
+path <- paste0(to, "/dogPack")
 setupFunc <- "dogPack_demo_setup" # the name of the setup-function in our example
 uniset_copyFilesToPackage(path, setupFunc)
 ```
 
-Please review the file 'dogPackFunc.R' in the folder 'dogPack/R' that was copied to the desktop and look at the code of the practical examples that will be executed below.
+Please review the file 'dogPackFunc.R' in the folder 'dogPack/R' that was copied to `tempdir()` and look at the code of the practical examples that will be executed below.
 
 Go on and read the [extended description](https://bpollner.github.io/uniset/articles/description.html) to deepen your understanding of how `uniset` works.

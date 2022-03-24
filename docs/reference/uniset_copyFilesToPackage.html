@@ -18,7 +18,7 @@ from the description file."><meta property="og:image" content="https://bpollner.
     
     <a class="navbar-brand me-2" href="../index.html">uniset</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,7 @@ from the description file."><meta property="og:image" content="https://bpollner.
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/description.html">Description &amp; Explanation</a>
     <a class="dropdown-item" href="../articles/example.html">Practical Example</a>
+    <a class="dropdown-item" href="../articles/testing.html">Testing the Target Package</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -85,8 +86,8 @@ from the description file.</p>
 <dd><p>Character length one. The path to the root of the
 target package.</p></dd>
 <dt>setupFunc</dt>
-<dd><p>Character length one. The name of the function 
-<strong>in the target package</strong> that is containing the setup-function 
+<dd><p>Character length one. The name of the function
+<strong>in the target package</strong> that is containing the setup-function
 <code><a href="uniset_setup.html">uniset_setup</a></code>.</p></dd>
 <dt>taPaSH</dt>
 <dd><p>Character length one. The name of the variable to be defined in
@@ -96,12 +97,12 @@ will be used, with 'taPaName' being the value provided at the argument
 'taPaName'.</p></dd>
 <dt>taPaObj</dt>
 <dd><p>Character length one. The name of the object holding the list
-with the key-value pairs that can be defined to be used in the target package. 
+with the key-value pairs that can be defined to be used in the target package.
 Can be left at the default 'settings'.</p></dd>
 <dt>tmpl</dt>
 <dd><p>Character length one. the Character string that will be appended
-to the fresh settings file that is copied (by the target package) to the users 
-settings home directory if updating the key=value pairs was not successful. 
+to the fresh settings file that is copied (by the target package) to the users
+settings home directory if updating the key=value pairs was not successful.
 Can be left at the default '_TEMPLATE'.</p></dd>
 </dl></div>
     <div class="section level2">
@@ -111,7 +112,7 @@ structure. Returns (invisible) NULL.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>Please refer to <code><a href="uniset.html">uniset</a></code> for a link to examples 
+    <p>Please refer to <code><a href="uniset.html">uniset</a></code> for a link to examples
 and a real-world demo.</p>
     </div>
     <div class="section level2">
@@ -132,16 +133,13 @@ and a real-world demo.</p>
 <span class="r-in"><span class="fu">uniset_copyFilesToPackage</span><span class="op">(</span><span class="va">path</span>, <span class="st">"nameOfSetupFunc"</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> A file called 'dogPack_settings.R' has been written into the 'inst' folder, </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> three files called 'zzz.R', 'uniset_globals.R' and 'uniset_functions.R' have been written into the 'R' folder of the package 'dogPack' at </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> '/var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T//RtmpUleo3l/dogPack'.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> two files called 'uniset_globals.R' and 'uniset_functions.R'</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> have been written into the 'R' folder of the package 'dogPack' at</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> '/var/folders/lz/7rwkvs09671dzp_fgvtxyrqh0000gq/T//RtmpRCRl4B/dogPack'.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> You will be able to access values of the file 'dogPack_settings.R' via the code: </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> '.dogPack_settingsEnv$settings$KEY'</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (With 'KEY' being any of the 'key=value' pairs defined in the file 'dogPack_settings.R'.)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Or (recommended), use the function </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'getstn()'</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> inside a function defined in the package 'dogPack' to directly get the list holding the key=value pairs.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Use the function </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 'autoUpS()' or 'getstn()'</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> inside a function defined in the package 'dogPack' to get the list holding the key=value pairs.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

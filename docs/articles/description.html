@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">uniset</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/description.html">Description &amp; Explanation</a>
     <a class="dropdown-item" href="../articles/example.html">Practical Example</a>
+    <a class="dropdown-item" href="../articles/testing.html">Testing the Target Package</a>
   </div>
 </li>
       </ul>
@@ -102,8 +103,8 @@ target package, and its user-defined values remain unchanged even when
 the author of the target package is introducing or deleting keys, or
 when the target package is updated or re-installed.</p>
 <p>In order to enable the target package to make use of the
-functionality offered by package <code>uniset</code>, four files have to
-be exported by <code>uniset</code> and be placed into the target
+functionality offered by package <code>uniset</code>, three files have
+to be exported by <code>uniset</code> and be placed into the target
 package.</p>
 </div>
 <div class="section level2">
@@ -116,8 +117,8 @@ file get updated (added / deleted) dynamically.<br>
 So the developer of a package can delete keys or introduce new ones, and
 the new key=value pairs will be automatically added to or deleted from
 the local ‘settings.R’ file.</p>
-<p>Values changed by the user of the target package will be
-preserved.<br>
+<p><strong>Values</strong> changed by the <strong>user</strong> of the
+target package will be <strong>preserved</strong>.<br>
 So the author of the target package can add or delete keys from the
 ‘settings.R’ file without worrying that this will cause any effort or
 troubles for the user of the target package.</p>
@@ -125,33 +126,30 @@ troubles for the user of the target package.</p>
 <div class="section level2">
 <h2 id="two-ways-to-generate-the-required-files">Two ways to generate the required files<a class="anchor" aria-label="anchor" href="#two-ways-to-generate-the-required-files"></a>
 </h2>
+<div class="section level3">
+<h3 id="a-export-and-move-files">
+<strong>A) Export and Move Files</strong><a class="anchor" aria-label="anchor" href="#a-export-and-move-files"></a>
+</h3>
 <ul>
-<li>
-<p><strong>1) Export and Move Files</strong></p>
-<ul>
-<li><p>Use <strong><code><a href="../reference/uniset_getFiles.html">uniset_getFiles()</a></code></strong>, then move
-the ‘xxx_settings.R’ file (‘xxx’ for the name of the target package)
-into the ‘inst’ folder (create one if not already done) of the target
+<li><p>Use <code><a href="../reference/uniset_getFiles.html">uniset_getFiles()</a></code>, then move the
+‘xxx_settings.R’ file (‘xxx’ for the name of the target package) into
+the ‘inst’ folder (create one if not already done) of the target
 package.</p></li>
-<li><p>Move the file ‘zzz.R’, ‘uniset_globals.R’ and
-‘uniset_functions.R’ to the ‘R’ folder of the target package.</p></li>
-<li><p>In case that the ‘.onLoad’ function already is defined, add the
-eight lines of code from the file ‘zzz.R’ to your existing ‘.onLoad’
-function.</p></li>
-<li><p>In case that the ‘.onUnLoad’ function already is defined, add the
-one line of code from the file ‘zzz.R’ to your existing ‘.onUnLoad’
-function.</p></li>
+<li><p>Move the files ‘uniset_globals.R’ and ‘uniset_functions.R’ to the
+‘R’ folder of the target package.</p></li>
 </ul>
-</li>
-<li><p><strong>2) Write files directly to target package
-(recommended)</strong><br>
-Alternatively, use
-<strong><code><a href="../reference/uniset_copyFilesToPackage.html">uniset_copyFilesToPackage()</a></code></strong> to copy the
-required files directly into the target package.</p></li>
-</ul>
+</div>
+<div class="section level3">
+<h3 id="b-write-files-directly-to-target-package">
+<strong>B) Write files directly to target package</strong><a class="anchor" aria-label="anchor" href="#b-write-files-directly-to-target-package"></a>
+</h3>
+<p>Alternatively, use <code><a href="../reference/uniset_copyFilesToPackage.html">uniset_copyFilesToPackage()</a></code> to copy
+the required files directly into the target package.</p>
 <p>In both cases the name of a setup-function has to be provided, that
-is the name of the function defined in the target package that contains
-the <code>uniset</code> function <code><a href="../reference/uniset_setup.html">uniset_setup()</a></code>.</p>
+is the name of a function <strong>defined in the target package</strong>
+that contains the <code>uniset</code> function
+<code><a href="../reference/uniset_setup.html">uniset_setup()</a></code>.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="accessing-values-from-within-target-package">Accessing values from within target package<a class="anchor" aria-label="anchor" href="#accessing-values-from-within-target-package"></a>
@@ -159,12 +157,11 @@ the <code>uniset</code> function <code><a href="../reference/uniset_setup.html">
 <p>Every variable defined in the ‘settings.R’ file is accessible in the
 code of the target package.</p>
 <p>The target package has to list <code>uniset</code> as an import, and
-then the functions <code><a href="../reference/uniset_updateSettings.html">uniset_updateSettings()</a></code> or
-<code><a href="../reference/uniset_autoUpS.html">uniset_autoUpS()</a></code> called from a function <strong>defined in
-the target package</strong> can be used to manually or automatically
-update the settings, i.e. to read in the key=value pairs stored in the
-‘settings.R’ file and have them accessible in an environment created by
-the target package.</p>
+then the functions <code><a href="../reference/uniset_updateSettings.html">uniset_updateSettings()</a></code>,
+<code><a href="../reference/uniset_autoUpS.html">uniset_autoUpS()</a></code> or <code><a href="../reference/uniset_getstn.html">uniset_getstn()</a></code> called
+from a function <strong>defined in the target package</strong> can be
+used to manually or automatically update the settings, i.e. to read in
+the key=value pairs stored in the ‘settings.R’ file.</p>
 <p>See <a href="https://bpollner.github.io/uniset/articles/example.html">next
 page</a> for a practical example.</p>
 </div>
@@ -173,29 +170,33 @@ page</a> for a practical example.</p>
 </h2>
 <p>You can define functions <strong>in the target package</strong> (what
 in this example will be the package ‘dogPack’) that can call the
-following four functions from <code>uniset</code>:</p>
+following functions from <code>uniset</code>:</p>
 <ul>
-<li><p><code>uniset_setup(where="somePath", get("uev"))</code></p></li>
-<li><p><code>uniset_test(get("uev"))</code></p></li>
-<li><p><code>uniset_updateSettings(get("uev"), "nameOfSetupFunction")</code></p></li>
-<li><p><code>uniset_autoUpS(get("uev"), "nameOfSetupFunction")</code></p></li>
+<li><code>uniset_setup(where="somePath", get("uniset_handover"))</code></li>
+<li><code>uniset_test(get("uniset_handover"))</code></li>
+<li><code>uniset_updateSettings(get("uniset_handover"), "nameOfSetupFunction")</code></li>
+<li><code>uniset_autoUpS(get("uniset_handover"), "nameOfSetupFunction")</code></li>
+<li><code>uniset_getstn(get("uniset_handover"))</code></li>
 </ul>
-<p><br><code>uev</code> is a global constant defined in the target package,
-handing over the name of the environment where necessary variables are
-stored.</p>
-<p><code><a href="../reference/uniset_test.html">uniset_test()</a></code> is merely a testing function to see if the
+<p><code>uniset_handover</code> is a global variable <strong>defined in
+the target package</strong> (the package ‘dogPack’ in our example). It
+contains the name of a function exported by the target package that
+hands over required values to package <code>uniset</code>.</p>
+<p><code><a href="../reference/uniset_test.html">uniset_test()</a></code> is a testing function to see if the
 handover of environments etc. is working properly.</p>
-<p><code>"nameOfSetupFunction"</code>is the name of the function defined
-in the target package that is containing the <code>uniset</code>
-setup-function <code><a href="../reference/uniset_setup.html">uniset_setup()</a></code>.</p>
+<p><code>nameOfSetupFunction</code>is the name of the function
+<strong>defined in the target package</strong> that is
+<em>containing</em> the <code>uniset</code> setup-function
+<code><a href="../reference/uniset_setup.html">uniset_setup()</a></code>.</p>
 <p>The function <code><a href="../reference/uniset_setup.html">uniset_setup()</a></code> is:</p>
 <ul>
 <li><p>Creating the required environment variable in the .Renviron file,
 and</p></li>
 <li><p>copying the ‘dogPack_settings.R’ file to a destination specified
-by the user of ‘dogPack’. It is this file (’dogPack_settings.R) that is
-meant to be seen, read and modified by the <strong>user</strong> of
-package <code>dogPack</code>.</p></li>
+by the user of ‘dogPack’.<br>
+It is this file (’dogPack_settings.R) that is meant to be seen, read and
+modified by the <strong>user</strong> of package
+<code>dogPack</code>.</p></li>
 </ul>
 <p>The functions <code><a href="../reference/uniset_updateSettings.html">uniset_updateSettings()</a></code> and
 <code><a href="../reference/uniset_autoUpS.html">uniset_autoUpS()</a></code> are updating (adding / deleting) the
@@ -210,8 +211,22 @@ Any values that the user modified will be preserved.</p>
 <code>dogPack</code> will not force the user of package
 <code>dogPack</code> to completely re-customize the ‘dogPack_settings.R’
 file</strong>.</p>
+<div class="section level3">
+<h3 id="only-sourcing-vs--compare-keys">Only Sourcing vs. Compare Keys<a class="anchor" aria-label="anchor" href="#only-sourcing-vs--compare-keys"></a>
+</h3>
+<p>The difference between <code><a href="../reference/uniset_getstn.html">uniset_getstn()</a></code> on the one hand
+and <code><a href="../reference/uniset_autoUpS.html">uniset_autoUpS()</a></code> and
+<code><a href="../reference/uniset_updateSettings.html">uniset_updateSettings()</a></code> on the other hand is that the first
+one is <strong>merely sourcing</strong> the values from the ‘settings.R’
+file, while the other ones are <strong>first</strong>
+<strong>comparing</strong> the <strong>keys</strong> in the user defined
+settings.R file with those in the root of the target packge. If the keys
+differ, the user-defined settings.R file is modified accordingly. Only
+<strong>then</strong>, after the comparison of the keys, is the user
+defined settings.R file <strong>sourced</strong>.</p>
 <p>Go on and see what <code>uniset</code> can do in a <a href="https://bpollner.github.io/uniset/articles/example.html">practical
 example</a>.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

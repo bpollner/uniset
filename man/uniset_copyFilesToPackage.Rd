@@ -16,8 +16,8 @@ uniset_copyFilesToPackage(
 \item{pathToPackage}{Character length one. The path to the root of the
 target package.}
 
-\item{setupFunc}{Character length one. The name of the function 
-\strong{in the target package} that is containing the setup-function 
+\item{setupFunc}{Character length one. The name of the function
+\strong{in the target package} that is containing the setup-function
 \code{\link{uniset_setup}}.}
 
 \item{taPaSH}{Character length one. The name of the variable to be defined in
@@ -27,12 +27,12 @@ will be used, with 'taPaName' being the value provided at the argument
 'taPaName'.}
 
 \item{taPaObj}{Character length one. The name of the object holding the list
-with the key-value pairs that can be defined to be used in the target package. 
+with the key-value pairs that can be defined to be used in the target package.
 Can be left at the default 'settings'.}
 
 \item{tmpl}{Character length one. the Character string that will be appended
-to the fresh settings file that is copied (by the target package) to the users 
-settings home directory if updating the key=value pairs was not successful. 
+to the fresh settings file that is copied (by the target package) to the users
+settings home directory if updating the key=value pairs was not successful.
 Can be left at the default '_TEMPLATE'.}
 }
 \value{
@@ -47,7 +47,7 @@ folders in the target package. The name of the target package will be extracted
 from the description file.
 }
 \section{Note}{
- Please refer to \code{\link{uniset}} for a link to examples 
+ Please refer to \code{\link{uniset}} for a link to examples
 and a real-world demo.
 }
 

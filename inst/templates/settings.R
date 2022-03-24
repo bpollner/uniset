@@ -1,18 +1,21 @@
-#######################################################################################################
-######################## Settings file for package "XXX_packageName" ##################################
-#######################################################################################################
+##########################################################################
+######## Settings file for package "XXX_packageName" #####################
+##########################################################################
 
 
-# If not already there, move this file called 'XXX_actualSettingsName' into the "inst" folder of 
-# your package 'XXX_packageName'. (create an "inst" folder if it does not exist)
+# For the developer of package "XXX_packageName":
+# If not already there, move this file called 'XXX_actualSettingsName' into
+# the "inst" folder of your package 'XXX_packageName'. (create an "inst"
+# folder if it does not exist)
+# Consider deleting this paragraph, as the USER of the target package should
+# to leave this file where it is.
 
-# do NOT change the name of the object holding the list - in this case, 'XXX_obj'
+# do NOT change the name of the object holding the list - in this
+# case, 'XXX_obj'
 
-# use the code 'XXX_targetEnv$XXX_obj$KEY' (with 'KEY' being any of the key=value pairs defined below) 
-# in the target package to access the values of the object 'XXX_obj'. 
-
-#' Or (recommended) use the function 'getstn()' as defined in the package 'XXX_packageName' to directly 
-# get the list 'XXX_obj' (below).
+#' Use the function 'getstn()' as defined in the package
+# 'XXX_packageName' to directly get the list
+# 'XXX_obj' (below).
 
 XXX_obj <- list(
 	# tag = value, # with a comma !!
@@ -68,18 +71,19 @@ XXX_obj <- list(
 	## the last one without comma !!
 ) # end of list called 'XXX_obj'
 
-
-# any of these key=value pairs can be accessed in the code of your package 'XXX_packageName' by using simply
-# XXX_targetEnv$XXX_obj$favouriteColor, for example. Instead of 'favouriteColor' any other of the keys defined
-# in the list above can be used. 
+ 
 # You can create as many key=value pairs as you want. 
 
-# Key=value pairs have to specified exactly in the format as shown above, with a ',' (comma) after the value!
-# (as this is nothing but a simple list, and in a list the key=value pairs have to be separated by a comma.)
+# Key=value pairs have to specified exactly in the format as shown above,
+# with a ',' (comma) after the value!
+# (as this is nothing but a simple list, and in a list the key=value pairs
+# have to be separated by a comma.)
 # The keys have to be unique (obviously). 
 
-# Do not change the name of the object holding the list - in this case, 'XXX_obj'
+# Do not change the name of the object holding the list - in
+# this case, 'XXX_obj'
 
 # empty lines and comments can be introduced or deleted at the users wish
-# it is recommended to place comments, explanations etc. to a specific key directly into the line holding the key.
+# it is recommended to place comments, explanations etc. to a specific key
+# directly into the line holding the key.
 # comments have to be preceeded by a '#' 

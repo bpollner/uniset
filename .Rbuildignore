@@ -14,7 +14,9 @@ _config.yml
 ^docs$
 ^pkgdown$
 ^_pkgdown\.yml$
+.Rbuildignore
 index.md
 description.Rmd
 example.Rmd
 uniset.Rmd
+testing.Rmd
