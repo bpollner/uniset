@@ -1,3 +1,13 @@
+# uniset 0.3.1
+
+## Improved
+* An informative error message is displayed when a target package is trying
+to hand over values in an outdated manner. (Probably using code from uniset
+versions < 0.3.0.)
+
+
+
+
 # uniset 0.3.0
 
 ## New

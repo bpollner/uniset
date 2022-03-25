@@ -389,6 +389,24 @@ uniset_copyFilesToPackage <- function(pathToPackage, setupFunc=NULL,
     return(invisible(NULL))
 } # EOF
 
+check_target_package_handover <- function(taPaInput) {
+    #
+    liNames <- c("pkgname", "funcname")
+    #
+    msg <- "\nPackage uniset has been updated.\nPlease see \nhttps://bpollner.github.io/uniset/news/index.html \nfor more information on what was changed. \n\nA package tried to hand over values to package 'uniset' in an outdated manner."
+    #
+    if (!is(taPaInput, "list")) {
+        stop(msg)
+    } # end if
+    if (length(taPaInput) != 2) {
+        stop(msg)
+    } # end if
+    if (! all(names(taPaInput) %in% liNames)) {
+        stop(msg)
+    } # end if
+    return(TRUE)
+} # EOF
+
 #' @title Simple Test
 #' @description Test if the input package name etc. was correct / successful. 
 #' This function is meant to be called from inside the  target package.
@@ -409,6 +427,7 @@ uniset_copyFilesToPackage <- function(pathToPackage, setupFunc=NULL,
 #' }
 #' @export
 uniset_test <- function(uniset_handover) {
+    check_target_package_handover(uniset_handover)
     txt <- paste0(uniset_handover$pkgname, "::", uniset_handover$funcname, "()")
     val_list <- eval(parse(text=txt))
     print(utils::str(val_list))
@@ -1223,6 +1242,7 @@ performSetup_sys <- function(userLoc, taPaList, taPaSettingsPath_test=NULL, sysH
 #' }
 #' @export
 uniset_setup <- function(where=NULL, uniset_handover) {
+    check_target_package_handover(uniset_handover)
     where <- getCheckPathToFolder(where, what="where")
     taPaList <- getUnisHandoverVariables(uniset_handover)
     ok <- performSetup_sys(where, taPaList)
@@ -1261,6 +1281,7 @@ uniset_setup <- function(where=NULL, uniset_handover) {
 #' }
 #' @export
 uniset_updateSettings <- function(uniset_handover, setupFunc=NULL, silent=FALSE) {
+    check_target_package_handover(uniset_handover)
     taPaList <- getUnisHandoverVariables(uniset_handover)
     taPaName <- taPaList$taPaName
     checkSetupFuncName(setupFunc, taPaName) # is stopping when setupFunc is left at NULL
@@ -1300,6 +1321,7 @@ uniset_updateSettings <- function(uniset_handover, setupFunc=NULL, silent=FALSE)
 #' }
 #' @export
 uniset_autoUpS <- function(uniset_handover, setupFunc=NULL) { # stops if somethings goes wrong
+    check_target_package_handover(uniset_handover)
     taPaList <- getUnisHandoverVariables(uniset_handover)
         taPaObj <- taPaList$taPaObj
         taPaName <- taPaList$taPaName
@@ -1340,6 +1362,7 @@ uniset_autoUpS <- function(uniset_handover, setupFunc=NULL) { # stops if somethi
 #' }
 #' @export
 uniset_getstn <- function(uniset_handover) {
+    check_target_package_handover(uniset_handover)
     taPaList <- getUnisHandoverVariables(uniset_handover)
 	stn <- sourceSettingsToObject(taPaList)
 	if (is.null(stn)) {

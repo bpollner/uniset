@@ -114,6 +114,16 @@ test_that("checkSetupFuncName", {
 
 ########### the tricky part ######## -----
 uniset_handover <- list(pkgname = "dogPack", funcname = "dogPack_handover_to_uniset")
+uhb1 <- ".someString"
+uhb2 <- list(a=1, b=2, c=3)
+uhb3 <- list(pkgnameX = "dogPack", funcname = "dogPack_handover_to_uniset")
+
+test_that("check_target_package_handover", {
+    expect_true(check_target_package_handover(uniset_handover))
+    expect_error(check_target_package_handover(uhb1))
+    expect_error(check_target_package_handover(uhb2))
+    expect_error(check_target_package_handover(uhb3))
+}) # EOT
 
 # test_that("getUnisHandoverVariables", {
 #     expect_error(getUnisHandoverVariables(uniset_handover)) # does not exist yet
