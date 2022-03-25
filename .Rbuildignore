@@ -20,3 +20,4 @@ description.Rmd
 example.Rmd
 uniset.Rmd
 testing.Rmd
+^CRAN-SUBMISSION$
