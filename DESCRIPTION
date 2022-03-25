@@ -1,7 +1,7 @@
 Package: uniset
 Type: Package
 Title: Dynamic Settings File
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
     person("Bernhard", "Pollner", email = "bernhard.pollner@mac.com", role = c("cre","aut")),
     person("Zoltan", "Kovacs", email = "kovacs@correltech.hu", role = "aut"))
