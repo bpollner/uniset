@@ -2,8 +2,8 @@
 
 ## Improved
 * An informative error message is displayed when a target package is trying
-to hand over values in an outdated manner. (Probably using code from uniset
-versions < 0.3.0.)
+to hand over values in an outdated manner. (The target package is probably
+using code from uniset versions < 0.3.0.)
 
 
 
