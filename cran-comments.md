@@ -1,60 +1,57 @@
-The notes are due to the fact that the previous submission was ~16 hours ago.
-
-Explanation:
-This new submission shortly after the previous is due to the fact that I
+This new submission shortly after the previous is due to the fact that I 
 forgot to include an informative error message, what is now fixed.
-I apologize,
-The update to version 0.3.1 is giving the users of uniset an
-informative error message when trying to use code from the old version
-(< 0.3.x) of uniset.
+I apologize,.
+The update to version 0.3.1 is urgent is it gives the users of uniset an 
+informative error message when still using code from uniset < 0.3.x
 
 ******
 
-https://win-builder.r-project.org/r1Z10e33l3R6
-is ok:
-0 errors ✓ | 0 warnings ✓ | 1 notes 
+https://win-builder.r-project.org/Fr6iDDXOyp3Z
 
 * checking CRAN incoming feasibility ... NOTE
 Maintainer: 'Bernhard Pollner <bernhard.pollner@mac.com>'
 
-Days since last update: 0
+Days since last update: 1
+
+0 errors ✓ | 0 warnings ✓ | 1 note x
+
+
 
 ******
 
-── uniset 0.3.1: ERROR
 
-  Build ID:   uniset_0.3.1.tar.gz-1298e0a9e6784a098c673dca372ba458
+
+── uniset 0.3.1: NOTE
+
+  Build ID:   uniset_0.3.1.tar.gz-a0119c748f0b4a3786fdd6d4b0c5be9e
   Platform:   Windows Server 2022, R-devel, 64 bit
-  Submitted:  28m 17.2s ago
-  Build time: 3m 16.1s
-
-> checking tests ...
-  See below...
+  Submitted:  27m 52.3s ago
+  Build time: 3m 10.9s
 
 > checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Bernhard Pollner <bernhard.pollner@mac.com>'
   
-  Days since last update: 0
+  Days since last update: 1
 
 > checking for detritus in the temp directory ... NOTE
   Found the following files/directories:
     'lastMiKTeXException'
 
-1 error x | 0 warnings ✓ | 2 notes x
+0 errors ✓ | 0 warnings ✓ | 2 notes x
 
 ******
 
 ── uniset 0.3.1: NOTE
 
-  Build ID:   uniset_0.3.1.tar.gz-d8530c8fa6d4450c9ce2ae20786b12c2
+  Build ID:   uniset_0.3.1.tar.gz-6949f9e148734726857e2bd9e17ae7c1
   Platform:   Ubuntu Linux 20.04.1 LTS, R-release, GCC
-  Submitted:  28m 17.2s ago
-  Build time: 25m 42s
+  Submitted:  27m 52.3s ago
+  Build time: 24m 48.1s
 
 > checking CRAN incoming feasibility ... NOTE
   Maintainer: ‘Bernhard Pollner <bernhard.pollner@mac.com>’
   
-  Days since last update: 0
+  Days since last update: 1
 
 0 errors ✓ | 0 warnings ✓ | 1 note x
 
@@ -62,14 +59,14 @@ Days since last update: 0
 
 ── uniset 0.3.1: NOTE
 
-  Build ID:   uniset_0.3.1.tar.gz-99bf4d7cec3c48d99e13b78f8b3e7c49
+  Build ID:   uniset_0.3.1.tar.gz-cc34f6cbc3ea49c084a494bc933716ec
   Platform:   Fedora Linux, R-devel, clang, gfortran
-  Submitted:  28m 17.3s ago
-  Build time: 27m 29.2s
+  Submitted:  27m 52.3s ago
+  Build time: 26m 38.7s
 
 > checking CRAN incoming feasibility ... NOTE
   Maintainer: ‘Bernhard Pollner <bernhard.pollner@mac.com>’
   
-  Days since last update: 0
+  Days since last update: 1
 
 0 errors ✓ | 0 warnings ✓ | 1 note x
